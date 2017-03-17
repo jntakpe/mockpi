@@ -1,5 +1,7 @@
 package com.github.jntakpe.mockpi.service
 
+import com.github.jntakpe.mockpi.exceptions.ConflictKeyException
+import com.github.jntakpe.mockpi.repository.UserRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -15,8 +17,11 @@ internal class UserServiceTest {
     @Autowired
     lateinit var userService: UserService
 
+    @Autowired
+    lateinit var userRepository: UserRepository
+
     @Test
-    fun `should find user by login`() {
+    fun `should find user by login because exact match`() {
         val login = "jntakpe"
         StepVerifier.create(userService.findByLogin(login))
                 .expectSubscription()
@@ -26,12 +31,11 @@ internal class UserServiceTest {
                         assertThat(user.login).isEqualTo(login)
                     }
                 }
-                .expectComplete()
-                .verify()
+                .verifyComplete()
     }
 
     @Test
-    fun `should find user by login ignoring case`() {
+    fun `should find user by login because ignoring case`() {
         val login = "JNtaKpe"
         StepVerifier.create(userService.findByLogin(login))
                 .expectSubscription()
@@ -41,8 +45,7 @@ internal class UserServiceTest {
                         assertThat(user.login).isEqualTo(login.toLowerCase())
                     }
                 }
-                .expectComplete()
-                .verify()
+                .verifyComplete()
     }
 
     @Test
@@ -52,7 +55,40 @@ internal class UserServiceTest {
                 .expectSubscription()
                 .recordWith { mutableListOf() }
                 .expectRecordedMatches { it.isEmpty() }
-                .expectComplete()
+                .verifyComplete()
+    }
+
+    @Test
+    fun `should accept login because none existing`() {
+        val newlogin = "newlogin"
+        StepVerifier.create(userService.verifyLoginAvailable(newlogin))
+                .expectSubscription()
+                .expectNext(newlogin)
+                .verifyComplete()
+    }
+
+    @Test
+    fun `should refuse login because same login exist`() {
+        StepVerifier.create(userService.verifyLoginAvailable("JNtakpe"))
+                .expectSubscription()
+                .expectError(ConflictKeyException::class.java)
+                .verify()
+    }
+
+    @Test
+    fun `should accept login because old login is the same`() {
+        val login = "JNtakpe"
+        StepVerifier.create(userService.verifyLoginAvailable(login, "jntakpe"))
+                .expectSubscription()
+                .expectNext(login)
+                .verifyComplete()
+    }
+
+    @Test
+    fun `should refuse login because old login is not the same`() {
+        StepVerifier.create(userService.verifyLoginAvailable("JNtakpe", "oldlogin"))
+                .expectSubscription()
+                .expectError(ConflictKeyException::class.java)
                 .verify()
     }
 
