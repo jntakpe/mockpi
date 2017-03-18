@@ -8,9 +8,11 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.test.web.reactive.server.WebTestClient
+import reactor.core.publisher.Mono
 import reactor.test.StepVerifier
 
 @SpringBootTest
@@ -20,11 +22,14 @@ class UserResourceTest {
     @Autowired
     lateinit var userResource: UserResource
 
+    @Autowired
+    lateinit var webAdvising: WebAdvising
+
     lateinit var client: WebTestClient
 
     @Before
     fun setUp() {
-        client = WebTestClient.bindToController(userResource).build()
+        client = WebTestClient.bindToController(userResource).controllerAdvice(webAdvising).build()
     }
 
     @Test
@@ -70,5 +75,28 @@ class UserResourceTest {
                 .expectStatus().isNotFound
     }
 
+    @Test
+    fun `should create new user`() {
+        val result = client.post().uri(Urls.USERS_API).accept(MediaType.APPLICATION_JSON_UTF8)
+                .exchange(Mono.just(User("postUser", "Post user", "postUser@mail.com")), User::class.java)
+                .expectStatus().isCreated
+                .expectHeader().contentType(MediaType.APPLICATION_JSON_UTF8)
+                .expectBody(User::class.java)
+                .returnResult<User>()
+        StepVerifier.create(result.responseBody).consumeNextWith {
+            (login, name, email) ->
+            run {
+                assertThat(login).isEqualTo("postuser")
+                assertThat(name).isEqualTo("Post user")
+                assertThat(email).isEqualTo("postuser@mail.com")
+            }
+        }
+    }
 
+    @Test
+    fun `should not create new user cuz login taken`() {
+        client.post().uri(Urls.USERS_API).accept(MediaType.APPLICATION_JSON_UTF8)
+                .exchange(Mono.just(User("jntakpe", "Joss", "jntakpe@mail.com")), User::class.java)
+                .expectStatus().isEqualTo(HttpStatus.CONFLICT)
+    }
 }

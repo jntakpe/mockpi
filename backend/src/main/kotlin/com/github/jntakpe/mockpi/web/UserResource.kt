@@ -7,7 +7,6 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Mono
-import javax.validation.Valid
 
 @RestController
 @RequestMapping(USERS_API)
@@ -21,6 +20,7 @@ class UserResource(private val userService: UserService) {
     }
 
     @PostMapping
-    fun create(@Valid @RequestBody user: User) = userService.create(user)
+    @ResponseStatus(HttpStatus.CREATED)
+    fun create(@RequestBody user: User) = userService.create(user)
 
 }
