@@ -2,6 +2,7 @@ package com.github.jntakpe.mockpi.service
 
 import com.github.jntakpe.mockpi.domain.User
 import com.github.jntakpe.mockpi.exceptions.ConflictKeyException
+import com.github.jntakpe.mockpi.exceptions.IdNotFoundException
 import com.github.jntakpe.mockpi.repository.UserRepository
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
@@ -25,32 +26,41 @@ class UserService(val userRepository: UserRepository) {
                 .map { false }
                 .defaultIfEmpty(true)
                 .flatMap { if (it) Mono.just(login) else Mono.error<String>(ConflictKeyException("Login $login is not available")) }
+                .map { login.toLowerCase() }
                 .single()
     }
 
     fun create(user: User): Mono<User> {
         logger.info("Creating user {}", user)
         return verifyLoginAvailable(user.login)
+                .map { l -> user.copy(login = l) }
                 .flatMap { userRepository.insert(user) }
                 .single()
     }
 
     fun update(user: User, oldLogin: String): Mono<User> {
         logger.info("Updating user {} to {}", oldLogin, user)
-        return verifyLoginAvailable(user.login, oldLogin)
-                .flatMap { userRepository.save(user) }
+        return findByLoginOrThrow(oldLogin)
+                .flatMap { verifyLoginAvailable(user.login, oldLogin) }
+                .map { l -> user.copy(login = l) }
+                .flatMap { u -> userRepository.save(u) }
                 .flatMap { u -> deleteOldLogin(oldLogin, u) }
-                .single()
+                .singleOrEmpty()
     }
 
-    fun delete(login: String): Mono<Void> {
-        logger.info("Deleting user {}", login)
-        return userRepository.delete(login)
+    fun delete(username: String): Mono<Void> {
+        logger.info("Deleting user {}", username)
+        return findByLoginOrThrow(username)
+                .flatMap { (login) -> userRepository.delete(login) }
+                .singleOrEmpty()
     }
+
+    private fun findByLoginOrThrow(username: String) = findByLogin(username)
+            .otherwiseIfEmpty(Mono.error(IdNotFoundException("Login $username doest not exist")))
 
     private fun deleteOldLogin(oldLogin: String, user: User): Flux<User>? = Mono.just(user)
             .filter { it.login != oldLogin }
-            .flatMap { u -> delete(oldLogin).map { u } }
+            .flatMap { u -> userRepository.delete(oldLogin).map { u } }
             .defaultIfEmpty(user)
 
 }

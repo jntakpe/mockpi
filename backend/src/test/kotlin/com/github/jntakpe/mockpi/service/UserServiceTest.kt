@@ -2,6 +2,7 @@ package com.github.jntakpe.mockpi.service
 
 import com.github.jntakpe.mockpi.domain.User
 import com.github.jntakpe.mockpi.exceptions.ConflictKeyException
+import com.github.jntakpe.mockpi.exceptions.IdNotFoundException
 import com.github.jntakpe.mockpi.repository.UserRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -81,7 +82,7 @@ internal class UserServiceTest {
         val login = "JNtakpe"
         StepVerifier.create(userService.verifyLoginAvailable(login, "jntakpe"))
                 .expectSubscription()
-                .expectNext(login)
+                .expectNext(login.toLowerCase())
                 .verifyComplete()
     }
 
@@ -150,20 +151,32 @@ internal class UserServiceTest {
         val corentin = User("crinfray", "Coco", "coco@mail.com")
         StepVerifier.create(userService.update(corentin, "jntakpe"))
                 .expectSubscription()
-                .expectError(ConflictKeyException::class.java)
-                .verify()
+                .verifyError(ConflictKeyException::class.java)
+    }
+
+    @Test
+    fun `should not update a user because old login doesn't exist`() {
+        val corentin = User("toto", "Coco", "coco@mail.com")
+        StepVerifier.create(userService.update(corentin, "unknown"))
+                .expectSubscription()
+                .verifyError(IdNotFoundException::class.java)
     }
 
     @Test
     fun `should delete user`() {
-        StepVerifier.create(userService.delete("todelete"))
-                .expectSubscription()
-                .expectNext()
+        StepVerifier.create(userService.delete("ToDelete"))
                 .verifyComplete()
         StepVerifier.create(userRepository.exists("todelete"))
                 .expectSubscription()
                 .expectNext(false)
                 .expectComplete()
+    }
+
+    @Test
+    fun `should not delete user because unknown id`() {
+        StepVerifier.create(userService.delete("unknown"))
+                .expectSubscription()
+                .verifyError(IdNotFoundException::class.java)
     }
 
 }
