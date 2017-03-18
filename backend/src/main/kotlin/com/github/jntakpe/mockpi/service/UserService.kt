@@ -26,15 +26,14 @@ class UserService(private val userRepository: UserRepository) {
                 .map { false }
                 .defaultIfEmpty(true)
                 .flatMap { if (it) Mono.just(login) else Mono.error<String>(ConflictKeyException("Login $login is not available")) }
-                .map { login.toLowerCase() }
                 .single()
     }
 
     fun create(user: User): Mono<User> {
         logger.info("Creating user {}", user)
         return verifyLoginAvailable(user.login)
-                .map { l -> user.copy(login = l) }
-                .flatMap { userRepository.insert(user) }
+                .map { lowerCaseLoginAndMail(user) }
+                .flatMap { u -> userRepository.insert(u) }
                 .single()
     }
 
@@ -42,7 +41,7 @@ class UserService(private val userRepository: UserRepository) {
         logger.info("Updating user {} to {}", oldLogin, user)
         return findByLoginOrThrow(oldLogin)
                 .flatMap { verifyLoginAvailable(user.login, oldLogin) }
-                .map { l -> user.copy(login = l) }
+                .map { lowerCaseLoginAndMail(user) }
                 .flatMap { u -> userRepository.save(u) }
                 .flatMap { u -> deleteOldLogin(oldLogin, u) }
                 .singleOrEmpty()
@@ -54,6 +53,8 @@ class UserService(private val userRepository: UserRepository) {
                 .flatMap { (login) -> userRepository.delete(login) }
                 .singleOrEmpty()
     }
+
+    private fun lowerCaseLoginAndMail(user: User) = user.copy(login = user.login.toLowerCase(), email = user.email.toLowerCase())
 
     private fun findByLoginOrThrow(username: String) = findByLogin(username)
             .otherwiseIfEmpty(Mono.error(IdNotFoundException("Login $username doest not exist")))

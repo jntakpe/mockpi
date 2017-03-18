@@ -82,7 +82,7 @@ class UserServiceTest {
         val login = "JNtakpe"
         StepVerifier.create(userService.verifyLoginAvailable(login, "jntakpe"))
                 .expectSubscription()
-                .expectNext(login.toLowerCase())
+                .expectNext(login)
                 .verifyComplete()
     }
 
@@ -108,6 +108,25 @@ class UserServiceTest {
     }
 
     @Test
+    fun `should create a new user with new login with lowercase mail and login`() {
+        val uppercase = User("UpperCase", "Upper Case", "UpperCase@mail.com")
+        StepVerifier.create(userService.create(uppercase))
+                .expectSubscription()
+                .consumeNextWith {
+                    (login, _, email) ->
+                    run {
+                        assertThat(login).isEqualTo("uppercase")
+                        assertThat(email).isEqualTo("uppercase@mail.com")
+                    }
+                }
+                .verifyComplete()
+        StepVerifier.create(userRepository.exists("uppercase"))
+                .expectSubscription()
+                .expectNext(true)
+                .verifyComplete()
+    }
+
+    @Test
     fun `should not create a new user because login unavailable`() {
         val rjansem = User("jntakpe", "Joss", "joss@mail.com")
         StepVerifier.create(userService.create(rjansem))
@@ -118,10 +137,36 @@ class UserServiceTest {
 
     @Test
     fun `should update a user keeping login`() {
-        val updated = User("cbarillet", "Updated", "updated@mail.com")
+        val updated = User("CBarillet", "Updated", "Updated@mail.com")
         StepVerifier.create(userService.update(updated, "cbarillet"))
                 .expectSubscription()
-                .expectNext(updated)
+                .consumeNextWith {
+                    (login, name, email) ->
+                    run {
+                        assertThat(login).isEqualTo("cbarillet")
+                        assertThat(name).isEqualTo("Updated")
+                        assertThat(email).isEqualTo("updated@mail.com")
+                    }
+                }
+                .verifyComplete()
+        StepVerifier.create(userRepository.exists("cbarillet"))
+                .expectSubscription()
+                .expectNext(true)
+                .verifyComplete()
+    }
+
+    @Test
+    fun `should update a user not uppercasing mail and login`() {
+        val updated = User("BPoindron", "Updated", "BPoindron@mail.com")
+        StepVerifier.create(userService.update(updated, "bpoindron"))
+                .expectSubscription()
+                .consumeNextWith {
+                    (login, _, email) ->
+                    run {
+                        assertThat(login).isEqualTo("bpoindron")
+                        assertThat(email).isEqualTo("bpoindron@mail.com")
+                    }
+                }
                 .verifyComplete()
         StepVerifier.create(userRepository.exists("cbarillet"))
                 .expectSubscription()
