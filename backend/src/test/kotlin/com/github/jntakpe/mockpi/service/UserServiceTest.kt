@@ -14,7 +14,7 @@ import reactor.test.StepVerifier
 
 @SpringBootTest
 @RunWith(SpringRunner::class)
-internal class UserServiceTest {
+class UserServiceTest {
 
     @Autowired
     lateinit var userService: UserService
