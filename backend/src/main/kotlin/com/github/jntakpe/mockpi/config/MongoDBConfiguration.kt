@@ -22,7 +22,10 @@ class MongoDBConfiguration(val mongoProperties: MongoProperties) : AbstractReact
         return CommandLineRunner {
             val persons = Flux.just(
                     User("jntakpe", "Joss", "jntakpe@mail.com"),
-                    User("cbarillet", "Vyril", "cbarillet@mail.com")
+                    User("cbarillet", "Vyril", "cbarillet@mail.com"),
+                    User("bpoindron", "Brubru", "bpoindron@mail.com"),
+                    User("crinfray", "Coco", "crinfray@mail.com"),
+                    User("todelete", "To Delete", "todelete@mail.com")
             )
             userRepository.deleteAll().thenMany(userRepository.save(persons)).blockLast()
         }

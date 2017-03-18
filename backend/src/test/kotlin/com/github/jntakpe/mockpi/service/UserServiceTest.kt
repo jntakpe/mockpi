@@ -94,7 +94,7 @@ internal class UserServiceTest {
     }
 
     @Test
-    fun `should create a new user`() {
+    fun `should create a new user with new login`() {
         val rjansem = User("rjansem", "Rudy", "rjansem@mail.com")
         StepVerifier.create(userService.create(rjansem))
                 .expectSubscription()
@@ -113,6 +113,57 @@ internal class UserServiceTest {
                 .expectSubscription()
                 .expectError(ConflictKeyException::class.java)
                 .verify()
+    }
+
+    @Test
+    fun `should update a user keeping login`() {
+        val updated = User("cbarillet", "Updated", "updated@mail.com")
+        StepVerifier.create(userService.update(updated, "cbarillet"))
+                .expectSubscription()
+                .expectNext(updated)
+                .verifyComplete()
+        StepVerifier.create(userRepository.exists("cbarillet"))
+                .expectSubscription()
+                .expectNext(true)
+                .verifyComplete()
+    }
+
+    @Test
+    fun `should update a user changing login`() {
+        val updated = User("updated", "Updated", "updated@mail.com")
+        StepVerifier.create(userService.update(updated, "bpoindron"))
+                .expectSubscription()
+                .expectNext(updated)
+                .verifyComplete()
+        StepVerifier.create(userRepository.exists("updated"))
+                .expectSubscription()
+                .expectNext(true)
+                .verifyComplete()
+        StepVerifier.create(userRepository.exists("bpoindron"))
+                .expectSubscription()
+                .expectNext(false)
+                .verifyComplete()
+    }
+
+    @Test
+    fun `should not update a user because login unavailable`() {
+        val corentin = User("crinfray", "Coco", "coco@mail.com")
+        StepVerifier.create(userService.update(corentin, "jntakpe"))
+                .expectSubscription()
+                .expectError(ConflictKeyException::class.java)
+                .verify()
+    }
+
+    @Test
+    fun `should delete user`() {
+        StepVerifier.create(userService.delete("todelete"))
+                .expectSubscription()
+                .expectNext()
+                .verifyComplete()
+        StepVerifier.create(userRepository.exists("todelete"))
+                .expectSubscription()
+                .expectNext(false)
+                .expectComplete()
     }
 
 }
