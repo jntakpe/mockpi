@@ -27,4 +27,11 @@ class UserService(val userRepository: UserRepository) {
                 .single()
     }
 
+    fun create(user: User): Mono<User> {
+        logger.info("Creating user {}", user)
+        return verifyLoginAvailable(user.login)
+                .flatMap { userRepository.save(user) }
+                .single()
+    }
+
 }

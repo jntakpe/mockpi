@@ -1,5 +1,6 @@
 package com.github.jntakpe.mockpi.service
 
+import com.github.jntakpe.mockpi.domain.User
 import com.github.jntakpe.mockpi.exceptions.ConflictKeyException
 import com.github.jntakpe.mockpi.repository.UserRepository
 import org.assertj.core.api.Assertions.assertThat
@@ -87,6 +88,28 @@ internal class UserServiceTest {
     @Test
     fun `should refuse login because old login is not the same`() {
         StepVerifier.create(userService.verifyLoginAvailable("JNtakpe", "oldlogin"))
+                .expectSubscription()
+                .expectError(ConflictKeyException::class.java)
+                .verify()
+    }
+
+    @Test
+    fun `should create a new user`() {
+        val rjansem = User("rjansem", "Rudy", "rjansem@mail.com")
+        StepVerifier.create(userService.create(rjansem))
+                .expectSubscription()
+                .expectNext(rjansem)
+                .verifyComplete()
+        StepVerifier.create(userRepository.exists("rjansem"))
+                .expectSubscription()
+                .expectNext(true)
+                .verifyComplete()
+    }
+
+    @Test
+    fun `should not create a new user because login unavailable`() {
+        val rjansem = User("jntakpe", "Joss", "joss@mail.com")
+        StepVerifier.create(userService.create(rjansem))
                 .expectSubscription()
                 .expectError(ConflictKeyException::class.java)
                 .verify()
