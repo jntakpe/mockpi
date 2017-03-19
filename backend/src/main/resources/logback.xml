@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+
+    <logger name="com.github.jntakpe.mockpi" level="TRACE"/>
+    <logger name="javax" level="WARN"/>
+    <logger name="io.netty" level="WARN"/>
+    <logger name="reactor" level="WARN"/>
+    <logger name="org.mongodb" level="WARN"/>
+    <logger name="org.jboss.logging" level="WARN"/>
+    <logger name="org.hibernate.validator" level="WARN"/>
+    <logger name="org.springframework" level="WARN"/>
+    <logger name="org.springframework.boot" level="WARN"/>
+    <logger name="org.springframework.web" level="WARN"/>
+    <logger name="org.springframework.security" level="WARN"/>
+
+    <root level="TRACE">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+
+</configuration>
