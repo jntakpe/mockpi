@@ -30,7 +30,7 @@ class UserService(private val userRepository: UserRepository) {
     }
 
     fun create(user: User): Mono<User> {
-        logger.info("Creating user {}", user)
+        logger.info("Creating {}", user)
         return verifyLoginAvailable(user.login)
                 .map { lowerCaseLoginAndMail(user) }
                 .flatMap { u -> userRepository.insert(u) }
@@ -38,7 +38,7 @@ class UserService(private val userRepository: UserRepository) {
     }
 
     fun update(user: User, oldLogin: String): Mono<User> {
-        logger.info("Updating user {} to {}", oldLogin, user)
+        logger.info("Updating {} to {}", oldLogin, user)
         return findByLoginOrThrow(oldLogin)
                 .flatMap { verifyLoginAvailable(user.login, oldLogin) }
                 .map { lowerCaseLoginAndMail(user) }
