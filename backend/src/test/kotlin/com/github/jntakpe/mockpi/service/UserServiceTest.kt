@@ -28,10 +28,8 @@ class UserServiceTest {
         StepVerifier.create(userService.findByLogin(login))
                 .expectSubscription()
                 .consumeNextWith { user ->
-                    run {
-                        assertThat(user).isNotNull()
-                        assertThat(user.login).isEqualTo(login)
-                    }
+                    assertThat(user).isNotNull()
+                    assertThat(user.login).isEqualTo(login)
                 }
                 .verifyComplete()
     }
@@ -42,10 +40,8 @@ class UserServiceTest {
         StepVerifier.create(userService.findByLogin(login))
                 .expectSubscription()
                 .consumeNextWith { user ->
-                    run {
-                        assertThat(user).isNotNull()
-                        assertThat(user.login).isEqualTo(login.toLowerCase())
-                    }
+                    assertThat(user).isNotNull()
+                    assertThat(user.login).isEqualTo(login.toLowerCase())
                 }
                 .verifyComplete()
     }
@@ -114,10 +110,8 @@ class UserServiceTest {
                 .expectSubscription()
                 .consumeNextWith {
                     (login, _, email) ->
-                    run {
-                        assertThat(login).isEqualTo("uppercase")
-                        assertThat(email).isEqualTo("uppercase@mail.com")
-                    }
+                    assertThat(login).isEqualTo("uppercase")
+                    assertThat(email).isEqualTo("uppercase@mail.com")
                 }
                 .verifyComplete()
         StepVerifier.create(userRepository.exists("uppercase"))
@@ -142,11 +136,9 @@ class UserServiceTest {
                 .expectSubscription()
                 .consumeNextWith {
                     (login, name, email) ->
-                    run {
-                        assertThat(login).isEqualTo("cbarillet")
-                        assertThat(name).isEqualTo("Updated")
-                        assertThat(email).isEqualTo("updated@mail.com")
-                    }
+                    assertThat(login).isEqualTo("cbarillet")
+                    assertThat(name).isEqualTo("Updated")
+                    assertThat(email).isEqualTo("updated@mail.com")
                 }
                 .verifyComplete()
         StepVerifier.create(userRepository.exists("cbarillet"))
@@ -162,10 +154,8 @@ class UserServiceTest {
                 .expectSubscription()
                 .consumeNextWith {
                     (login, _, email) ->
-                    run {
-                        assertThat(login).isEqualTo("bpoindron")
-                        assertThat(email).isEqualTo("bpoindron@mail.com")
-                    }
+                    assertThat(login).isEqualTo("bpoindron")
+                    assertThat(email).isEqualTo("bpoindron@mail.com")
                 }
                 .verifyComplete()
         StepVerifier.create(userRepository.exists("cbarillet"))

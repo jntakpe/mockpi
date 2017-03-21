@@ -35,10 +35,8 @@ class MockServiceTest {
                 .expectSubscription()
                 .consumeNextWith {
                     (name, request) ->
-                    run {
-                        assertThat(name).isEqualTo(mockName)
-                        assertThat(request.path).isEqualTo(path)
-                    }
+                    assertThat(name).isEqualTo(mockName)
+                    assertThat(request.path).isEqualTo(path)
                 }
                 .verifyComplete()
         StepVerifier.create(mockRepository.exists(mockName))

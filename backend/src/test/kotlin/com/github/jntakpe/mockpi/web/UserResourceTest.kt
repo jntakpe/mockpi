@@ -42,11 +42,9 @@ class UserResourceTest {
                 .returnResult<User>()
         StepVerifier.create(result.responseBody).consumeNextWith {
             (login, name, email) ->
-            run {
-                assertThat(login).isEqualTo("jntakpe")
-                assertThat(name).isEqualTo("Joss")
-                assertThat(email).isEqualTo("jntakpe@mail.com")
-            }
+            assertThat(login).isEqualTo("jntakpe")
+            assertThat(name).isEqualTo("Joss")
+            assertThat(email).isEqualTo("jntakpe@mail.com")
         }
     }
 
@@ -60,11 +58,9 @@ class UserResourceTest {
                 .returnResult<User>()
         StepVerifier.create(result.responseBody).consumeNextWith {
             (login, name, email) ->
-            run {
-                assertThat(login).isEqualTo("jntakpe")
-                assertThat(name).isEqualTo("Joss")
-                assertThat(email).isEqualTo("jntakpe@mail.com")
-            }
+            assertThat(login).isEqualTo("jntakpe")
+            assertThat(name).isEqualTo("Joss")
+            assertThat(email).isEqualTo("jntakpe@mail.com")
         }
     }
 
@@ -85,11 +81,9 @@ class UserResourceTest {
                 .returnResult<User>()
         StepVerifier.create(result.responseBody).consumeNextWith {
             (login, name, email) ->
-            run {
-                assertThat(login).isEqualTo("postuser")
-                assertThat(name).isEqualTo("Post user")
-                assertThat(email).isEqualTo("postuser@mail.com")
-            }
+            assertThat(login).isEqualTo("postuser")
+            assertThat(name).isEqualTo("Post user")
+            assertThat(email).isEqualTo("postuser@mail.com")
         }
     }
 
