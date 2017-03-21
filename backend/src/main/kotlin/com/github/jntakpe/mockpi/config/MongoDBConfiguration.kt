@@ -12,6 +12,7 @@ import org.springframework.boot.autoconfigure.mongo.MongoProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.data.mongodb.config.AbstractReactiveMongoConfiguration
+import org.springframework.web.bind.annotation.RequestMethod
 import reactor.core.publisher.Flux
 
 @Configuration
@@ -42,8 +43,8 @@ class MongoDBConfiguration(val mongoProperties: MongoProperties) : AbstractReact
 
     private fun initMocks(mockRepository: MockRepository) {
         val mocks = Flux.just(
-                Mock("demo1", Request("/users/1"), Response("{\"name\": \"jntakpe\"}")),
-                Mock("demo2", Request("/users/2"), Response("{\"name\": \"cbarillet\"}"))
+                Mock("demo1", Request("/users/1", RequestMethod.GET), Response("{\"name\": \"jntakpe\"}")),
+                Mock("demo2", Request("/users/2", RequestMethod.GET), Response("{\"name\": \"cbarillet\"}"))
         )
         mockRepository.deleteAll().thenMany(mockRepository.save(mocks)).blockLast()
     }

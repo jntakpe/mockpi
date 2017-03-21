@@ -11,6 +11,7 @@ import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit4.SpringRunner
+import org.springframework.web.bind.annotation.RequestMethod
 import reactor.test.StepVerifier
 
 @SpringBootTest
@@ -27,7 +28,7 @@ class MockServiceTest {
     fun `should create basic mock`() {
         val mockName = "basicmock"
         val path = "/basicmock"
-        val mock = Mock(mockName, Request(path), Response(ObjectMapper().writeValueAsString(Pair("basic", "mock"))))
+        val mock = Mock(mockName, Request(path, RequestMethod.GET), Response(ObjectMapper().writeValueAsString(Pair("basic", "mock"))))
         StepVerifier.create(mockService.create(mock))
                 .expectSubscription()
                 .consumeNextWith {
