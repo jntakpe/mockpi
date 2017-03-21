@@ -12,7 +12,8 @@ import org.springframework.boot.autoconfigure.mongo.MongoProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.data.mongodb.config.AbstractReactiveMongoConfiguration
-import org.springframework.web.bind.annotation.RequestMethod
+import org.springframework.http.HttpHeaders.*
+import org.springframework.web.bind.annotation.RequestMethod.GET
 import reactor.core.publisher.Flux
 
 @Configuration
@@ -43,8 +44,14 @@ class MongoDBConfiguration(val mongoProperties: MongoProperties) : AbstractReact
 
     private fun initMocks(mockRepository: MockRepository) {
         val mocks = Flux.just(
-                Mock("demo1", Request("/users/1", RequestMethod.GET), Response("{\"name\": \"jntakpe\"}")),
-                Mock("demo2", Request("/users/2", RequestMethod.GET), Response("{\"name\": \"cbarillet\"}"))
+                Mock("demo1", Request("/users/1", GET), Response("{\"name\": \"jntakpe\"}")),
+                Mock("demo2", Request("/users/1", GET, mapOf(Pair("age", "20")), emptyMap()), Response("{\"name\": \"jntakpe\"}")),
+                Mock("demo3", Request("/users/1", GET, mapOf(Pair("age", "20"), Pair("gender", "M")), emptyMap()),
+                        Response("{\"name\": \"jntakpe\"}")),
+                Mock("demo4", Request("/users/2", GET, emptyMap(), mapOf(Pair(ACCEPT, "*"))), Response("{\"name\": \"cbarillet\"}")),
+                Mock("demo5", Request("/users/2", GET, emptyMap(),
+                        mapOf(Pair(CONTENT_TYPE, "application/json"), Pair(CACHE_CONTROL, "no-cache"))),
+                        Response("{\"name\": \"cbarillet\"}"))
         )
         mockRepository.deleteAll().thenMany(mockRepository.save(mocks)).blockLast()
     }
