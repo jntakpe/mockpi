@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.jntakpe.mockpi.domain.Mock
 import com.github.jntakpe.mockpi.domain.Request
 import com.github.jntakpe.mockpi.domain.Response
+import com.github.jntakpe.mockpi.exceptions.ConflictKeyException
 import com.github.jntakpe.mockpi.repository.MockRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -25,6 +26,71 @@ class MockServiceTest {
 
     @Autowired
     lateinit var mockRepository: MockRepository
+
+    @Test
+    fun `should find mock by name because exact match`() {
+        val name = "demo1"
+        StepVerifier.create(mockService.findByName(name))
+                .expectSubscription()
+                .consumeNextWith { mock ->
+                    assertThat(mock).isNotNull()
+                    assertThat(mock.name).isEqualTo(name)
+                }
+                .verifyComplete()
+    }
+
+    @Test
+    fun `should find mock by name ignoring case`() {
+        val name = "DEMO1"
+        StepVerifier.create(mockService.findByName(name))
+                .expectSubscription()
+                .consumeNextWith { mock ->
+                    assertThat(mock).isNotNull()
+                    assertThat(mock.name).isEqualTo(name.toLowerCase())
+                }
+                .verifyComplete()
+    }
+
+    @Test
+    fun `should not find mock because unknown name`() {
+        StepVerifier.create(mockService.findByName("unknown"))
+                .expectSubscription()
+                .expectNextCount(0)
+                .verifyComplete()
+    }
+
+    @Test
+    fun `shoud accept name because none existing`() {
+        val newName = "newname"
+        StepVerifier.create(mockService.verifyNameAvailable(newName))
+                .expectSubscription()
+                .expectNext(newName)
+                .verifyComplete()
+    }
+
+    @Test
+    fun `shoud refuse name because same name exist`() {
+        val newName = "dEMO1"
+        StepVerifier.create(mockService.verifyNameAvailable(newName))
+                .expectSubscription()
+                .verifyError(ConflictKeyException::class.java)
+    }
+
+    @Test
+    fun `should accept name because old name is the the same`() {
+        val name = "DEmo1"
+        StepVerifier.create(mockService.verifyNameAvailable(name, "demo1"))
+                .expectSubscription()
+                .expectNext(name)
+                .verifyComplete()
+    }
+
+    @Test
+    fun `should refuse name because old name is not the same`() {
+        StepVerifier.create(mockService.verifyNameAvailable("Demo1", "oldName"))
+                .expectSubscription()
+                .verifyError(ConflictKeyException::class.java)
+    }
 
     @Test
     fun `should create basic mock`() {

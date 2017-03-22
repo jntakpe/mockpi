@@ -51,8 +51,7 @@ class UserServiceTest {
         val login = "unknown"
         StepVerifier.create(userService.findByLogin(login))
                 .expectSubscription()
-                .recordWith { mutableListOf() }
-                .expectRecordedMatches { it.isEmpty() }
+                .expectNextCount(0)
                 .verifyComplete()
     }
 
@@ -69,8 +68,7 @@ class UserServiceTest {
     fun `should refuse login because same login exist`() {
         StepVerifier.create(userService.verifyLoginAvailable("JNtakpe"))
                 .expectSubscription()
-                .expectError(ConflictKeyException::class.java)
-                .verify()
+                .verifyError(ConflictKeyException::class.java)
     }
 
     @Test
@@ -86,8 +84,7 @@ class UserServiceTest {
     fun `should refuse login because old login is not the same`() {
         StepVerifier.create(userService.verifyLoginAvailable("JNtakpe", "oldlogin"))
                 .expectSubscription()
-                .expectError(ConflictKeyException::class.java)
-                .verify()
+                .verifyError(ConflictKeyException::class.java)
     }
 
     @Test
