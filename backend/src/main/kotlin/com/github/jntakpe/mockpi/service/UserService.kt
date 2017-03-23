@@ -23,9 +23,8 @@ class UserService(private val userRepository: UserRepository) {
         logger.debug("Checking that login {} is available", login)
         return findByLogin(login)
                 .filter { it.login != oldLogin }
-                .map { false }
-                .defaultIfEmpty(true)
-                .flatMap { if (it) Mono.just(login) else Mono.error<String>(ConflictKeyException("Login $login is not available")) }
+                .flatMap { Mono.error<String>(ConflictKeyException("Login $login is not available")) }
+                .defaultIfEmpty(login)
                 .single()
     }
 

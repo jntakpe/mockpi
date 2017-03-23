@@ -22,9 +22,17 @@ class MockService(private val mockRepository: MockRepository) {
         logger.debug("Checking that name {} is available", name)
         return findByName(name)
                 .filter { it.name != oldName }
-                .map { false }
-                .defaultIfEmpty(true)
-                .flatMap { if (it) Mono.just(name) else Mono.error<String>(ConflictKeyException("Name $name is not available")) }
+                .flatMap { Mono.error<String>(ConflictKeyException("Name $name is not available")) }
+                .defaultIfEmpty(name)
+                .single()
+    }
+
+    fun verifyRequestAvailable(request: Request, oldRequest: Request? = null): Mono<Request> {
+        logger.debug("Checking that request {} is available", request)
+        return findMatchingMock(request)
+                .filter { it.request != oldRequest }
+                .flatMap { Mono.error<Request>(ConflictKeyException("Request $request is not available")) }
+                .defaultIfEmpty(request)
                 .single()
     }
 
@@ -38,10 +46,13 @@ class MockService(private val mockRepository: MockRepository) {
 
     fun create(mock: Mock): Mono<Mock> {
         logger.info("Creating {}", mock)
-        //TODO check le même id n'existe pas
         //TODO check la même request n'existe pas
         //TODO générer un name quand il n'est pas renseigné
-        return mockRepository.save(mock)
+        return verifyNameAvailable(mock.name)
+                .flatMap { verifyRequestAvailable(mock.request) }
+                .map { mock.copy(name = mock.name.toLowerCase()) }
+                .flatMap { m -> mockRepository.insert(m) }
+                .single()
     }
 
     private fun matchHeadersRelaxed(mockHeaders: Map<String, String>, requestHeaders: Map<String, String>): Boolean {

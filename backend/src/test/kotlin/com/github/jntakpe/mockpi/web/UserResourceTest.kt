@@ -93,4 +93,5 @@ class UserResourceTest {
                 .exchange(Mono.just(User("jntakpe", "Joss", "jntakpe@mail.com")), User::class.java)
                 .expectStatus().isEqualTo(HttpStatus.CONFLICT)
     }
+
 }

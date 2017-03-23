@@ -93,22 +93,33 @@ class MockServiceTest {
     }
 
     @Test
-    fun `should create basic mock`() {
-        val mockName = "basicmock"
-        val path = "/basicmock"
-        val mock = Mock(mockName, Request(path, GET), Response(ObjectMapper().writeValueAsString(Pair("basic", "mock"))))
-        StepVerifier.create(mockService.create(mock))
+    fun `should accept request because none existing`() {
+        StepVerifier.create(mockService.verifyRequestAvailable(Request("somenewrequest", GET)))
                 .expectSubscription()
-                .consumeNextWith {
-                    (name, request) ->
-                    assertThat(name).isEqualTo(mockName)
-                    assertThat(request.path).isEqualTo(path)
-                }
+                .expectNextCount(1)
                 .verifyComplete()
-        StepVerifier.create(mockRepository.exists(mockName))
+    }
+
+    @Test
+    fun `shoud refuse request because same request exist`() {
+        StepVerifier.create(mockService.verifyRequestAvailable(Request("/users/1", GET)))
                 .expectSubscription()
-                .expectNext(true)
+                .verifyError(ConflictKeyException::class.java)
+    }
+
+    @Test
+    fun `should accept request because old request is the the same`() {
+        StepVerifier.create(mockService.verifyRequestAvailable(Request("/users/1", GET), Request("/users/1", GET)))
+                .expectSubscription()
+                .expectNextCount(1)
                 .verifyComplete()
+    }
+
+    @Test
+    fun `should refuse request because old request is not the same`() {
+        StepVerifier.create(mockService.verifyRequestAvailable(Request("/users/1", GET), Request("/users/1", POST)))
+                .expectSubscription()
+                .verifyError(ConflictKeyException::class.java)
     }
 
     @Test
@@ -224,6 +235,42 @@ class MockServiceTest {
                 .expectSubscription()
                 .expectNextCount(0)
                 .verifyComplete()
+    }
+
+    @Test
+    fun `should create basic mock`() {
+        val mockName = "basicmock"
+        val path = "/basicmock"
+        val mock = Mock(mockName, Request(path, GET), Response(ObjectMapper().writeValueAsString(Pair("basic", "mock"))))
+        StepVerifier.create(mockService.create(mock))
+                .expectSubscription()
+                .consumeNextWith {
+                    (name, request) ->
+                    assertThat(name).isEqualTo(mockName)
+                    assertThat(request.path).isEqualTo(path)
+                }
+                .verifyComplete()
+        StepVerifier.create(mockRepository.exists(mockName))
+                .expectSubscription()
+                .expectNext(true)
+                .verifyComplete()
+    }
+
+    @Test
+    fun `should not create because name taken`() {
+        val mock = Mock("demo1", Request("someRequest/path", GET), Response(ObjectMapper().writeValueAsString(Pair("basic", "mock"))))
+        StepVerifier.create(mockService.create(mock))
+                .expectSubscription()
+                .verifyError(ConflictKeyException::class.java)
+    }
+
+
+    @Test
+    fun `should not create because request taken`() {
+        val mock = Mock("unknownNameForSure", Request("/users/1", GET), Response(ObjectMapper().writeValueAsString(Pair("basic", "mock"))))
+        StepVerifier.create(mockService.create(mock))
+                .expectSubscription()
+                .verifyError(ConflictKeyException::class.java)
     }
 
 }
