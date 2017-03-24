@@ -53,7 +53,8 @@ class MongoDBConfiguration(val mongoProperties: MongoProperties) : AbstractReact
                         mapOf(Pair(CONTENT_TYPE, "application/json"), Pair(CACHE_CONTROL, "no-cache"))),
                         Response("{\"name\": \"cbarillet\"}")),
                 Mock("toupdate", Request("/toupdate/1", GET), Response("{\"name\": \"jntakpe\"}")),
-                Mock("toupdate2", Request("/toupdate/2", GET), Response("{\"name\": \"jntakpe\"}"))
+                Mock("toupdate2", Request("/toupdate/2", GET), Response("{\"name\": \"jntakpe\"}")),
+                Mock("toupdateapi", Request("/toupdate/api", GET), Response("{\"name\": \"jntakpe\"}"))
         )
         mockRepository.deleteAll().thenMany(mockRepository.save(mocks)).blockLast()
     }

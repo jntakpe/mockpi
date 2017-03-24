@@ -24,4 +24,7 @@ class MockResource(private val mockService: MockService) {
     @ResponseStatus(HttpStatus.CREATED)
     fun create(@RequestBody @Valid mock: Mock): Mono<Mock> = mockService.create(mock)
 
+    @PutMapping("/{name}")
+    fun update(@PathVariable name: String, @RequestBody @Valid mock: Mock): Mono<Mock> = mockService.update(mock, name)
+
 }
