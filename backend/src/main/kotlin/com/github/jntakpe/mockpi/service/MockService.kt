@@ -3,6 +3,7 @@ package com.github.jntakpe.mockpi.service
 import com.github.jntakpe.mockpi.domain.Mock
 import com.github.jntakpe.mockpi.domain.Request
 import com.github.jntakpe.mockpi.exceptions.ConflictKeyException
+import com.github.jntakpe.mockpi.exceptions.IdNotFoundException
 import com.github.jntakpe.mockpi.repository.MockRepository
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
@@ -48,10 +49,20 @@ class MockService(private val mockRepository: MockRepository) {
         logger.info("Creating {}", mock)
         //TODO check la même request n'existe pas
         //TODO générer un name quand il n'est pas renseigné
-        return verifyNameAvailable(mock.name)
-                .flatMap { verifyRequestAvailable(mock.request) }
+        return Mono.`when`(verifyNameAvailable(mock.name), verifyRequestAvailable(mock.request))
                 .map { mock.copy(name = mock.name.toLowerCase()) }
-                .flatMap { m -> mockRepository.insert(m) }
+                .flatMap { mockRepository.insert(it) }
+                .single()
+    }
+
+    fun update(mock: Mock, oldName: String): Mono<Mock> {
+        logger.info("Updating {} to {}", oldName, mock)
+        return findByNameOrThrow(oldName)
+                .flatMap { (name, request) ->
+                    Mono.`when`(verifyNameAvailable(mock.name, name), verifyRequestAvailable(mock.request, request))
+                }
+                .map { mock.copy(name = mock.name.toLowerCase()) }
+                .flatMap { mockRepository.save(it) }
                 .single()
     }
 
@@ -59,4 +70,6 @@ class MockService(private val mockRepository: MockRepository) {
         return mockHeaders.filter { (k, v) -> requestHeaders[k] != v }.none()
     }
 
+    private fun findByNameOrThrow(name: String): Mono<Mock> = findByName(name)
+            .otherwiseIfEmpty(Mono.error(IdNotFoundException("Mock $name doest not exist")))
 }

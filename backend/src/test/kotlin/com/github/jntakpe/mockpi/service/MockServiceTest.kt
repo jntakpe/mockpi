@@ -5,6 +5,7 @@ import com.github.jntakpe.mockpi.domain.Mock
 import com.github.jntakpe.mockpi.domain.Request
 import com.github.jntakpe.mockpi.domain.Response
 import com.github.jntakpe.mockpi.exceptions.ConflictKeyException
+import com.github.jntakpe.mockpi.exceptions.IdNotFoundException
 import com.github.jntakpe.mockpi.repository.MockRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -157,7 +158,6 @@ class MockServiceTest {
                     assertThat(response).isNotNull()
                     assertThat(response.name).isEqualTo("demo2")
                 }
-
                 .verifyComplete()
     }
 
@@ -264,11 +264,68 @@ class MockServiceTest {
                 .verifyError(ConflictKeyException::class.java)
     }
 
-
     @Test
     fun `should not create because request taken`() {
         val mock = Mock("unknownNameForSure", Request("/users/1", GET), Response(ObjectMapper().writeValueAsString(Pair("basic", "mock"))))
         StepVerifier.create(mockService.create(mock))
+                .expectSubscription()
+                .verifyError(ConflictKeyException::class.java)
+    }
+
+    @Test
+    fun `should update mock without changing name`() {
+        val responseBody = "updatedresponse"
+        val name = "demo1"
+        val mock = mockRepository.findByNameIgnoreCase(name).block().copy(response = Response(responseBody))
+        StepVerifier.create(mockService.update(mock, name))
+                .expectSubscription()
+                .consumeNextWith { assertThat(it.response.body).isEqualTo(responseBody) }
+                .verifyComplete()
+    }
+
+    @Test
+    fun `should update mock changing name`() {
+        val name = "toupdate"
+        val updatedName = "updatedName"
+        val mock = mockRepository.findByNameIgnoreCase(name).block().copy(name = updatedName)
+        StepVerifier.create(mockService.update(mock, name))
+                .expectSubscription()
+                .consumeNextWith {
+                    assertThat(it.name).isEqualTo(updatedName.toLowerCase())
+                    assertThat(it.request.path).isEqualTo("/toupdate/1")
+                }
+                .verifyComplete()
+        StepVerifier.create(mockRepository.findByNameIgnoreCase(name))
+                .expectSubscription()
+                .expectNextCount(0)
+                .verifyComplete()
+        StepVerifier.create(mockRepository.findByNameIgnoreCase(updatedName))
+                .expectSubscription()
+                .expectNextCount(1)
+                .verifyComplete()
+    }
+
+    @Test
+    fun `should not update because name missing`() {
+        val mock = mockRepository.findByNameIgnoreCase("demo1").block()
+        StepVerifier.create(mockService.update(mock, "unknownname"))
+                .expectSubscription()
+                .verifyError(IdNotFoundException::class.java)
+    }
+
+    @Test
+    fun `should not update because name taken`() {
+        val mock = mockRepository.findByNameIgnoreCase("demo1").block()
+        StepVerifier.create(mockService.update(mock, "demo2"))
+                .expectSubscription()
+                .verifyError(ConflictKeyException::class.java)
+    }
+
+    @Test
+    fun `should not update because request taken`() {
+        val mock = mockRepository.findByNameIgnoreCase("toupdate2").block()
+        val request = mockRepository.findByNameIgnoreCase("demo1").block().request
+        StepVerifier.create(mockService.update(mock.copy(request = request), mock.name))
                 .expectSubscription()
                 .verifyError(ConflictKeyException::class.java)
     }
