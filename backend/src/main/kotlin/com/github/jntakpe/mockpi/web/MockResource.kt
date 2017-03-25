@@ -13,7 +13,7 @@ import javax.validation.Valid
 @RequestMapping(Urls.MOCK_API)
 class MockResource(private val mockService: MockService) {
 
-    @GetMapping("/{name}")
+    @GetMapping(Urls.BY_NAME)
     fun findByName(@PathVariable name: String): Mono<ResponseEntity<Mock>> {
         return mockService.findByName(name)
                 .map { m -> ResponseEntity(m, HttpStatus.OK) }
@@ -24,7 +24,10 @@ class MockResource(private val mockService: MockService) {
     @ResponseStatus(HttpStatus.CREATED)
     fun create(@RequestBody @Valid mock: Mock): Mono<Mock> = mockService.create(mock)
 
-    @PutMapping("/{name}")
+    @PutMapping(Urls.BY_NAME)
     fun update(@PathVariable name: String, @RequestBody @Valid mock: Mock): Mono<Mock> = mockService.update(mock, name)
 
+    @DeleteMapping(Urls.BY_NAME)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun remove(@PathVariable name: String): Mono<Void> = mockService.delete(name)
 }

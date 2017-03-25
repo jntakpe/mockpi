@@ -66,6 +66,13 @@ class MockService(private val mockRepository: MockRepository) {
                 .single()
     }
 
+    fun delete(name: String): Mono<Void> {
+        logger.info("Deleting mock {}", name)
+        return findByNameOrThrow(name)
+                .flatMap { mockRepository.delete(it.name) }
+                .singleOrEmpty()
+    }
+
     private fun matchHeadersRelaxed(mockHeaders: Map<String, String>, requestHeaders: Map<String, String>): Boolean {
         return mockHeaders.filter { (k, v) -> requestHeaders[k] != v }.none()
     }

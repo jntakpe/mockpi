@@ -330,4 +330,24 @@ class MockServiceTest {
                 .verifyError(ConflictKeyException::class.java)
     }
 
+    @Test
+    fun `should delete`() {
+        val name = "todelete"
+        StepVerifier.create(mockService.delete(name))
+                .expectSubscription()
+                .expectNext()
+                .verifyComplete()
+        StepVerifier.create(mockRepository.findByNameIgnoreCase(name))
+                .expectSubscription()
+                .expectNextCount(0)
+                .verifyComplete()
+    }
+
+    @Test
+    fun `shoud not delete because missing mock`() {
+        StepVerifier.create(mockService.delete("unknown"))
+                .expectSubscription()
+                .verifyError(IdNotFoundException::class.java)
+    }
+
 }

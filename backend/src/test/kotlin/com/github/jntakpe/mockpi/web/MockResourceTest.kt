@@ -38,7 +38,7 @@ class MockResourceTest {
     @Test
     fun `should get mock by name`() {
         val demo1Name = "demo1"
-        val result = client.get().uri(Urls.MOCK_API + "/{name}", demo1Name)
+        val result = client.get().uri(Urls.MOCK_API + Urls.BY_NAME, demo1Name)
                 .exchange()
                 .expectStatus().isOk
                 .expectHeader().contentType(APPLICATION_JSON_UTF8)
@@ -55,7 +55,7 @@ class MockResourceTest {
 
     @Test
     fun `should get mock by name ignoring case`() {
-        val result = client.get().uri(Urls.MOCK_API + "/{name}", "deMO1")
+        val result = client.get().uri(Urls.MOCK_API + Urls.BY_NAME, "deMO1")
                 .exchange()
                 .expectStatus().isOk
                 .expectHeader().contentType(APPLICATION_JSON_UTF8)
@@ -72,7 +72,7 @@ class MockResourceTest {
 
     @Test
     fun `should not get mock by name if unknown name`() {
-        client.get().uri(Urls.MOCK_API + "/{name}", "unknown")
+        client.get().uri(Urls.MOCK_API + Urls.BY_NAME, "unknown")
                 .exchange()
                 .expectStatus().isNotFound
     }
@@ -109,7 +109,7 @@ class MockResourceTest {
         val updatedName = "updatedfromapi"
         val updatedPath = "/updated/from/api"
         val updatedBody = "updatedBody"
-        val result = client.put().uri(Urls.MOCK_API + "/{name}", "toupdateapi").accept(APPLICATION_JSON_UTF8)
+        val result = client.put().uri(Urls.MOCK_API + Urls.BY_NAME, "toupdateapi").accept(APPLICATION_JSON_UTF8)
                 .exchange(Mono.just(Mock(updatedName, Request(updatedPath, RequestMethod.POST), Response(updatedBody))), Mock::class.java)
                 .expectStatus().isOk
                 .expectHeader().contentType(APPLICATION_JSON_UTF8)
@@ -127,9 +127,23 @@ class MockResourceTest {
 
     @Test
     fun `should not update mock because name taken`() {
-        client.put().uri(Urls.MOCK_API + "/{name}", "toupdateapi").accept(APPLICATION_JSON_UTF8)
+        client.put().uri(Urls.MOCK_API + Urls.BY_NAME, "toupdateapi").accept(APPLICATION_JSON_UTF8)
                 .exchange(Mono.just(Mock("demo1", Request("/path", RequestMethod.POST), Response("body"))), Mock::class.java)
                 .expectStatus().isEqualTo(HttpStatus.CONFLICT)
+    }
+
+    @Test
+    fun `should delete mock`() {
+        client.delete().uri(Urls.MOCK_API + Urls.BY_NAME, "todeleteapi")
+                .exchange()
+                .expectStatus().isNoContent
+    }
+
+    @Test
+    fun `should not delete mock because missing`() {
+        client.delete().uri(Urls.MOCK_API + Urls.BY_NAME, "unknown")
+                .exchange()
+                .expectStatus().isNotFound
     }
 
 }
