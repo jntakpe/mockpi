@@ -1,0 +1,12 @@
+<div class="signin-container" fxLayout="column" fxLayoutAlign="none center">
+  <h1>mockPI</h1>
+  <form class="signin-form" [formGroup]="loginForm" (ngSubmit)="signIn()" autocomplete="on" fxLayout="column" fxFlex="50">
+    <md-input-container>
+      <input mdInput type="text" placeholder="Username" formControlName="username" #username>
+    </md-input-container>
+    <md-input-container>
+      <input mdInput type="password" placeholder="Password" formControlName="password" #password>
+    </md-input-container>
+    <button md-raised-button color="accent" type="submit" [disabled]="loginForm.invalid">Sign in</button>
+  </form>
+</div>

@@ -1,0 +1,10 @@
+@import url(https://fonts.googleapis.com/icon?family=Material+Icons);
+@import '~@angular/material/core/theming/all-theme';
+@import 'app/shared/styles/variables';
+@import 'app/shared/styles/spacing';
+
+@include mat-core();
+$primary: mat-palette($mat-light-blue);
+$accent: mat-palette($mat-orange);
+$theme: mat-light-theme($primary, $accent);
+@include angular-material-theme($theme);

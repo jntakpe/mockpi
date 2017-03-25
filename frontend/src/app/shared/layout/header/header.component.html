@@ -1,0 +1,12 @@
+<nav class="header-navbar">
+  <a md-button class="header-button" routerLink="/" aria-label="Web Core">
+    <img class="header-logo" src="assets/images/logo_angular.svg" alt="Logo">
+    <span>mockPI</span>
+  </a>
+  <a md-button class="header-button" routerLink="mocks">Mocks</a>
+  <a md-button class="header-button" routerLink="requests">Requests</a>
+  <a id="logout-btn" md-button class="header-button" (click)="logout()">
+    <md-icon>power_settings_new</md-icon>
+    <span>{{username$ | async}}</span>
+  </a>
+</nav>
