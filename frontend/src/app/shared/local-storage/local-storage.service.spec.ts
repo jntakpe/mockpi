@@ -1,9 +1,8 @@
-import {LocalStorageService} from './local-storage.service';
-import {async, inject, TestBed} from '@angular/core/testing';
-import {OAuth2Response} from '../security/oauth2-response.model';
-import {appConst} from '../constants';
-import moment = require('moment');
-import StartOf = moment.unitOfTime.StartOf;
+import { LocalStorageService } from './local-storage.service';
+import { async, inject, TestBed } from '@angular/core/testing';
+import { OAuth2Response } from '../security/oauth2-response.model';
+import { appConst } from '../constants';
+import * as moment from 'moment';
 
 describe('local storage service', () => {
 
@@ -67,14 +66,49 @@ describe('local storage service', () => {
   });
 
   it('should not load access token cuz missing', done => {
-    spyOn(localStorageService, 'isTokenValid');
+    spyOn(localStorageService, 'isAccessTokenValid');
     const tokenStore = localStorageService['tokenStore'];
     tokenStore.removeItem(appConst.localstorage.token.key).then(() => {
       localStorageService.loadAccessToken().subscribe(
         () => fail('should not success cuz expired'),
         () => fail('should complete'),
         () => {
-          expect(localStorageService['isTokenValid']).toHaveBeenCalledTimes(0);
+          expect(localStorageService['isAccessTokenValid']).toHaveBeenCalledTimes(0);
+          done();
+        });
+    });
+  });
+
+  it('should load refresh token', done => {
+    localStorageService.saveOAuth2Response(oauth2Response).subscribe(() => {
+      spyOn(localStorageService, 'decodeToken').and.returnValue({exp: moment().add(1, 'h').unix() * 1000});
+      localStorageService.loadRefreshToken().subscribe(r => {
+        expect(r).toBeTruthy();
+        localStorageService['tokenStore'].removeItem(appConst.localstorage.token.key).then(() => done());
+      });
+    });
+  });
+
+  it('should load refresh token cuz expired', done => {
+    localStorageService.saveOAuth2Response(oauth2Response).subscribe(() => {
+      spyOn(localStorageService, 'decodeToken').and.returnValue({exp: moment().subtract(1, 'h').unix() * 1000});
+      localStorageService.loadRefreshToken().subscribe(
+        () => fail('should be empty'),
+        () => fail('should not fail on refresh token retrieval'),
+        () => localStorageService['tokenStore'].removeItem(appConst.localstorage.token.key).then(() => done())
+      )
+    });
+  });
+
+  it('should not load refresh token cuz missing', done => {
+    spyOn(localStorageService, 'isRefreshTokenValid');
+    const tokenStore = localStorageService['tokenStore'];
+    tokenStore.removeItem(appConst.localstorage.token.key).then(() => {
+      localStorageService.loadAccessToken().subscribe(
+        () => fail('should not success cuz expired'),
+        () => fail('should complete'),
+        () => {
+          expect(localStorageService['isRefreshTokenValid']).toHaveBeenCalledTimes(0);
           done();
         });
     });

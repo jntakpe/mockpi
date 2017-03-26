@@ -1,9 +1,10 @@
 import * as localforage from 'localforage';
 import * as moment from 'moment';
-import {appConst} from '../constants';
-import {Injectable} from '@angular/core';
-import {OAuth2Response} from '../security/oauth2-response.model';
-import {Observable} from 'rxjs';
+import * as jwtDecode from 'jwt-decode';
+import { appConst } from '../constants';
+import { Injectable } from '@angular/core';
+import { OAuth2Response } from '../security/oauth2-response.model';
+import { Observable } from 'rxjs';
 
 @Injectable()
 export class LocalStorageService {
@@ -22,18 +23,38 @@ export class LocalStorageService {
   }
 
   loadAccessToken(): Observable<string> {
-    return Observable.fromPromise(this.tokenStore.getItem(appConst.localstorage.token.key))
-      .filter(r => !!r)
-      .mergeMap((r: OAuth2Response) => this.isTokenValid(r) ? Observable.of(r) : this.removeExpiredToken())
+    return this.loadResponse()
+      .mergeMap(r => this.isAccessTokenValid(r) ? Observable.of(r) : this.removeExpiredToken())
       .map(r => r.access_token)
+  }
+
+  loadRefreshToken(): Observable<string> {
+    return this.loadResponse()
+      .map(r => r.refresh_token)
+      .filter(t => this.isRefreshTokenValid(t));
   }
 
   removeToken(): Observable<void> {
     return Observable.fromPromise(this.tokenStore.removeItem(appConst.localstorage.token.key));
   }
 
-  private isTokenValid(response: OAuth2Response): boolean {
+  private loadResponse(): Observable<OAuth2Response> {
+    return Observable.fromPromise(this.tokenStore.getItem(appConst.localstorage.token.key))
+      .filter(r => !!r);
+  }
+
+  private isAccessTokenValid(response: OAuth2Response): boolean {
     return response && moment().isBefore(moment(response.expires_at));
+  }
+
+  private isRefreshTokenValid(refreshToken: string): boolean {
+    if (refreshToken) {
+      const token = this.decodeToken(refreshToken);
+      if (token && token.exp) {
+        return moment().isBefore(moment(token.exp));
+      }
+    }
+    return false;
   }
 
   private calcExpirationDate(expiresIn: number) {
@@ -42,6 +63,10 @@ export class LocalStorageService {
 
   private removeExpiredToken(): Observable<any> {
     return this.removeToken().flatMap(() => Observable.empty());
+  }
+
+  private decodeToken(refreshToken: string): any {
+    return jwtDecode(refreshToken);
   }
 
 }

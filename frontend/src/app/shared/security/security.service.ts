@@ -1,11 +1,11 @@
-import {Injectable} from '@angular/core';
-import {Headers, Http, RequestOptionsArgs, Response} from '@angular/http';
-import {BehaviorSubject, Observable, Subject} from 'rxjs';
-import {User} from './user';
-import {LocalStorageService} from '../local-storage/local-storage.service';
-import {appConst} from '../constants';
+import { Injectable } from '@angular/core';
+import { Headers, Http, RequestOptionsArgs, Response } from '@angular/http';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { User } from './user';
+import { LocalStorageService } from '../local-storage/local-storage.service';
+import { appConst } from '../constants';
 import * as jwtDecode from 'jwt-decode';
-import {OAuth2Response} from './oauth2-response.model';
+import { OAuth2Response } from './oauth2-response.model';
 
 @Injectable()
 export class SecurityService {
@@ -32,6 +32,12 @@ export class SecurityService {
     return this.localStorageService.removeToken()
       .do(() => this._loginEvent.next(null));
   }
+
+  // findAccessToken(): Observable<string> {
+  //   return this.localStorageService.loadAccessToken()
+  //     .defaultIfEmpty(false)
+  //     .mergeMap(t => t ? Observable.of(t): );
+  // }
 
   private loadUserFromLocalStorage(): Observable<User> {
     return this.localStorageService.loadAccessToken().map(t => this.mapUser(t)).defaultIfEmpty(null);
