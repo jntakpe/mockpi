@@ -28,9 +28,18 @@ class UserService(private val userRepository: UserRepository) {
                 .single()
     }
 
+    fun verifyEmailAvailable(email: String, oldMail: String = ""): Mono<String> {
+        logger.debug("Checking that email {} is available", email)
+        return userRepository.findByEmailIgnoreCase(email)
+                .filter { it.email != oldMail }
+                .flatMap { Mono.error<String>(ConflictKeyException("Email $email is not available")) }
+                .defaultIfEmpty(email)
+                .single()
+    }
+
     fun create(user: User): Mono<User> {
         logger.info("Creating {}", user)
-        return verifyLoginAvailable(user.login)
+        return Mono.`when`(verifyLoginAvailable(user.login), verifyEmailAvailable(user.email))
                 .map { lowerCaseLoginAndMail(user) }
                 .flatMap { u -> userRepository.insert(u) }
                 .single()
@@ -39,7 +48,9 @@ class UserService(private val userRepository: UserRepository) {
     fun update(user: User, oldLogin: String): Mono<User> {
         logger.info("Updating {} to {}", oldLogin, user)
         return findByLoginOrThrow(oldLogin)
-                .flatMap { verifyLoginAvailable(user.login, oldLogin) }
+                .flatMap { (login, _, email) ->
+                    Mono.`when`(verifyLoginAvailable(user.login, login), verifyEmailAvailable(user.email, email))
+                }
                 .map { lowerCaseLoginAndMail(user) }
                 .flatMap { u -> userRepository.save(u) }
                 .flatMap { u -> deleteOldLogin(oldLogin, u) }

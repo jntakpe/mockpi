@@ -127,15 +127,24 @@ class UserServiceTest {
     }
 
     @Test
+    fun `should not create a new user because email unavailable`() {
+        val rjansem = User("jntakpe2", "Joss", "jntakpe@mail.com")
+        StepVerifier.create(userService.create(rjansem))
+                .expectSubscription()
+                .expectError(ConflictKeyException::class.java)
+                .verify()
+    }
+
+    @Test
     fun `should update a user keeping login`() {
-        val updated = User("CBarillet", "Updated", "Updated@mail.com")
+        val updated = User("CBarillet", "Updated", "UpdatedCBA@mail.com")
         StepVerifier.create(userService.update(updated, "cbarillet"))
                 .expectSubscription()
                 .consumeNextWith {
                     (login, name, email) ->
                     assertThat(login).isEqualTo("cbarillet")
                     assertThat(name).isEqualTo("Updated")
-                    assertThat(email).isEqualTo("updated@mail.com")
+                    assertThat(email).isEqualTo("updatedcba@mail.com")
                 }
                 .verifyComplete()
         StepVerifier.create(userRepository.exists("cbarillet"))
@@ -182,6 +191,14 @@ class UserServiceTest {
     fun `should not update a user because login unavailable`() {
         val corentin = User("crinfray", "Coco", "coco@mail.com")
         StepVerifier.create(userService.update(corentin, "jntakpe"))
+                .expectSubscription()
+                .verifyError(ConflictKeyException::class.java)
+    }
+
+    @Test
+    fun `should not update a user because email unavailable`() {
+        val corentin = User("crinfray", "Coco", "jntakpe@mail.com")
+        StepVerifier.create(userService.update(corentin, "crinfray"))
                 .expectSubscription()
                 .verifyError(ConflictKeyException::class.java)
     }

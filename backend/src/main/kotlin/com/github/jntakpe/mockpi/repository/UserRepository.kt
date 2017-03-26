@@ -8,4 +8,5 @@ interface UserRepository : ReactiveMongoRepository<User, String> {
 
     fun findByLoginIgnoreCase(login: String): Mono<User>
 
+    fun findByEmailIgnoreCase(email: String): Mono<User>
 }
