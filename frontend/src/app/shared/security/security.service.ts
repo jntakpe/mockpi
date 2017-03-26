@@ -16,7 +16,7 @@ export class SecurityService {
   }
 
   login(username: string, password: string): Observable<User> {
-    return this.accessToken(username, password)
+    return this.accessTokenRequest(username, password)
       .map(res => res.json())
       .mergeMap((o: OAuth2Response) => this.localStorageService.saveOAuth2Response(o))
       .map(o => this.mapUser(o.access_token))
@@ -33,21 +33,29 @@ export class SecurityService {
       .do(() => this._loginEvent.next(null));
   }
 
-  // findAccessToken(): Observable<string> {
-  //   return this.localStorageService.loadAccessToken()
-  //     .defaultIfEmpty(false)
-  //     .mergeMap(t => t ? Observable.of(t): );
-  // }
+  findAccessToken(): Observable<string> {
+    return this.localStorageService.loadAccessToken()
+      .defaultIfEmpty(false)
+      .mergeMap(t => t ? Observable.of(t) : this.refresh().map(o => o.access_token));
+  }
+
+  private refresh(): Observable<OAuth2Response> {
+    return this.localStorageService.loadRefreshToken()
+      .mergeMap(r => this.refreshTokenRequest(r))
+      .map(res => res.json())
+      .catch(() => this.localStorageService.removeToken().mergeMap(() => Observable.empty()))
+      .mergeMap((o: OAuth2Response) => this.localStorageService.saveOAuth2Response(o))
+  }
 
   private loadUserFromLocalStorage(): Observable<User> {
     return this.localStorageService.loadAccessToken().map(t => this.mapUser(t)).defaultIfEmpty(null);
   }
 
-  private accessToken(username: string, password: string): Observable<Response> {
+  private accessTokenRequest(username: string, password: string): Observable<Response> {
     return this.http.post('auth-service/oauth/token', this.buildTokenRequestBody(username, password), this.buildTokenRequestOption());
   }
 
-  private refreshToken(refreshToken: string): Observable<Response> {
+  private refreshTokenRequest(refreshToken: string): Observable<Response> {
     return this.http.post('auth-service/oauth/token', this.buildRefreshTokenRequestBody(refreshToken), this.buildTokenRequestOption());
   }
 

@@ -3,6 +3,29 @@ import { async, inject, TestBed } from '@angular/core/testing';
 import { OAuth2Response } from '../security/oauth2-response.model';
 import { appConst } from '../constants';
 import * as moment from 'moment';
+import { Observable } from 'rxjs';
+import { tokenJson } from '../testing/testing-utils.spec';
+
+export class MockLocalStorageService extends LocalStorageService {
+
+  saveOAuth2Response(oauth2Response: OAuth2Response): Observable<OAuth2Response> {
+    return Observable.of(tokenJson);
+  }
+
+  loadAccessToken(): Observable<string> {
+    return Observable.of(tokenJson['access_token']);
+  }
+
+  loadRefreshToken(): Observable<string> {
+    return Observable.of(tokenJson['refresh_token']);
+  }
+
+  removeToken(): Observable<void> {
+    return Observable.of(null);
+  }
+
+}
+
 
 describe('local storage service', () => {
 
@@ -89,7 +112,7 @@ describe('local storage service', () => {
     });
   });
 
-  it('should load refresh token cuz expired', done => {
+  it('should not load refresh token cuz expired', done => {
     localStorageService.saveOAuth2Response(oauth2Response).subscribe(() => {
       spyOn(localStorageService, 'decodeToken').and.returnValue({exp: moment().subtract(1, 'h').unix() * 1000});
       localStorageService.loadRefreshToken().subscribe(
