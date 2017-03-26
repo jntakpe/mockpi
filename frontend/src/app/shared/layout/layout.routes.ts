@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { LayoutComponent } from './layout.component';
 import { HomeComponent } from '../../home/home.component';
 import { RegisterComponent } from '../../register/register.component';
+import { MocksComponent } from '../../mocks/mocks.component';
 
 export const layoutRoutes: Routes = [
   {
@@ -9,7 +10,8 @@ export const layoutRoutes: Routes = [
     children: [
       {path: 'home', component: HomeComponent},
       {path: '', redirectTo: 'home', pathMatch: 'full'},
-      {path: 'register', component: RegisterComponent}
+      {path: 'register', component: RegisterComponent},
+      {path: 'mocks', component: MocksComponent},
     ]
   }
 ];
