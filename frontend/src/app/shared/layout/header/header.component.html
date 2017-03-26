@@ -5,7 +5,7 @@
   </a>
   <a md-button class="header-button" routerLink="mocks">Mocks</a>
   <a md-button class="header-button" routerLink="requests">Requests</a>
-  <a id="logout-btn" md-button class="header-button" (click)="logout()">
+  <a id="logout-btn" md-button class="header-button" (click)="logout()" mdTooltip="Logout">
     <md-icon>power_settings_new</md-icon>
     <span>{{username$ | async}}</span>
   </a>
