@@ -1,6 +1,4 @@
-import {Component, OnInit} from '@angular/core';
-import {Observable} from 'rxjs';
-import {HeaderService} from './header.service';
+import { Component, OnInit } from '@angular/core';
 
 @Component({
   selector: 'mpi-header',
@@ -9,17 +7,10 @@ import {HeaderService} from './header.service';
 })
 export class HeaderComponent implements OnInit {
 
-  username$: Observable<string>;
-
-  constructor(private headerService: HeaderService) {
+  constructor() {
   }
 
   ngOnInit() {
-    this.username$ = this.headerService.username();
-  }
-
-  logout(): void {
-    this.headerService.logoutThenRedirectHome().subscribe();
   }
 
 }

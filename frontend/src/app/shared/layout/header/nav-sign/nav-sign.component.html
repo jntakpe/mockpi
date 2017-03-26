@@ -1,0 +1,10 @@
+<a *ngIf="username$ | async" id="logout-btn" md-button (click)="logout()" mdTooltip="Logout">
+  <md-icon>power_settings_new</md-icon>
+  <span>{{username$ | async}}</span>
+</a>
+<a *ngIf="!(username$ | async)" id="signin-btn" md-mini-fab routerLink="/login" mdTooltip="SignIn">
+  <md-icon>launch</md-icon>
+</a>
+<a *ngIf="!(username$ | async)" id="signup-btn" md-mini-fab routerLink="/register" mdTooltip="SignUp">
+  <md-icon>exit_to_app</md-icon>
+</a>

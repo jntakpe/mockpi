@@ -1,11 +1,10 @@
-import {async, ComponentFixture, inject, TestBed} from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import {HeaderComponent} from './header.component';
-import {RouterTestingModule} from '@angular/router/testing';
-import {MaterialModule} from '@angular/material';
-import {HeaderService} from './header.service';
-import {Observable} from 'rxjs';
-import {By} from '@angular/platform-browser';
+import { HeaderComponent } from './header.component';
+import { RouterTestingModule } from '@angular/router/testing';
+import { MaterialModule } from '@angular/material';
+import { NavSignComponent } from './nav-sign/nav-sign.component';
+import { NavSignService } from './nav-sign/nav-sign.service';
 
 describe('HeaderComponent', () => {
   let component: HeaderComponent;
@@ -13,11 +12,11 @@ describe('HeaderComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [HeaderComponent],
+      declarations: [HeaderComponent, NavSignComponent],
       imports: [RouterTestingModule, MaterialModule],
       providers: [{
-        provide: HeaderService,
-        useValue: {username: () => Observable.of('jntakpe'), logoutThenRedirectHome: () => Observable.of(true)}
+        provide: NavSignService,
+        useValue: jasmine.createSpyObj(NavSignService.name, ['username', 'logoutThenRedirectHome'])
       }]
     })
       .compileComponents();
@@ -33,11 +32,4 @@ describe('HeaderComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should call logout', async(inject([HeaderService], (headerService: HeaderService) => {
-    spyOn(headerService, 'logoutThenRedirectHome').and.returnValue(Observable.of(true));
-    const logoutBtn = fixture.debugElement.query(By.css('a#logout-btn'));
-    logoutBtn.nativeElement.click();
-    fixture.detectChanges();
-    expect(headerService.logoutThenRedirectHome).toHaveBeenCalled();
-  })));
 });

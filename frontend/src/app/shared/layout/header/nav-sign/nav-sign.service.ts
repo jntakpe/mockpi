@@ -1,10 +1,10 @@
-import {Injectable} from '@angular/core';
-import {SecurityService} from '../../security/security.service';
-import {Observable} from 'rxjs';
-import {Router} from '@angular/router';
+import { Injectable } from '@angular/core';
+import { SecurityService } from '../../../security/security.service';
+import { Observable } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Injectable()
-export class HeaderService {
+export class NavSignService {
 
   constructor(private securityService: SecurityService, private router: Router) {
   }
