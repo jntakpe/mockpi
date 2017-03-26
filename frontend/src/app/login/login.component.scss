@@ -1,4 +1,4 @@
-@import '../shared/styles/variables';
+@import '../shared/styles/theme';
 
 .signin-container {
   height: 100vh;
@@ -43,7 +43,6 @@
         width: 100%;
       }
     }
-
   }
 
   @keyframes cardEnter {
