@@ -7,10 +7,12 @@ import {MaterialModule, MaterialRootModule} from '@angular/material';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {SecurityModule} from './security/security.module';
 import {CovalentCoreModule} from '@covalent/core';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
 @NgModule({
   imports: [
     CommonModule,
+    BrowserAnimationsModule,
     HttpModule,
     RouterModule,
     ReactiveFormsModule,
@@ -21,6 +23,7 @@ import {CovalentCoreModule} from '@covalent/core';
   ],
   exports: [
     CommonModule,
+    BrowserAnimationsModule,
     HttpModule,
     RouterModule,
     ReactiveFormsModule,
