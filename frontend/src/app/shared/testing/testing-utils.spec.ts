@@ -64,6 +64,5 @@ export function createRoot(router: Router, type: any): ComponentFixture<any> {
 
 export function changeInputValueAndDispatch(input: DebugElement, value: string): void {
   input.nativeElement.value = value;
-  console.log(input.nativeElement);
   input.nativeElement.dispatchEvent(new Event('input'));
 }

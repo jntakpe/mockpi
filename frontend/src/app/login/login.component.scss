@@ -22,15 +22,14 @@
     animation: cardEnter 0.75s ease-in-out 0.5s;
     animation-fill-mode: both;
     opacity: 0;
-    min-width: 15vw;
+    min-width: 20vw;
 
     md-card-header {
+      margin-bottom: 10vh;
+
       md-card-title {
         font-size: 3em;
         color: $mpi-primary;
-      }
-      md-card-subtitle {
-        font-size: 2em;
       }
     }
 

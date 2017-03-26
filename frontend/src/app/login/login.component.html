@@ -3,8 +3,8 @@
     <img md-card-image class="card-logo" src="assets/images/logo_angular.svg" alt="Logo">
     <md-card-header fxLayout="column">
       <md-card-title fxLayoutAlign="center center">mockPI</md-card-title>
+      <md-card-subtitle fxLayoutAlign="center center">Mock portal interface</md-card-subtitle>
     </md-card-header>
-    <md-card-subtitle fxLayoutAlign="center center">Mock portal interface</md-card-subtitle>
     <md-card-content>
       <form class="signin-form" [formGroup]="loginForm" (ngSubmit)="signIn()" autocomplete="on" fxLayout="column" fxFlex="50">
         <md-input-container>
@@ -15,10 +15,8 @@
           <span md-prefix><md-icon>lock</md-icon></span>
           <input mdInput type="password" placeholder="Password" formControlName="password" #password>
         </md-input-container>
+        <button md-raised-button color="accent" type="submit" [disabled]="loginForm.invalid">Sign in</button>
       </form>
     </md-card-content>
-    <md-card-actions>
-      <button md-raised-button color="accent" type="submit" [disabled]="loginForm.invalid">Sign in</button>
-    </md-card-actions>
   </md-card>
 </div>
