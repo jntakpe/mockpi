@@ -1,8 +1,8 @@
-import {Component, DebugElement} from '@angular/core';
-import {ComponentFixture, TestBed, tick} from '@angular/core/testing';
-import {Router} from '@angular/router';
-import {MockConnection} from '@angular/http/testing';
-import {Response, ResponseOptions} from '@angular/http';
+import { Component, DebugElement } from '@angular/core';
+import { ComponentFixture, TestBed, tick } from '@angular/core/testing';
+import { Router } from '@angular/router';
+import { MockConnection } from '@angular/http/testing';
+import { Response, ResponseOptions } from '@angular/http';
 import * as _ from 'lodash';
 
 export const tokenJson = require('./token-response.json');
@@ -20,14 +20,14 @@ export function mockRefreshTokenResponse(connection: MockConnection) {
 }
 
 @Component({
-  selector: 'fd-root-cmp',
+  selector: 'mpi-root-cmp',
   template: '<router-outlet></router-outlet>'
 })
 export class RootComponent {
 }
 
 @Component({
-  selector: 'fd-home-cmp',
+  selector: 'mpi-home-cmp',
   template: '<h1>home</h1>'
 })
 export class FakeHomeComponent {
@@ -35,14 +35,14 @@ export class FakeHomeComponent {
 }
 
 @Component({
-  selector: 'fd-fake-login-cmp',
+  selector: 'mpi-fake-login-cmp',
   template: '<h1>fake cmp</h1>'
 })
 export class FakeLoginComponent {
 }
 
 @Component({
-  selector: 'fd-fake-feat-cmp',
+  selector: 'mpi-fake-feat-cmp',
   template: '<h1>feat cmp</h1>'
 })
 export class FakeFeatureComponent {

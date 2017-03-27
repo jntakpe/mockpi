@@ -1,6 +1,7 @@
 import { async, fakeAsync, inject, TestBed } from '@angular/core/testing';
 import { SecurityService } from '../../../security/security.service';
-import { Observable } from 'rxjs';
+import { Observable } from 'rxjs/Observable';
+import '../../../rxjs.extension';
 import { User } from '../../../security/user';
 import { RouterTestingModule } from '@angular/router/testing';
 import { advance, createRoot, FakeHomeComponent, FakeLoginComponent, RootComponent } from '../../../testing/testing-utils.spec';

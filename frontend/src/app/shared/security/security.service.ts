@@ -1,11 +1,14 @@
 import { Injectable } from '@angular/core';
 import { Headers, Http, RequestOptionsArgs, Response } from '@angular/http';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { Observable } from 'rxjs/Observable';
+import { Subject } from 'rxjs/Subject';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { User } from './user';
 import { LocalStorageService } from '../local-storage/local-storage.service';
 import { appConst } from '../constants';
 import * as jwtDecode from 'jwt-decode';
 import { OAuth2Response } from './oauth2-response.model';
+import '../rxjs.extension';
 
 @Injectable()
 export class SecurityService {

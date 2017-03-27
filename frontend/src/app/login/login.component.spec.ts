@@ -1,14 +1,15 @@
-import {async, ComponentFixture, inject, TestBed} from '@angular/core/testing';
+import { async, ComponentFixture, inject, TestBed } from '@angular/core/testing';
 
-import {LoginComponent} from './login.component';
-import {MaterialModule} from '@angular/material';
-import {FormGroup, ReactiveFormsModule} from '@angular/forms';
-import {LoginService} from './login.service';
-import {By} from '@angular/platform-browser';
-import {changeInputValueAndDispatch} from '../shared/testing/testing-utils.spec';
-import {Response, ResponseOptions} from '@angular/http';
-import {User} from '../shared/security/user';
-import {Observable} from 'rxjs';
+import { LoginComponent } from './login.component';
+import { MaterialModule } from '@angular/material';
+import { FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { LoginService } from './login.service';
+import { By } from '@angular/platform-browser';
+import { changeInputValueAndDispatch } from '../shared/testing/testing-utils.spec';
+import { Response, ResponseOptions } from '@angular/http';
+import { User } from '../shared/security/user';
+import { Observable } from 'rxjs/Observable';
+import '../shared/rxjs.extension';
 
 describe('LoginComponent', () => {
   let component: LoginComponent;

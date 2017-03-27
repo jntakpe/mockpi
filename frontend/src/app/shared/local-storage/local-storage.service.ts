@@ -4,7 +4,8 @@ import * as jwtDecode from 'jwt-decode';
 import { appConst } from '../constants';
 import { Injectable } from '@angular/core';
 import { OAuth2Response } from '../security/oauth2-response.model';
-import { Observable } from 'rxjs';
+import { Observable } from 'rxjs/Observable';
+import '../rxjs.extension';
 
 @Injectable()
 export class LocalStorageService {
@@ -25,7 +26,7 @@ export class LocalStorageService {
   loadAccessToken(): Observable<string> {
     return this.loadResponse()
       .mergeMap(r => this.isAccessTokenValid(r) ? Observable.of(r) : this.removeExpiredToken())
-      .map(r => r.access_token)
+      .map(r => r.access_token);
   }
 
   loadRefreshToken(): Observable<string> {

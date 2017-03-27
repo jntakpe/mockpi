@@ -1,11 +1,12 @@
-import {async, fakeAsync, inject, TestBed} from '@angular/core/testing';
-import {RouterTestingModule} from '@angular/router/testing';
-import {ConnectedGuard} from './connected-guard.service';
-import {SecurityService} from '../security.service';
-import {Observable} from 'rxjs';
-import {Router, Routes} from '@angular/router';
-import {advance, createRoot, FakeHomeComponent, FakeLoginComponent, RootComponent} from '../../testing/testing-utils.spec';
-import {Location} from '@angular/common';
+import { async, fakeAsync, inject, TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
+import { ConnectedGuard } from './connected-guard.service';
+import { SecurityService } from '../security.service';
+import { Observable } from 'rxjs/Observable';
+import '../../rxjs.extension';
+import { Router, Routes } from '@angular/router';
+import { advance, createRoot, FakeHomeComponent, FakeLoginComponent, RootComponent } from '../../testing/testing-utils.spec';
+import { Location } from '@angular/common';
 
 const routes: Routes = [
   {path: '', component: RootComponent},

@@ -1,11 +1,12 @@
-import {Injectable} from '@angular/core';
-import {SecurityService} from '../shared/security/security.service';
-import {Observable} from 'rxjs';
-import {User} from '../shared/security/user';
-import {Router} from '@angular/router';
-import {appConst} from '../shared/constants';
-import {MdSnackBar} from '@angular/material';
-import {Response} from '@angular/http';
+import { Injectable } from '@angular/core';
+import { SecurityService } from '../shared/security/security.service';
+import { Observable } from 'rxjs/Observable';
+import '../shared/rxjs.extension';
+import { User } from '../shared/security/user';
+import { Router } from '@angular/router';
+import { appConst } from '../shared/constants';
+import { MdSnackBar } from '@angular/material';
+import { Response } from '@angular/http';
 
 @Injectable()
 export class LoginService {

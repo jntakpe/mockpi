@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { SecurityService } from '../../../security/security.service';
-import { Observable } from 'rxjs';
+import { Observable } from 'rxjs/Observable';
 import { Router } from '@angular/router';
+import '../../../rxjs.extension';
 
 @Injectable()
 export class NavSignService {

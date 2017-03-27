@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { SecurityService } from './security.service';
 import { Headers, Http, RequestOptions, RequestOptionsArgs, Response } from '@angular/http';
-import { Observable } from 'rxjs';
+import { Observable } from 'rxjs/Observable';
+import '../rxjs.extension';
 import { Router } from '@angular/router';
 
 @Injectable()

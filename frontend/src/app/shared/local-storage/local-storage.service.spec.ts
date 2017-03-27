@@ -3,7 +3,8 @@ import { async, inject, TestBed } from '@angular/core/testing';
 import { OAuth2Response } from '../security/oauth2-response.model';
 import { appConst } from '../constants';
 import * as moment from 'moment';
-import { Observable } from 'rxjs';
+import { Observable } from 'rxjs/Observable';
+import '../rxjs.extension';
 import { tokenJson } from '../testing/testing-utils.spec';
 
 export class MockLocalStorageService extends LocalStorageService {
@@ -119,7 +120,7 @@ describe('local storage service', () => {
         () => fail('should be empty'),
         () => fail('should not fail on refresh token retrieval'),
         () => localStorageService['tokenStore'].removeItem(appConst.localstorage.token.key).then(() => done())
-      )
+      );
     });
   });
 
@@ -144,10 +145,10 @@ describe('local storage service', () => {
       .then(response => {
         expect(response).toBeTruthy();
         localStorageService.removeToken().subscribe(() => {
-          tokenStore.getItem(appConst.localstorage.token.key).then(response => {
-            expect(response).toBeFalsy();
+          tokenStore.getItem(appConst.localstorage.token.key).then(res => {
+            expect(res).toBeFalsy();
             done();
-          }, () => fail('remove should succeed'))
+          }, () => fail('remove should succeed'));
         });
       }, () => fail('should get response'));
   });
@@ -157,10 +158,10 @@ describe('local storage service', () => {
     tokenStore.getItem(appConst.localstorage.token.key).then(response => {
       expect(response).toBeFalsy();
       localStorageService.removeToken().subscribe(() => {
-        tokenStore.getItem(appConst.localstorage.token.key).then(response => {
-          expect(response).toBeFalsy();
+        tokenStore.getItem(appConst.localstorage.token.key).then(res => {
+          expect(res).toBeFalsy();
           done();
-        }, () => fail('remove should succeed'))
+        }, () => fail('remove should succeed'));
       });
     });
   });

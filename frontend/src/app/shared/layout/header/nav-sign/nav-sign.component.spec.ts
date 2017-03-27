@@ -1,7 +1,7 @@
 import { async, ComponentFixture, inject, TestBed } from '@angular/core/testing';
-
 import { NavSignComponent } from './nav-sign.component';
-import { Observable } from 'rxjs';
+import { Observable } from 'rxjs/Observable';
+import '../../../rxjs.extension';
 import { NavSignService } from './nav-sign.service';
 import { By } from '@angular/platform-browser';
 import { MaterialModule } from '@angular/material';

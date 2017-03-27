@@ -1,7 +1,8 @@
-import {ActivatedRouteSnapshot, CanActivateChild, Router, RouterStateSnapshot} from '@angular/router';
-import {Observable} from 'rxjs/Observable';
-import {Injectable} from '@angular/core';
-import {SecurityService} from '../security.service';
+import { ActivatedRouteSnapshot, CanActivateChild, Router, RouterStateSnapshot } from '@angular/router';
+import { Observable } from 'rxjs/Observable';
+import { Injectable } from '@angular/core';
+import { SecurityService } from '../security.service';
+import '../../rxjs.extension';
 
 @Injectable()
 export class ConnectedGuard implements CanActivateChild {

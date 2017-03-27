@@ -7,14 +7,15 @@ import { RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { LocalStorageService } from '../local-storage/local-storage.service';
 import { mockRefreshTokenResponse, mockTokenResponse, tokenJson } from '../testing/testing-utils.spec';
-import { Observable } from 'rxjs';
+import { Observable } from 'rxjs/Observable';
+import '../rxjs.extension';
 import { User } from './user';
 import { MockLocalStorageService } from '../local-storage/local-storage.service.spec';
 
 export class MockSecurityService extends SecurityService {
 
   constructor() {
-    super(null, null)
+    super(null, null);
   }
 
   login(username: string, password: string): Observable<User> {
@@ -80,9 +81,9 @@ describe('SecurityService', () => {
       spyOn(localStorageService, 'loadAccessToken').and.returnValue(Observable.of(tokenJson['access_token']));
       securityService.listenLoginChanges().subscribe(user => {
           expect(user).toBeTruthy();
-          expect(localStorageService.loadAccessToken).toHaveBeenCalled()
+          expect(localStorageService.loadAccessToken).toHaveBeenCalled();
         },
-        () => fail('should observe event'))
+        () => fail('should observe event'));
     })));
 
   it('should listen to user changes and observe user from memory', async(inject([SecurityService, MockBackend, LocalStorageService],
@@ -95,7 +96,7 @@ describe('SecurityService', () => {
             expect(user).toBeTruthy();
             expect(localStorageService.loadAccessToken).not.toHaveBeenCalled();
           },
-          () => fail('should observe event'))
+          () => fail('should observe event'));
       });
     })));
 
