@@ -3,6 +3,7 @@ buildscript {
         kotlinVersion = '1.1.1'
         springBootVersion = '2.0.0.BUILD-SNAPSHOT'
         jacksonVersion = '2.8.7'
+        typescriptGenVersion = '1.21.304'
     }
     repositories {
         mavenCentral()
@@ -13,6 +14,7 @@ buildscript {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVersion}")
         classpath("org.jetbrains.kotlin:kotlin-allopen:${kotlinVersion}")
+        classpath ("cz.habarta.typescript-generator:typescript-generator-gradle-plugin:${typescriptGenVersion}")
     }
 }
 
@@ -20,6 +22,7 @@ apply plugin: 'kotlin'
 apply plugin: 'kotlin-spring'
 apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
+apply plugin: 'cz.habarta.typescript-generator'
 
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = 1.8
@@ -44,4 +47,13 @@ dependencies {
     compile("org.jetbrains.kotlin:kotlin-stdlib-jre8:${kotlinVersion}")
     compile("org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}")
     testCompile('org.springframework.boot:spring-boot-starter-test')
+}
+
+generateTypeScript {
+    jsonLibrary = 'jackson2'
+    classPatterns = ['com.github.jntakpe.mockpi.domain.**']
+    outputFile = '../frontend/src/app/shared/api.model.ts'
+    outputKind = 'module'
+    outputFileType = 'implementationFile'
+    stringQuotes = 'singleQuotes'
 }
