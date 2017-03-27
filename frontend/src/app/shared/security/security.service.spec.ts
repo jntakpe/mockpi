@@ -11,6 +11,29 @@ import { Observable } from 'rxjs';
 import { User } from './user';
 import { MockLocalStorageService } from '../local-storage/local-storage.service.spec';
 
+export class MockSecurityService extends SecurityService {
+
+  constructor() {
+    super(null, null)
+  }
+
+  login(username: string, password: string): Observable<User> {
+    return Observable.of(new User('jntakpe', 'Joss', ['ADMIN']));
+  }
+
+  listenLoginChanges(): Observable<User> {
+    return Observable.of(new User('jntakpe', 'Joss', ['ADMIN']));
+  }
+
+  logout(): Observable<void> {
+    return Observable.of(null);
+  }
+
+  findAccessToken(): Observable<string> {
+    return Observable.of(tokenJson['access_token']);
+  }
+}
+
 describe('SecurityService', () => {
 
   beforeEach(() => {

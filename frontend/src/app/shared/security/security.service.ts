@@ -44,7 +44,7 @@ export class SecurityService {
       .mergeMap(r => this.refreshTokenRequest(r))
       .map(res => res.json())
       .catch(() => this.localStorageService.removeToken().mergeMap(() => Observable.empty()))
-      .mergeMap((o: OAuth2Response) => this.localStorageService.saveOAuth2Response(o))
+      .mergeMap((o: OAuth2Response) => this.localStorageService.saveOAuth2Response(o));
   }
 
   private loadUserFromLocalStorage(): Observable<User> {
