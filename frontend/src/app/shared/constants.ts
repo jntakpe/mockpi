@@ -1,4 +1,7 @@
 export const appConst = {
+  api: {
+    baseUrl: '/api'
+  },
   snackBar: {
     closeBtnLabel: 'Close'
   },
