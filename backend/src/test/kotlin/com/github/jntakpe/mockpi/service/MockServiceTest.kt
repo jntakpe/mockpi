@@ -16,7 +16,7 @@ import org.springframework.http.HttpHeaders.*
 import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.web.bind.annotation.RequestMethod.GET
 import org.springframework.web.bind.annotation.RequestMethod.POST
-import reactor.test.StepVerifier
+import reactor.core.publisher.test
 
 @SpringBootTest
 @RunWith(SpringRunner::class)
@@ -31,7 +31,7 @@ class MockServiceTest {
     @Test
     fun `should find mock by name because exact match`() {
         val name = "demo1"
-        StepVerifier.create(mockService.findByName(name))
+        mockService.findByName(name).test()
                 .expectSubscription()
                 .consumeNextWith { mock ->
                     assertThat(mock).isNotNull()
@@ -43,7 +43,7 @@ class MockServiceTest {
     @Test
     fun `should find mock by name ignoring case`() {
         val name = "DEMO1"
-        StepVerifier.create(mockService.findByName(name))
+        mockService.findByName(name).test()
                 .expectSubscription()
                 .consumeNextWith { mock ->
                     assertThat(mock).isNotNull()
@@ -54,7 +54,7 @@ class MockServiceTest {
 
     @Test
     fun `should not find mock because unknown name`() {
-        StepVerifier.create(mockService.findByName("unknown"))
+        mockService.findByName("unknown").test()
                 .expectSubscription()
                 .expectNextCount(0)
                 .verifyComplete()
@@ -63,7 +63,7 @@ class MockServiceTest {
     @Test
     fun `shoud accept name because none existing`() {
         val newName = "newname"
-        StepVerifier.create(mockService.verifyNameAvailable(newName))
+        mockService.verifyNameAvailable(newName).test()
                 .expectSubscription()
                 .expectNext(newName)
                 .verifyComplete()
@@ -72,7 +72,7 @@ class MockServiceTest {
     @Test
     fun `shoud refuse name because same name exist`() {
         val newName = "dEMO1"
-        StepVerifier.create(mockService.verifyNameAvailable(newName))
+        mockService.verifyNameAvailable(newName).test()
                 .expectSubscription()
                 .verifyError(ConflictKeyException::class.java)
     }
@@ -80,7 +80,7 @@ class MockServiceTest {
     @Test
     fun `should accept name because old name is the the same`() {
         val name = "DEmo1"
-        StepVerifier.create(mockService.verifyNameAvailable(name, "demo1"))
+        mockService.verifyNameAvailable(name, "demo1").test()
                 .expectSubscription()
                 .expectNext(name)
                 .verifyComplete()
@@ -88,14 +88,14 @@ class MockServiceTest {
 
     @Test
     fun `should refuse name because old name is not the same`() {
-        StepVerifier.create(mockService.verifyNameAvailable("Demo1", "oldName"))
+        mockService.verifyNameAvailable("Demo1", "oldName").test()
                 .expectSubscription()
                 .verifyError(ConflictKeyException::class.java)
     }
 
     @Test
     fun `should accept request because none existing`() {
-        StepVerifier.create(mockService.verifyRequestAvailable(Request("somenewrequest", GET)))
+        mockService.verifyRequestAvailable(Request("somenewrequest", GET)).test()
                 .expectSubscription()
                 .expectNextCount(1)
                 .verifyComplete()
@@ -103,14 +103,14 @@ class MockServiceTest {
 
     @Test
     fun `shoud refuse request because same request exist`() {
-        StepVerifier.create(mockService.verifyRequestAvailable(Request("/users/1", GET)))
+        mockService.verifyRequestAvailable(Request("/users/1", GET)).test()
                 .expectSubscription()
                 .verifyError(ConflictKeyException::class.java)
     }
 
     @Test
     fun `should accept request because old request is the the same`() {
-        StepVerifier.create(mockService.verifyRequestAvailable(Request("/users/1", GET), Request("/users/1", GET)))
+        mockService.verifyRequestAvailable(Request("/users/1", GET), Request("/users/1", GET)).test()
                 .expectSubscription()
                 .expectNextCount(1)
                 .verifyComplete()
@@ -118,14 +118,14 @@ class MockServiceTest {
 
     @Test
     fun `should refuse request because old request is not the same`() {
-        StepVerifier.create(mockService.verifyRequestAvailable(Request("/users/1", GET), Request("/users/1", POST)))
+        mockService.verifyRequestAvailable(Request("/users/1", GET), Request("/users/1", POST)).test()
                 .expectSubscription()
                 .verifyError(ConflictKeyException::class.java)
     }
 
     @Test
     fun `should find one response with request path and method`() {
-        StepVerifier.create(mockService.findMatchingMock(Request("/users/1", GET)))
+        mockService.findMatchingMock(Request("/users/1", GET)).test()
                 .expectSubscription()
                 .consumeNextWith { response ->
                     assertThat(response).isNotNull()
@@ -136,7 +136,7 @@ class MockServiceTest {
 
     @Test
     fun `should find none cuz path missmatch`() {
-        StepVerifier.create(mockService.findMatchingMock(Request("/user/1", GET)))
+        mockService.findMatchingMock(Request("/user/1", GET)).test()
                 .expectSubscription()
                 .expectNextCount(0)
                 .verifyComplete()
@@ -144,7 +144,7 @@ class MockServiceTest {
 
     @Test
     fun `should find none cuz method missmatch`() {
-        StepVerifier.create(mockService.findMatchingMock(Request("/users/1", POST)))
+        mockService.findMatchingMock(Request("/users/1", POST)).test()
                 .expectSubscription()
                 .expectNextCount(0)
                 .verifyComplete()
@@ -152,7 +152,7 @@ class MockServiceTest {
 
     @Test
     fun `should find one response with request path, method and one param`() {
-        StepVerifier.create(mockService.findMatchingMock(Request("/users/1", GET, mapOf(Pair("age", "20")), emptyMap())))
+        mockService.findMatchingMock(Request("/users/1", GET, mapOf(Pair("age", "20")), emptyMap())).test()
                 .expectSubscription()
                 .consumeNextWith { response ->
                     assertThat(response).isNotNull()
@@ -164,7 +164,7 @@ class MockServiceTest {
     @Test
     fun `should find one response with request path, method and two params`() {
         val request = Request("/users/1", GET, mapOf(Pair("gender", "M"), Pair("age", "20")), emptyMap())
-        StepVerifier.create(mockService.findMatchingMock(request))
+        mockService.findMatchingMock(request).test()
                 .expectSubscription()
                 .consumeNextWith { response ->
                     assertThat(response).isNotNull()
@@ -176,7 +176,7 @@ class MockServiceTest {
     @Test
     fun `should find none because param missmatch`() {
         val request = Request("/users/1", GET, mapOf(Pair("gender", "Mme"), Pair("age", "20")), emptyMap())
-        StepVerifier.create(mockService.findMatchingMock(request))
+        mockService.findMatchingMock(request).test()
                 .expectSubscription()
                 .expectNextCount(0)
                 .verifyComplete()
@@ -186,7 +186,7 @@ class MockServiceTest {
     @Test
     fun `should find one response with request path, method and no headers matching`() {
         val request = Request("/users/1", GET, emptyMap(), mapOf(Pair(ACCEPT, "*")))
-        StepVerifier.create(mockService.findMatchingMock(request))
+        mockService.findMatchingMock(request).test()
                 .expectSubscription()
                 .consumeNextWith { response ->
                     assertThat(response).isNotNull()
@@ -198,7 +198,7 @@ class MockServiceTest {
     @Test
     fun `should find one response with request path, method and one headers matching`() {
         val request = Request("/users/2", GET, emptyMap(), mapOf(Pair(ACCEPT, "*")))
-        StepVerifier.create(mockService.findMatchingMock(request))
+        mockService.findMatchingMock(request).test()
                 .expectSubscription()
                 .consumeNextWith { response ->
                     assertThat(response).isNotNull()
@@ -210,7 +210,7 @@ class MockServiceTest {
     @Test
     fun `should find one response with request path, method and two headers matching`() {
         val request = Request("/users/2", GET, emptyMap(), mapOf(Pair(CACHE_CONTROL, "no-cache"), Pair(CONTENT_TYPE, "application/json")))
-        StepVerifier.create(mockService.findMatchingMock(request))
+        mockService.findMatchingMock(request).test()
                 .expectSubscription()
                 .consumeNextWith { response ->
                     assertThat(response).isNotNull()
@@ -222,7 +222,7 @@ class MockServiceTest {
     @Test
     fun `should not find because accept header missing`() {
         val request = Request("/users/2", GET, emptyMap(), mapOf(Pair(CONTENT_TYPE, "application/json")))
-        StepVerifier.create(mockService.findMatchingMock(request))
+        mockService.findMatchingMock(request).test()
                 .expectSubscription()
                 .expectNextCount(0)
                 .verifyComplete()
@@ -231,7 +231,7 @@ class MockServiceTest {
     @Test
     fun `should not find because accept header wrong value`() {
         val request = Request("/users/2", GET, emptyMap(), mapOf(Pair(ACCEPT, "ALL")))
-        StepVerifier.create(mockService.findMatchingMock(request))
+        mockService.findMatchingMock(request).test()
                 .expectSubscription()
                 .expectNextCount(0)
                 .verifyComplete()
@@ -242,7 +242,7 @@ class MockServiceTest {
         val mockName = "basicmock"
         val path = "/basicmock"
         val mock = Mock(mockName, Request(path, GET), Response(ObjectMapper().writeValueAsString(Pair("basic", "mock"))))
-        StepVerifier.create(mockService.create(mock))
+        mockService.create(mock).test()
                 .expectSubscription()
                 .consumeNextWith {
                     (name, request) ->
@@ -250,7 +250,7 @@ class MockServiceTest {
                     assertThat(request.path).isEqualTo(path)
                 }
                 .verifyComplete()
-        StepVerifier.create(mockRepository.exists(mockName))
+        mockRepository.exists(mockName).test()
                 .expectSubscription()
                 .expectNext(true)
                 .verifyComplete()
@@ -259,7 +259,7 @@ class MockServiceTest {
     @Test
     fun `should not create because name taken`() {
         val mock = Mock("demo1", Request("someRequest/path", GET), Response(ObjectMapper().writeValueAsString(Pair("basic", "mock"))))
-        StepVerifier.create(mockService.create(mock))
+        mockService.create(mock).test()
                 .expectSubscription()
                 .verifyError(ConflictKeyException::class.java)
     }
@@ -267,7 +267,7 @@ class MockServiceTest {
     @Test
     fun `should not create because request taken`() {
         val mock = Mock("unknownNameForSure", Request("/users/1", GET), Response(ObjectMapper().writeValueAsString(Pair("basic", "mock"))))
-        StepVerifier.create(mockService.create(mock))
+        mockService.create(mock).test()
                 .expectSubscription()
                 .verifyError(ConflictKeyException::class.java)
     }
@@ -277,7 +277,7 @@ class MockServiceTest {
         val responseBody = "updatedresponse"
         val name = "demo1"
         val mock = mockRepository.findByNameIgnoreCase(name).block().copy(response = Response(responseBody))
-        StepVerifier.create(mockService.update(mock, name))
+        mockService.update(mock, name).test()
                 .expectSubscription()
                 .consumeNextWith { assertThat(it.response.body).isEqualTo(responseBody) }
                 .verifyComplete()
@@ -288,18 +288,18 @@ class MockServiceTest {
         val name = "toupdate"
         val updatedName = "updatedName"
         val mock = mockRepository.findByNameIgnoreCase(name).block().copy(name = updatedName)
-        StepVerifier.create(mockService.update(mock, name))
+        mockService.update(mock, name).test()
                 .expectSubscription()
                 .consumeNextWith {
                     assertThat(it.name).isEqualTo(updatedName.toLowerCase())
                     assertThat(it.request.path).isEqualTo("/toupdate/1")
                 }
                 .verifyComplete()
-        StepVerifier.create(mockRepository.findByNameIgnoreCase(name))
+        mockRepository.findByNameIgnoreCase(name).test()
                 .expectSubscription()
                 .expectNextCount(0)
                 .verifyComplete()
-        StepVerifier.create(mockRepository.findByNameIgnoreCase(updatedName))
+        mockRepository.findByNameIgnoreCase(updatedName).test()
                 .expectSubscription()
                 .expectNextCount(1)
                 .verifyComplete()
@@ -308,7 +308,7 @@ class MockServiceTest {
     @Test
     fun `should not update because name missing`() {
         val mock = mockRepository.findByNameIgnoreCase("demo1").block()
-        StepVerifier.create(mockService.update(mock, "unknownname"))
+        mockService.update(mock, "unknownname").test()
                 .expectSubscription()
                 .verifyError(IdNotFoundException::class.java)
     }
@@ -316,7 +316,7 @@ class MockServiceTest {
     @Test
     fun `should not update because name taken`() {
         val mock = mockRepository.findByNameIgnoreCase("demo1").block()
-        StepVerifier.create(mockService.update(mock, "demo2"))
+        mockService.update(mock, "demo2").test()
                 .expectSubscription()
                 .verifyError(ConflictKeyException::class.java)
     }
@@ -325,7 +325,7 @@ class MockServiceTest {
     fun `should not update because request taken`() {
         val mock = mockRepository.findByNameIgnoreCase("toupdate2").block()
         val request = mockRepository.findByNameIgnoreCase("demo1").block().request
-        StepVerifier.create(mockService.update(mock.copy(request = request), mock.name))
+        mockService.update(mock.copy(request = request), mock.name).test()
                 .expectSubscription()
                 .verifyError(ConflictKeyException::class.java)
     }
@@ -333,11 +333,11 @@ class MockServiceTest {
     @Test
     fun `should delete`() {
         val name = "todelete"
-        StepVerifier.create(mockService.delete(name))
+        mockService.delete(name).test()
                 .expectSubscription()
                 .expectNext()
                 .verifyComplete()
-        StepVerifier.create(mockRepository.findByNameIgnoreCase(name))
+        mockRepository.findByNameIgnoreCase(name).test()
                 .expectSubscription()
                 .expectNextCount(0)
                 .verifyComplete()
@@ -345,7 +345,7 @@ class MockServiceTest {
 
     @Test
     fun `shoud not delete because missing mock`() {
-        StepVerifier.create(mockService.delete("unknown"))
+        mockService.delete("unknown").test()
                 .expectSubscription()
                 .verifyError(IdNotFoundException::class.java)
     }

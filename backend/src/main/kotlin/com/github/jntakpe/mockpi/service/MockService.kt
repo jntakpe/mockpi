@@ -8,6 +8,7 @@ import com.github.jntakpe.mockpi.repository.MockRepository
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
+import reactor.core.publisher.toMono
 
 @Service
 class MockService(private val mockRepository: MockRepository) {
@@ -23,7 +24,7 @@ class MockService(private val mockRepository: MockRepository) {
         logger.debug("Checking that name {} is available", name)
         return findByName(name)
                 .filter { it.name != oldName }
-                .flatMap { Mono.error<String>(ConflictKeyException("Name $name is not available")) }
+                .flatMap { ConflictKeyException("Name $name is not available").toMono<String>() }
                 .defaultIfEmpty(name)
                 .single()
     }
@@ -32,7 +33,7 @@ class MockService(private val mockRepository: MockRepository) {
         logger.debug("Checking that request {} is available", request)
         return findMatchingMock(request)
                 .filter { it.request != oldRequest }
-                .flatMap { Mono.error<Request>(ConflictKeyException("Request $request is not available")) }
+                .flatMap { ConflictKeyException("Request $request is not available").toMono<Request>() }
                 .defaultIfEmpty(request)
                 .single()
     }
@@ -78,5 +79,5 @@ class MockService(private val mockRepository: MockRepository) {
     }
 
     private fun findByNameOrThrow(name: String): Mono<Mock> = findByName(name)
-            .otherwiseIfEmpty(Mono.error(IdNotFoundException("Mock $name doest not exist")))
+            .otherwiseIfEmpty(IdNotFoundException("Mock $name doest not exist").toMono<Mock>())
 }

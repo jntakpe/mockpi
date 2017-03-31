@@ -12,8 +12,8 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.test.web.reactive.server.WebTestClient
-import reactor.core.publisher.Mono
-import reactor.test.StepVerifier
+import reactor.core.publisher.test
+import reactor.core.publisher.toMono
 
 @SpringBootTest
 @RunWith(SpringRunner::class)
@@ -40,7 +40,7 @@ class UserResourceTest {
                 .expectHeader().contentType(MediaType.APPLICATION_JSON_UTF8)
                 .expectBody(User::class.java)
                 .returnResult<User>()
-        StepVerifier.create(result.responseBody).consumeNextWith {
+        result.responseBody.test().consumeNextWith {
             (login, name, email) ->
             assertThat(login).isEqualTo("jntakpe")
             assertThat(name).isEqualTo("Joss")
@@ -56,7 +56,7 @@ class UserResourceTest {
                 .expectHeader().contentType(MediaType.APPLICATION_JSON_UTF8)
                 .expectBody(User::class.java)
                 .returnResult<User>()
-        StepVerifier.create(result.responseBody).consumeNextWith {
+        result.responseBody.test().consumeNextWith {
             (login, name, email) ->
             assertThat(login).isEqualTo("jntakpe")
             assertThat(name).isEqualTo("Joss")
@@ -74,13 +74,13 @@ class UserResourceTest {
     @Test
     fun `should create new user`() {
         val result = client.post().uri(Urls.USERS_API).accept(MediaType.APPLICATION_JSON_UTF8)
-                .body(Mono.just(User("postUser", "Post user", "postUser@mail.com")), User::class.java)
+                .body(User("postUser", "Post user", "postUser@mail.com").toMono(), User::class.java)
                 .exchange()
                 .expectStatus().isCreated
                 .expectHeader().contentType(MediaType.APPLICATION_JSON_UTF8)
                 .expectBody(User::class.java)
                 .returnResult<User>()
-        StepVerifier.create(result.responseBody).consumeNextWith {
+        result.responseBody.test().consumeNextWith {
             (login, name, email) ->
             assertThat(login).isEqualTo("postuser")
             assertThat(name).isEqualTo("Post user")
@@ -91,7 +91,7 @@ class UserResourceTest {
     @Test
     fun `should not create new user cuz login taken`() {
         client.post().uri(Urls.USERS_API).accept(MediaType.APPLICATION_JSON_UTF8)
-                .body(Mono.just(User("jntakpe", "Joss", "jntakpe@mail.com")), User::class.java)
+                .body(User("jntakpe", "Joss", "jntakpe@mail.com").toMono(), User::class.java)
                 .exchange()
                 .expectStatus().isEqualTo(HttpStatus.CONFLICT)
     }

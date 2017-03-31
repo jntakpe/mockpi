@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Mono
+import reactor.core.publisher.toMono
 import javax.validation.Valid
 
 @RestController
@@ -17,7 +18,7 @@ class UserResource(private val userService: UserService) {
     fun findByLogin(@PathVariable login: String): Mono<ResponseEntity<User>> {
         return userService.findByLogin(login)
                 .map { u -> ResponseEntity(u, HttpStatus.OK) }
-                .otherwiseIfEmpty(Mono.just(ResponseEntity.notFound().build()))
+                .otherwiseIfEmpty(ResponseEntity.notFound().build<User>().toMono())
     }
 
     @PostMapping

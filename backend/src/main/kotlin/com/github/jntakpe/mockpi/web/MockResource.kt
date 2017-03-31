@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Mono
+import reactor.core.publisher.toMono
 import javax.validation.Valid
 
 @RestController
@@ -17,7 +18,7 @@ class MockResource(private val mockService: MockService) {
     fun findByName(@PathVariable name: String): Mono<ResponseEntity<Mock>> {
         return mockService.findByName(name)
                 .map { m -> ResponseEntity(m, HttpStatus.OK) }
-                .otherwiseIfEmpty(Mono.just(ResponseEntity.notFound().build()))
+                .otherwiseIfEmpty(ResponseEntity.notFound().build<Mock>().toMono())
     }
 
     @PostMapping

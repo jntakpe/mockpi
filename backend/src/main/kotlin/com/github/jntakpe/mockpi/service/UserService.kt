@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import reactor.core.publisher.toMono
 
 @Service
 class UserService(private val userRepository: UserRepository) {
@@ -23,7 +24,7 @@ class UserService(private val userRepository: UserRepository) {
         logger.debug("Checking that login {} is available", login)
         return findByLogin(login)
                 .filter { it.login != oldLogin }
-                .flatMap { Mono.error<String>(ConflictKeyException("Login $login is not available")) }
+                .flatMap { ConflictKeyException("Login $login is not available").toMono<String>() }
                 .defaultIfEmpty(login)
                 .single()
     }
@@ -32,7 +33,7 @@ class UserService(private val userRepository: UserRepository) {
         logger.debug("Checking that email {} is available", email)
         return userRepository.findByEmailIgnoreCase(email)
                 .filter { it.email != oldMail }
-                .flatMap { Mono.error<String>(ConflictKeyException("Email $email is not available")) }
+                .flatMap { ConflictKeyException("Email $email is not available").toMono<String>() }
                 .defaultIfEmpty(email)
                 .single()
     }
@@ -67,9 +68,9 @@ class UserService(private val userRepository: UserRepository) {
     private fun lowerCaseLoginAndMail(user: User) = user.copy(login = user.login.toLowerCase(), email = user.email.toLowerCase())
 
     private fun findByLoginOrThrow(username: String) = findByLogin(username)
-            .otherwiseIfEmpty(Mono.error(IdNotFoundException("Login $username doest not exist")))
+            .otherwiseIfEmpty(IdNotFoundException("Login $username doest not exist").toMono<User>())
 
-    private fun deleteOldLogin(oldLogin: String, user: User): Flux<User>? = Mono.just(user)
+    private fun deleteOldLogin(oldLogin: String, user: User): Flux<User>? = user.toMono()
             .filter { it.login != oldLogin }
             .flatMap { u -> userRepository.delete(oldLogin).map { u } }
             .defaultIfEmpty(user)

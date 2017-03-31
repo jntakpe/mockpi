@@ -10,7 +10,7 @@ import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit4.SpringRunner
-import reactor.test.StepVerifier
+import reactor.core.publisher.test
 
 @SpringBootTest
 @RunWith(SpringRunner::class)
@@ -25,7 +25,7 @@ class UserServiceTest {
     @Test
     fun `should find user by login because exact match`() {
         val login = "jntakpe"
-        StepVerifier.create(userService.findByLogin(login))
+        userService.findByLogin(login).test()
                 .expectSubscription()
                 .consumeNextWith { user ->
                     assertThat(user).isNotNull()
@@ -37,7 +37,7 @@ class UserServiceTest {
     @Test
     fun `should find user by login because ignoring case`() {
         val login = "JNtaKpe"
-        StepVerifier.create(userService.findByLogin(login))
+        userService.findByLogin(login).test()
                 .expectSubscription()
                 .consumeNextWith { user ->
                     assertThat(user).isNotNull()
@@ -49,7 +49,7 @@ class UserServiceTest {
     @Test
     fun `should not find user by login because unknown login`() {
         val login = "unknown"
-        StepVerifier.create(userService.findByLogin(login))
+        userService.findByLogin(login).test()
                 .expectSubscription()
                 .expectNextCount(0)
                 .verifyComplete()
@@ -58,7 +58,7 @@ class UserServiceTest {
     @Test
     fun `should accept login because none existing`() {
         val newlogin = "newlogin"
-        StepVerifier.create(userService.verifyLoginAvailable(newlogin))
+        userService.verifyLoginAvailable(newlogin).test()
                 .expectSubscription()
                 .expectNext(newlogin)
                 .verifyComplete()
@@ -66,7 +66,7 @@ class UserServiceTest {
 
     @Test
     fun `should refuse login because same login exist`() {
-        StepVerifier.create(userService.verifyLoginAvailable("JNtakpe"))
+        userService.verifyLoginAvailable("JNtakpe").test()
                 .expectSubscription()
                 .verifyError(ConflictKeyException::class.java)
     }
@@ -74,7 +74,7 @@ class UserServiceTest {
     @Test
     fun `should accept login because old login is the same`() {
         val login = "JNtakpe"
-        StepVerifier.create(userService.verifyLoginAvailable(login, "jntakpe"))
+        userService.verifyLoginAvailable(login, "jntakpe").test()
                 .expectSubscription()
                 .expectNext(login)
                 .verifyComplete()
@@ -82,7 +82,7 @@ class UserServiceTest {
 
     @Test
     fun `should refuse login because old login is not the same`() {
-        StepVerifier.create(userService.verifyLoginAvailable("JNtakpe", "oldlogin"))
+        userService.verifyLoginAvailable("JNtakpe", "oldlogin").test()
                 .expectSubscription()
                 .verifyError(ConflictKeyException::class.java)
     }
@@ -90,11 +90,11 @@ class UserServiceTest {
     @Test
     fun `should create a new user with new login`() {
         val rjansem = User("rjansem", "Rudy", "rjansem@mail.com")
-        StepVerifier.create(userService.create(rjansem))
+        userService.create(rjansem).test()
                 .expectSubscription()
                 .expectNext(rjansem)
                 .verifyComplete()
-        StepVerifier.create(userRepository.exists("rjansem"))
+        userRepository.exists("rjansem").test()
                 .expectSubscription()
                 .expectNext(true)
                 .verifyComplete()
@@ -103,7 +103,7 @@ class UserServiceTest {
     @Test
     fun `should create a new user with new login with lowercase mail and login`() {
         val uppercase = User("UpperCase", "Upper Case", "UpperCase@mail.com")
-        StepVerifier.create(userService.create(uppercase))
+        userService.create(uppercase).test()
                 .expectSubscription()
                 .consumeNextWith {
                     (login, _, email) ->
@@ -111,7 +111,7 @@ class UserServiceTest {
                     assertThat(email).isEqualTo("uppercase@mail.com")
                 }
                 .verifyComplete()
-        StepVerifier.create(userRepository.exists("uppercase"))
+        userRepository.exists("uppercase").test()
                 .expectSubscription()
                 .expectNext(true)
                 .verifyComplete()
@@ -120,7 +120,7 @@ class UserServiceTest {
     @Test
     fun `should not create a new user because login unavailable`() {
         val rjansem = User("jntakpe", "Joss", "joss@mail.com")
-        StepVerifier.create(userService.create(rjansem))
+        userService.create(rjansem).test()
                 .expectSubscription()
                 .expectError(ConflictKeyException::class.java)
                 .verify()
@@ -129,7 +129,7 @@ class UserServiceTest {
     @Test
     fun `should not create a new user because email unavailable`() {
         val rjansem = User("jntakpe2", "Joss", "jntakpe@mail.com")
-        StepVerifier.create(userService.create(rjansem))
+        userService.create(rjansem).test()
                 .expectSubscription()
                 .expectError(ConflictKeyException::class.java)
                 .verify()
@@ -138,7 +138,7 @@ class UserServiceTest {
     @Test
     fun `should update a user keeping login`() {
         val updated = User("CBarillet", "Updated", "UpdatedCBA@mail.com")
-        StepVerifier.create(userService.update(updated, "cbarillet"))
+        userService.update(updated, "cbarillet").test()
                 .expectSubscription()
                 .consumeNextWith {
                     (login, name, email) ->
@@ -147,7 +147,7 @@ class UserServiceTest {
                     assertThat(email).isEqualTo("updatedcba@mail.com")
                 }
                 .verifyComplete()
-        StepVerifier.create(userRepository.exists("cbarillet"))
+        userRepository.exists("cbarillet").test()
                 .expectSubscription()
                 .expectNext(true)
                 .verifyComplete()
@@ -156,7 +156,7 @@ class UserServiceTest {
     @Test
     fun `should update a user not uppercasing mail and login`() {
         val updated = User("BPoindron", "Updated", "BPoindron@mail.com")
-        StepVerifier.create(userService.update(updated, "bpoindron"))
+        userService.update(updated, "bpoindron").test()
                 .expectSubscription()
                 .consumeNextWith {
                     (login, _, email) ->
@@ -164,7 +164,7 @@ class UserServiceTest {
                     assertThat(email).isEqualTo("bpoindron@mail.com")
                 }
                 .verifyComplete()
-        StepVerifier.create(userRepository.exists("cbarillet"))
+        userRepository.exists("cbarillet").test()
                 .expectSubscription()
                 .expectNext(true)
                 .verifyComplete()
@@ -173,15 +173,15 @@ class UserServiceTest {
     @Test
     fun `should update a user changing login`() {
         val updated = User("updated", "Updated", "updated@mail.com")
-        StepVerifier.create(userService.update(updated, "bpoindron"))
+        userService.update(updated, "bpoindron").test()
                 .expectSubscription()
                 .expectNext(updated)
                 .verifyComplete()
-        StepVerifier.create(userRepository.exists("updated"))
+        userRepository.exists("updated").test()
                 .expectSubscription()
                 .expectNext(true)
                 .verifyComplete()
-        StepVerifier.create(userRepository.exists("bpoindron"))
+        userRepository.exists("bpoindron").test()
                 .expectSubscription()
                 .expectNext(false)
                 .verifyComplete()
@@ -190,7 +190,7 @@ class UserServiceTest {
     @Test
     fun `should not update a user because login unavailable`() {
         val corentin = User("crinfray", "Coco", "coco@mail.com")
-        StepVerifier.create(userService.update(corentin, "jntakpe"))
+        userService.update(corentin, "jntakpe").test()
                 .expectSubscription()
                 .verifyError(ConflictKeyException::class.java)
     }
@@ -198,7 +198,7 @@ class UserServiceTest {
     @Test
     fun `should not update a user because email unavailable`() {
         val corentin = User("crinfray", "Coco", "jntakpe@mail.com")
-        StepVerifier.create(userService.update(corentin, "crinfray"))
+        userService.update(corentin, "crinfray").test()
                 .expectSubscription()
                 .verifyError(ConflictKeyException::class.java)
     }
@@ -206,16 +206,16 @@ class UserServiceTest {
     @Test
     fun `should not update a user because old login doesn't exist`() {
         val corentin = User("toto", "Coco", "coco@mail.com")
-        StepVerifier.create(userService.update(corentin, "unknown"))
+        userService.update(corentin, "unknown").test()
                 .expectSubscription()
                 .verifyError(IdNotFoundException::class.java)
     }
 
     @Test
     fun `should delete user`() {
-        StepVerifier.create(userService.delete("ToDelete"))
+        userService.delete("ToDelete").test()
                 .verifyComplete()
-        StepVerifier.create(userRepository.exists("todelete"))
+        userRepository.exists("todelete").test()
                 .expectSubscription()
                 .expectNext(false)
                 .expectComplete()
@@ -223,7 +223,7 @@ class UserServiceTest {
 
     @Test
     fun `should not delete user because unknown id`() {
-        StepVerifier.create(userService.delete("unknown"))
+        userService.delete("unknown").test()
                 .expectSubscription()
                 .verifyError(IdNotFoundException::class.java)
     }
