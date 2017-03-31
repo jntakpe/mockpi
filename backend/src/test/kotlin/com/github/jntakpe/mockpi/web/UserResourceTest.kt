@@ -74,7 +74,8 @@ class UserResourceTest {
     @Test
     fun `should create new user`() {
         val result = client.post().uri(Urls.USERS_API).accept(MediaType.APPLICATION_JSON_UTF8)
-                .exchange(Mono.just(User("postUser", "Post user", "postUser@mail.com")), User::class.java)
+                .body(Mono.just(User("postUser", "Post user", "postUser@mail.com")), User::class.java)
+                .exchange()
                 .expectStatus().isCreated
                 .expectHeader().contentType(MediaType.APPLICATION_JSON_UTF8)
                 .expectBody(User::class.java)
@@ -90,7 +91,8 @@ class UserResourceTest {
     @Test
     fun `should not create new user cuz login taken`() {
         client.post().uri(Urls.USERS_API).accept(MediaType.APPLICATION_JSON_UTF8)
-                .exchange(Mono.just(User("jntakpe", "Joss", "jntakpe@mail.com")), User::class.java)
+                .body(Mono.just(User("jntakpe", "Joss", "jntakpe@mail.com")), User::class.java)
+                .exchange()
                 .expectStatus().isEqualTo(HttpStatus.CONFLICT)
     }
 

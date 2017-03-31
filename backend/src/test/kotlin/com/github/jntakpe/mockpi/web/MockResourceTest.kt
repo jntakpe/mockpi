@@ -82,7 +82,8 @@ class MockResourceTest {
         val mockName = "postMock"
         val mockBody = "mockBody"
         val result = client.post().uri(Urls.MOCK_API).accept(APPLICATION_JSON_UTF8)
-                .exchange(Mono.just(Mock(mockName, Request("/post/mock", RequestMethod.GET), Response(mockBody))), Mock::class.java)
+                .body(Mono.just(Mock(mockName, Request("/post/mock", RequestMethod.GET), Response(mockBody))), Mock::class.java)
+                .exchange()
                 .expectStatus().isCreated
                 .expectHeader().contentType(APPLICATION_JSON_UTF8)
                 .expectBody(Mock::class.java)
@@ -100,7 +101,8 @@ class MockResourceTest {
     @Test
     fun `should not create new mock cuz login taken`() {
         client.post().uri(Urls.MOCK_API).accept(APPLICATION_JSON_UTF8)
-                .exchange(Mono.just(Mock("dEMo1", Request("/some", RequestMethod.GET), Response("test"))), Mock::class.java)
+                .body(Mono.just(Mock("dEMo1", Request("/some", RequestMethod.GET), Response("test"))), Mock::class.java)
+                .exchange()
                 .expectStatus().isEqualTo(HttpStatus.CONFLICT)
     }
 
@@ -110,7 +112,8 @@ class MockResourceTest {
         val updatedPath = "/updated/from/api"
         val updatedBody = "updatedBody"
         val result = client.put().uri(Urls.MOCK_API + Urls.BY_NAME, "toupdateapi").accept(APPLICATION_JSON_UTF8)
-                .exchange(Mono.just(Mock(updatedName, Request(updatedPath, RequestMethod.POST), Response(updatedBody))), Mock::class.java)
+                .body(Mono.just(Mock(updatedName, Request(updatedPath, RequestMethod.POST), Response(updatedBody))), Mock::class.java)
+                .exchange()
                 .expectStatus().isOk
                 .expectHeader().contentType(APPLICATION_JSON_UTF8)
                 .expectBody(Mock::class.java)
@@ -128,7 +131,8 @@ class MockResourceTest {
     @Test
     fun `should not update mock because name taken`() {
         client.put().uri(Urls.MOCK_API + Urls.BY_NAME, "toupdateapi").accept(APPLICATION_JSON_UTF8)
-                .exchange(Mono.just(Mock("demo1", Request("/path", RequestMethod.POST), Response("body"))), Mock::class.java)
+                .body(Mono.just(Mock("demo1", Request("/path", RequestMethod.POST), Response("body"))), Mock::class.java)
+                .exchange()
                 .expectStatus().isEqualTo(HttpStatus.CONFLICT)
     }
 

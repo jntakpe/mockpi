@@ -1,4 +1,4 @@
-// Generated using typescript-generator version 1.21.304 on 2017-03-27 22:50:28.
+// Generated using typescript-generator version 1.21.304 on 2017-03-31 14:33:51.
 
 export interface Mock {
   name: string;
