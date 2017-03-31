@@ -4,6 +4,7 @@ import com.github.jntakpe.mockpi.config.Urls
 import com.github.jntakpe.mockpi.domain.Mock
 import com.github.jntakpe.mockpi.domain.Request
 import com.github.jntakpe.mockpi.domain.Response
+import com.github.jntakpe.mockpi.repository.MockRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -26,6 +27,9 @@ class MockResourceTest {
     lateinit var mockResource: MockResource
 
     @Autowired
+    lateinit var mockRepository: MockRepository
+
+    @Autowired
     lateinit var webAdvising: WebAdvising
 
     lateinit var client: WebTestClient
@@ -33,6 +37,21 @@ class MockResourceTest {
     @Before
     fun setUp() {
         client = WebTestClient.bindToController(mockResource).controllerAdvice(webAdvising).build()
+    }
+
+    @Test
+    fun `should find all mocks`() {
+        val count = mockRepository.count().block()
+        val result = client.get().uri(Urls.MOCK_API)
+                .exchange()
+                .expectStatus().isOk
+                .expectHeader().contentType(APPLICATION_JSON_UTF8)
+                .expectBody(Mock::class.java)
+                .returnResult<Mock>()
+        result.responseBody.test()
+                .expectNextCount(count)
+                .expectComplete()
+                .verify()
     }
 
     @Test
@@ -50,7 +69,7 @@ class MockResourceTest {
             assertThat(request).isNotNull()
             assertThat(request.path).isEqualTo("/users/1")
             assertThat(response).isNotNull()
-        }
+        }.verifyComplete()
     }
 
     @Test
@@ -67,7 +86,7 @@ class MockResourceTest {
             assertThat(request).isNotNull()
             assertThat(request.path).isEqualTo("/users/1")
             assertThat(response).isNotNull()
-        }
+        }.verifyComplete()
     }
 
     @Test
@@ -90,12 +109,12 @@ class MockResourceTest {
                 .returnResult<Mock>()
         result.responseBody.test().consumeNextWith {
             (name, request, response) ->
-            assertThat(name).isEqualTo(mockName)
+            assertThat(name).isEqualTo(mockName.toLowerCase())
             assertThat(request).isNotNull()
             assertThat(request.path).isEqualTo("/post/mock")
             assertThat(response).isNotNull()
             assertThat(response.body).isEqualTo(mockBody)
-        }
+        }.verifyComplete()
     }
 
     @Test
@@ -125,7 +144,7 @@ class MockResourceTest {
             assertThat(request.path).isEqualTo(updatedPath)
             assertThat(response).isNotNull()
             assertThat(response.body).isEqualTo(updatedBody)
-        }
+        }.verifyComplete()
     }
 
     @Test

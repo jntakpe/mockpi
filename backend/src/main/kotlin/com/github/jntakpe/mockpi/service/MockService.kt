@@ -7,6 +7,7 @@ import com.github.jntakpe.mockpi.exceptions.IdNotFoundException
 import com.github.jntakpe.mockpi.repository.MockRepository
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.core.publisher.toMono
 
@@ -14,6 +15,11 @@ import reactor.core.publisher.toMono
 class MockService(private val mockRepository: MockRepository) {
 
     val logger = LoggerFactory.getLogger(javaClass.simpleName)
+
+    fun findAll(): Flux<Mock> {
+        logger.debug("Searching all mocks")
+        return mockRepository.findAll()
+    }
 
     fun findByName(name: String): Mono<Mock> {
         logger.debug("Searching mock with name {}", name)

@@ -14,6 +14,9 @@ import javax.validation.Valid
 @RequestMapping(Urls.MOCK_API)
 class MockResource(private val mockService: MockService) {
 
+    @GetMapping
+    fun findAll() = mockService.findAll()
+
     @GetMapping(Urls.BY_NAME)
     fun findByName(@PathVariable name: String): Mono<ResponseEntity<Mock>> {
         return mockService.findByName(name)

@@ -29,6 +29,15 @@ class MockServiceTest {
     lateinit var mockRepository: MockRepository
 
     @Test
+    fun `should find all mocks`() {
+        val count = mockRepository.count().block()
+        mockService.findAll().test()
+                .expectSubscription()
+                .expectNextCount(count)
+                .verifyComplete()
+    }
+
+    @Test
     fun `should find mock by name because exact match`() {
         val name = "demo1"
         mockService.findByName(name).test()

@@ -45,7 +45,7 @@ class UserResourceTest {
             assertThat(login).isEqualTo("jntakpe")
             assertThat(name).isEqualTo("Joss")
             assertThat(email).isEqualTo("jntakpe@mail.com")
-        }
+        }.verifyComplete()
     }
 
     @Test
@@ -61,7 +61,7 @@ class UserResourceTest {
             assertThat(login).isEqualTo("jntakpe")
             assertThat(name).isEqualTo("Joss")
             assertThat(email).isEqualTo("jntakpe@mail.com")
-        }
+        }.verifyComplete()
     }
 
     @Test
@@ -85,7 +85,7 @@ class UserResourceTest {
             assertThat(login).isEqualTo("postuser")
             assertThat(name).isEqualTo("Post user")
             assertThat(email).isEqualTo("postuser@mail.com")
-        }
+        }.verifyComplete()
     }
 
     @Test
