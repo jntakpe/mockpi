@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Mock } from '../shared/api.model';
 import { MocksService } from './mocks.service';
-import { ITdDataTableColumn, ITdDataTableSortChangeEvent } from '@covalent/core';
-import { TableModel } from '../shared/table/table.model';
+import { Observable } from 'rxjs/Observable';
 
 @Component({
   selector: 'mpi-mocks',
@@ -11,34 +10,13 @@ import { TableModel } from '../shared/table/table.model';
 })
 export class MocksComponent implements OnInit {
 
-  table: TableModel;
-
-  mocks: Mock[];
+  mocks$: Observable<Mock[]>;
 
   constructor(private mocksService: MocksService) {
-    this.table = {
-      columns: this.initColumns()
-    };
   }
 
   ngOnInit() {
-    this.mocksService.findMocks().subscribe(m => this.mocks = m);
-  }
-
-  initColumns(): ITdDataTableColumn[] {
-    return [
-      {name: 'name', label: 'Name', sortable: true},
-      {name: 'request.path', label: 'Path', sortable: true},
-      {name: 'request.method', label: 'Method', sortable: true},
-      {name: 'request.fmtParams', label: 'Params', sortable: true},
-      {name: 'response.status', label: 'Status', sortable: true}
-    ];
-  }
-
-  sort(sortEvent: ITdDataTableSortChangeEvent): void {
-    this.table.sortBy = sortEvent.name;
-    this.table.sortOrder = sortEvent.order;
-    this.mocks = this.mocksService.updateTable(this.mocks, this.table);
+    this.mocks$ = this.mocksService.findMocks();
   }
 
 }

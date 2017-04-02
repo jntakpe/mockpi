@@ -1,7 +1,23 @@
-<td-data-table [data]="mocks"
-               [columns]="table.columns"
-               [sortable]="true"
-               [sortBy]="table.sortBy"
-               [sortOrder]="table.sortOrder"
-               (sortChange)="sort($event)">
-</td-data-table>
+<md-toolbar>Mock list</md-toolbar>
+<md-card class="m-3">
+  <table class="mdl-data-table mdl-js-data-table" fxFill>
+    <thead>
+    <tr>
+      <th class="mdl-data-table__cell--non-numeric">Name</th>
+      <th class="mdl-data-table__cell--non-numeric">Path</th>
+      <th class="mdl-data-table__cell--non-numeric">Method</th>
+      <th class="mdl-data-table__cell--non-numeric">Params</th>
+      <th class="mdl-data-table__cell--non-numeric">Response</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let mock of (mocks$ | async)">
+      <td class="mdl-data-table__cell--non-numeric">{{mock.name}}</td>
+      <td class="mdl-data-table__cell--non-numeric">{{mock.request.path}}</td>
+      <td class="mdl-data-table__cell--non-numeric">{{mock.request.method}}</td>
+      <td class="mdl-data-table__cell--non-numeric">{{mock.request.fmtParams}}</td>
+      <td class="mdl-data-table__cell--non-numeric">{{mock.response.body}}</td>
+    </tr>
+    </tbody>
+  </table>
+</md-card>

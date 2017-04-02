@@ -2,11 +2,10 @@ import { NgModule } from '@angular/core';
 import { MocksComponent } from './mocks.component';
 import { SharedModule } from '../shared/shared.module';
 import { MocksService } from './mocks.service';
-import { CovalentDataTableModule } from '@covalent/core';
 
 @NgModule({
   declarations: [MocksComponent],
-  imports: [SharedModule, CovalentDataTableModule.forRoot()],
+  imports: [SharedModule],
   exports: [MocksComponent],
   providers: [MocksService]
 })
