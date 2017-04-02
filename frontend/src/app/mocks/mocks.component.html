@@ -1,23 +1,48 @@
 <md-toolbar>Mock list</md-toolbar>
 <md-card class="m-3">
-  <table class="mdl-data-table mdl-js-data-table" fxFill>
-    <thead>
-    <tr>
-      <th class="mdl-data-table__cell--non-numeric">Name</th>
-      <th class="mdl-data-table__cell--non-numeric">Path</th>
-      <th class="mdl-data-table__cell--non-numeric">Method</th>
-      <th class="mdl-data-table__cell--non-numeric">Params</th>
-      <th class="mdl-data-table__cell--non-numeric">Response</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr *ngFor="let mock of (mocks$ | async)">
-      <td class="mdl-data-table__cell--non-numeric">{{mock.name}}</td>
-      <td class="mdl-data-table__cell--non-numeric">{{mock.request.path}}</td>
-      <td class="mdl-data-table__cell--non-numeric">{{mock.request.method}}</td>
-      <td class="mdl-data-table__cell--non-numeric">{{mock.request.fmtParams}}</td>
-      <td class="mdl-data-table__cell--non-numeric">{{mock.response.body}}</td>
-    </tr>
-    </tbody>
-  </table>
+  <md-card-content>
+    <table class="mdl-data-table mdl-js-data-table" fxFill>
+      <thead>
+      <tr>
+        <th class="mdl-data-table__cell--non-numeric">Name</th>
+        <th class="mdl-data-table__cell--non-numeric">Path</th>
+        <th class="mdl-data-table__cell--non-numeric">Method</th>
+        <th class="mdl-data-table__cell--non-numeric">Params</th>
+        <th class="mdl-data-table__cell--non-numeric">Response</th>
+        <th class="mdl-data-table__cell--non-numeric">Actions</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let mock of (mocks$ | async)">
+        <td class="mdl-data-table__cell--non-numeric">{{mock.name}}</td>
+        <td class="mdl-data-table__cell--non-numeric">{{mock.request.path}}</td>
+        <td class="mdl-data-table__cell--non-numeric">{{mock.request.method}}</td>
+        <td class="mdl-data-table__cell--non-numeric">{{mock.request.fmtParams}}</td>
+        <td class="mdl-data-table__cell--non-numeric">{{mock.response.body}}</td>
+        <td class="mdl-data-table__cell--non-numeric">
+          <button md-icon-button [mdMenuTriggerFor]="menu">
+            <md-icon>more_vert</md-icon>
+          </button>
+          <md-menu #menu="mdMenu">
+            <button md-menu-item>
+              <md-icon>edit</md-icon>
+              <span>Edit</span>
+            </button>
+            <button md-menu-item>
+              <md-icon>delete_forever</md-icon>
+              <span>Delete</span>
+            </button>
+          </md-menu>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </md-card-content>
+  <md-card-actions fxLayout="row" fxLayoutAlign="space-between center">
+    <a md-button routerLink="/">Back</a>
+    <a md-fab routerLink="">
+      <md-icon>add</md-icon>
+    </a>
+  </md-card-actions>
 </md-card>
+
