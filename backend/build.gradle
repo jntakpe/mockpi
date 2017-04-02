@@ -3,6 +3,7 @@ buildscript {
         kotlinVersion = '1.1.1'
         springBootVersion = '2.0.0.BUILD-SNAPSHOT'
         jacksonVersion = '2.8.7'
+        reactorVersion = '3.0.6.BUILD-SNAPSHOT'
         reactorKotlinVersion = '1.0.0.M1'
         typescriptGenVersion = '1.21.304'
     }
@@ -49,6 +50,8 @@ dependencies {
     compile("org.jetbrains.kotlin:kotlin-stdlib-jre8:${kotlinVersion}")
     compile("org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}")
     testCompile('org.springframework.boot:spring-boot-starter-test')
+    compileOnly("io.projectreactor.addons:reactor-test:${reactorVersion}")
+    testCompile("io.projectreactor.addons:reactor-test:${reactorVersion}")
 }
 
 generateTypeScript {
