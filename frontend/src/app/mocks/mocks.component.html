@@ -1,3 +1,7 @@
-<p>
-  mocks works!
-</p>
+<td-data-table [data]="mocks"
+               [columns]="table.columns"
+               [sortable]="true"
+               [sortBy]="table.sortBy"
+               [sortOrder]="table.sortOrder"
+               (sortChange)="sort($event)">
+</td-data-table>
