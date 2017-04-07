@@ -1,9 +1,9 @@
 import { async, inject, TestBed } from '@angular/core/testing';
-
 import { MocksService } from './mocks.service';
 import { MockBackend } from '@angular/http/testing';
 import { BaseRequestOptions, Http, HttpModule, Response, ResponseOptions } from '@angular/http';
 import { Mock } from '../shared/api.model';
+import { Observable } from 'rxjs/Observable';
 
 const firstMock: Mock = {
   name: 'firstmock',
@@ -42,6 +42,18 @@ const secondMock: Mock = {
   delay: 10,
   description: 'My second mock'
 };
+
+export class FakeMocksService extends MocksService {
+
+  constructor() {
+    super(null);
+  }
+
+  findMocks(): Observable<Mock[]> {
+    return Observable.of([firstMock, secondMock]);
+  }
+}
+
 
 describe('MocksService', () => {
   beforeEach(() => {

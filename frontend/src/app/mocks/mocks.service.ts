@@ -17,7 +17,7 @@ export class MocksService {
       .map((m: Mock[]) => m.map(this.formatRequestParams));
   }
 
-  formatRequestParams(mock: Mock): Mock {
+  private formatRequestParams(mock: Mock): Mock {
     const params = mock.request.params;
     const urlSearchParams = new URLSearchParams();
     Object.keys(params).forEach(k => urlSearchParams.set(k, params[k]));

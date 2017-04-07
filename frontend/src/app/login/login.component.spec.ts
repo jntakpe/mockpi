@@ -10,6 +10,7 @@ import { Response, ResponseOptions } from '@angular/http';
 import { User } from '../shared/security/user';
 import { Observable } from 'rxjs/Observable';
 import '../shared/rxjs.extension';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('LoginComponent', () => {
   let component: LoginComponent;
@@ -36,7 +37,7 @@ describe('LoginComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MaterialModule, ReactiveFormsModule],
+      imports: [MaterialModule, ReactiveFormsModule, BrowserAnimationsModule],
       providers: [{
         provide: LoginService,
         useClass: MockLoginService
