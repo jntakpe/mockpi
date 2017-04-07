@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'mpi-register',
@@ -15,14 +15,28 @@ export class RegisterComponent implements OnInit {
 
   ngOnInit() {
     this.registerForm = this.formBuilder.group({
-      username: ['', Validators.required],
-      email: ['', Validators.required],
-      name: [''],
-      pwd: this.formBuilder.group({
-        password: [''],
-        confirmPassword: ['']
+      username: ['', [Validators.required, Validators.minLength(3)]],
+      email: ['', [Validators.required, this.email]],
+      name: ['', Validators.required],
+      pwdForm: this.formBuilder.group({
+        password: ['', [Validators.required]],
+        confirmPassword: ''
+      }, {
+        validator: this.pwdMatch
       })
     });
   }
+
+  email(formControl: FormControl) {
+    const emailRegex = /^[a-z0-9!#$%&'*+\/=?^_`{|}~.-]+@[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)*$/i;
+    return emailRegex.test(formControl.value) ? null : {email: true};
+  }
+
+  pwdMatch(formGroup: FormGroup) {
+    const password = formGroup.get('password').value;
+    const confirmPassword = formGroup.get('confirmPassword').value;
+    return password === confirmPassword ? null : {pwdMatch: true};
+  }
+
 
 }
