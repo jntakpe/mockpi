@@ -88,9 +88,9 @@ class UserServiceTest {
     }
 
     @Test
-    fun `should create a new user with new login`() {
+    fun `should register a new user with new login`() {
         val rjansem = User("rjansem", "Rudy", "rjansem@mail.com")
-        userService.create(rjansem).test()
+        userService.register(rjansem).test()
                 .expectSubscription()
                 .expectNext(rjansem)
                 .verifyComplete()
@@ -101,9 +101,9 @@ class UserServiceTest {
     }
 
     @Test
-    fun `should create a new user with new login with lowercase mail and login`() {
+    fun `should register a new user with new login with lowercase mail and login`() {
         val uppercase = User("UpperCase", "Upper Case", "UpperCase@mail.com")
-        userService.create(uppercase).test()
+        userService.register(uppercase).test()
                 .expectSubscription()
                 .consumeNextWith {
                     (login, _, email) ->
@@ -118,18 +118,18 @@ class UserServiceTest {
     }
 
     @Test
-    fun `should not create a new user because login unavailable`() {
+    fun `should not register a new user because login unavailable`() {
         val rjansem = User("jntakpe", "Joss", "joss@mail.com")
-        userService.create(rjansem).test()
+        userService.register(rjansem).test()
                 .expectSubscription()
                 .expectError(ConflictKeyException::class.java)
                 .verify()
     }
 
     @Test
-    fun `should not create a new user because email unavailable`() {
+    fun `should not register a new user because email unavailable`() {
         val rjansem = User("jntakpe2", "Joss", "jntakpe@mail.com")
-        userService.create(rjansem).test()
+        userService.register(rjansem).test()
                 .expectSubscription()
                 .expectError(ConflictKeyException::class.java)
                 .verify()

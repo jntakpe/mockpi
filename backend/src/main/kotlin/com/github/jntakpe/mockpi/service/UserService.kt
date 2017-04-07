@@ -38,7 +38,7 @@ class UserService(private val userRepository: UserRepository) {
                 .single()
     }
 
-    fun create(user: User): Mono<User> {
+    fun register(user: User): Mono<User> {
         logger.info("Creating {}", user)
         return Mono.`when`(verifyLoginAvailable(user.login), verifyEmailAvailable(user.email))
                 .map { lowerCaseLoginAndMail(user) }
