@@ -23,7 +23,7 @@
         </md-error>
       </md-input-container>
       <md-input-container>
-        <span mdPrefix><md-icon>face</md-icon></span>
+        <span mdPrefix><md-icon>face</md-icon>&nbsp;</span>
         <input mdInput type="text" placeholder="Name" formControlName="name">
         <md-error *ngIf="registerForm.get('name').touched && registerForm.get('name').hasError('required')">
           Name is required
@@ -47,7 +47,7 @@
         </md-input-container>
       </section>
       <section class="mt-3">
-        <button md-raised-button color="accent">Register</button>
+        <button type="submit" md-raised-button color="accent" [disabled]="registerForm.invalid">Register</button>
       </section>
     </form>
   </md-card-content>

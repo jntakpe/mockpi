@@ -15,6 +15,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 describe('LoginComponent', () => {
   let component: LoginComponent;
   let fixture: ComponentFixture<LoginComponent>;
+  let compiled: any;
 
   class MockLoginService extends LoginService {
 
@@ -51,6 +52,7 @@ describe('LoginComponent', () => {
     fixture = TestBed.createComponent(LoginComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
+    compiled = fixture.debugElement.nativeElement;
   });
 
   it('should create', () => {
@@ -58,18 +60,15 @@ describe('LoginComponent', () => {
   });
 
   it('should have empty form', async(() => {
-    const compiled = fixture.debugElement.nativeElement;
     expect(compiled.querySelector('input[formControlName="username"]').value).toBe('');
     expect(compiled.querySelector('input[formControlName="password"]').value).toBe('');
   }));
 
   it('should disable form submit if empty fields', async(() => {
-    const compiled = fixture.debugElement.nativeElement;
-    expect(compiled.querySelector('button:disabled')).toBeTruthy();
+    expect(compiled.querySelector('button[type="submit"]:disabled')).toBeTruthy();
   }));
 
   it('should enable form submit if fields not empty', async(() => {
-    const compiled = fixture.debugElement.nativeElement;
     const usernameInput = fixture.debugElement.query(By.css('input[formControlName="username"]'));
     const passwordInput = fixture.debugElement.query(By.css('input[formControlName="password"]'));
     const updatedValue = 'updatedValue';
@@ -79,11 +78,10 @@ describe('LoginComponent', () => {
     fixture.detectChanges();
     expect(form.value.username).toBe(updatedValue);
     expect(form.value.password).toBe(updatedValue);
-    expect(compiled.querySelector('button:not(:disabled)')).toBeTruthy();
+    expect(compiled.querySelector('button[type="submit"]:not(:disabled)')).toBeTruthy();
   }));
 
   it('should disable form submit if password empty after being set', async(() => {
-    const compiled = fixture.debugElement.nativeElement;
     const usernameInput = fixture.debugElement.query(By.css('input[formControlName="username"]'));
     const passwordInput = fixture.debugElement.query(By.css('input[formControlName="password"]'));
     const updatedValue = 'updatedValue';
@@ -93,23 +91,22 @@ describe('LoginComponent', () => {
     fixture.detectChanges();
     expect(form.value.username).toBe(updatedValue);
     expect(form.value.password).toBe(updatedValue);
-    expect(compiled.querySelector('button:not(:disabled)')).toBeTruthy();
+    expect(compiled.querySelector('button[type="submit"]:not(:disabled)')).toBeTruthy();
     changeInputValueAndDispatch(passwordInput, '');
     fixture.detectChanges();
     expect(form.value.password).toBe('');
-    expect(compiled.querySelector('button:not(:disabled)')).toBeFalsy();
-    expect(compiled.querySelector('button:disabled')).toBeTruthy();
+    expect(compiled.querySelector('button[type="submit"]:not(:disabled)')).toBeFalsy();
+    expect(compiled.querySelector('button[type="submit"]:disabled')).toBeTruthy();
   }));
 
   it('should log in user and call redirect home', async(inject([LoginService], (loginService: LoginService) => {
     spyOn(loginService, 'redirectHome');
-    const compiled = fixture.debugElement.nativeElement;
     const usernameInput = fixture.debugElement.query(By.css('input[formControlName="username"]'));
     const passwordInput = fixture.debugElement.query(By.css('input[formControlName="password"]'));
     changeInputValueAndDispatch(usernameInput, 'jntakpe');
     changeInputValueAndDispatch(passwordInput, 'test');
     fixture.detectChanges();
-    compiled.querySelector('button').click();
+    compiled.querySelector('button[type="submit"]').click();
     fixture.detectChanges();
     expect(loginService.redirectHome).toHaveBeenCalled();
   })));
@@ -118,13 +115,12 @@ describe('LoginComponent', () => {
     spyOn(loginService, 'redirectHome');
     spyOn(loginService, 'displayLoginErrorMsg');
     spyOn(loginService, 'login').and.returnValue(Observable.throw(new Response(new ResponseOptions({status: 400}))));
-    const compiled = fixture.debugElement.nativeElement;
     const usernameInput = fixture.debugElement.query(By.css('input[formControlName="username"]'));
     const passwordInput = fixture.debugElement.query(By.css('input[formControlName="password"]'));
     changeInputValueAndDispatch(usernameInput, 'toto');
     changeInputValueAndDispatch(passwordInput, 'titi');
     fixture.detectChanges();
-    compiled.querySelector('button').click();
+    compiled.querySelector('button[type="submit"]').click();
     fixture.detectChanges();
     expect(loginService.displayLoginErrorMsg).toHaveBeenCalled();
     expect(loginService.redirectHome).toHaveBeenCalledTimes(0);
