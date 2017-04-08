@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { RegisterService } from './register.service';
 
 @Component({
   selector: 'mpi-register',
@@ -10,7 +11,7 @@ export class RegisterComponent implements OnInit {
 
   registerForm: FormGroup;
 
-  constructor(private formBuilder: FormBuilder) {
+  constructor(private formBuilder: FormBuilder, private registerService: RegisterService) {
   }
 
   ngOnInit() {
@@ -36,6 +37,11 @@ export class RegisterComponent implements OnInit {
     const password = formGroup.get('password').value;
     const confirmPassword = formGroup.get('confirmPassword').value;
     return password === confirmPassword ? null : {pwdMatch: true};
+  }
+
+  register() {
+    const {username,} = this.registerForm.value;
+    this.registerService.register()
   }
 
 

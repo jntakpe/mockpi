@@ -15,17 +15,17 @@ class UserService(private val userRepository: UserRepository) {
 
     val logger = LoggerFactory.getLogger(javaClass.simpleName)
 
-    fun findByLogin(login: String): Mono<User> {
-        logger.debug("Searching user with login {}", login)
-        return userRepository.findByLoginIgnoreCase(login)
+    fun findByUsername(username: String): Mono<User> {
+        logger.debug("Searching user with username {}", username)
+        return userRepository.findByUsernameIgnoreCase(username)
     }
 
-    fun verifyLoginAvailable(login: String, oldLogin: String = ""): Mono<String> {
-        logger.debug("Checking that login {} is available", login)
-        return findByLogin(login)
-                .filter { it.login != oldLogin }
-                .flatMap { ConflictKeyException("Login $login is not available").toMono<String>() }
-                .defaultIfEmpty(login)
+    fun verifyUsernameAvailable(username: String, oldUsername: String = ""): Mono<String> {
+        logger.debug("Checking that username {} is available", username)
+        return findByUsername(username)
+                .filter { it.username != oldUsername }
+                .flatMap { ConflictKeyException("Username $username is not available").toMono<String>() }
+                .defaultIfEmpty(username)
                 .single()
     }
 
@@ -40,39 +40,39 @@ class UserService(private val userRepository: UserRepository) {
 
     fun register(user: User): Mono<User> {
         logger.info("Creating {}", user)
-        return Mono.`when`(verifyLoginAvailable(user.login), verifyEmailAvailable(user.email))
-                .map { lowerCaseLoginAndMail(user) }
+        return Mono.`when`(verifyUsernameAvailable(user.username), verifyEmailAvailable(user.email))
+                .map { lowerCaseUsernameAndMail(user) }
                 .flatMap { u -> userRepository.insert(u) }
                 .single()
     }
 
-    fun update(user: User, oldLogin: String): Mono<User> {
-        logger.info("Updating {} to {}", oldLogin, user)
-        return findByLoginOrThrow(oldLogin)
-                .flatMap { (login, _, email) ->
-                    Mono.`when`(verifyLoginAvailable(user.login, login), verifyEmailAvailable(user.email, email))
+    fun update(user: User, oldUsername: String): Mono<User> {
+        logger.info("Updating {} to {}", oldUsername, user)
+        return findByUsernameOrThrow(oldUsername)
+                .flatMap { (username, _, email) ->
+                    Mono.`when`(verifyUsernameAvailable(user.username, username), verifyEmailAvailable(user.email, email))
                 }
-                .map { lowerCaseLoginAndMail(user) }
+                .map { lowerCaseUsernameAndMail(user) }
                 .flatMap { u -> userRepository.save(u) }
-                .flatMap { u -> deleteOldLogin(oldLogin, u) }
+                .flatMap { u -> deleteOldUsername(oldUsername, u) }
                 .singleOrEmpty()
     }
 
     fun delete(username: String): Mono<Void> {
         logger.info("Deleting user {}", username)
-        return findByLoginOrThrow(username)
-                .flatMap { (login) -> userRepository.delete(login) }
+        return findByUsernameOrThrow(username)
+                .flatMap { (username) -> userRepository.delete(username) }
                 .singleOrEmpty()
     }
 
-    private fun lowerCaseLoginAndMail(user: User) = user.copy(login = user.login.toLowerCase(), email = user.email.toLowerCase())
+    private fun lowerCaseUsernameAndMail(user: User) = user.copy(username = user.username.toLowerCase(), email = user.email.toLowerCase())
 
-    private fun findByLoginOrThrow(username: String) = findByLogin(username)
-            .otherwiseIfEmpty(IdNotFoundException("Login $username doest not exist").toMono<User>())
+    private fun findByUsernameOrThrow(username: String) = findByUsername(username)
+            .otherwiseIfEmpty(IdNotFoundException("Username $username doest not exist").toMono<User>())
 
-    private fun deleteOldLogin(oldLogin: String, user: User): Flux<User>? = user.toMono()
-            .filter { it.login != oldLogin }
-            .flatMap { u -> userRepository.delete(oldLogin).map { u } }
+    private fun deleteOldUsername(oldUsername: String, user: User): Flux<User>? = user.toMono()
+            .filter { it.username != oldUsername }
+            .flatMap { u -> userRepository.delete(oldUsername).map { u } }
             .defaultIfEmpty(user)
 
 }

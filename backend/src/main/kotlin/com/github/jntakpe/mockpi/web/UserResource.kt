@@ -13,8 +13,8 @@ import javax.validation.Valid
 @RequestMapping(USERS_API)
 class UserResource(private val userService: UserService) {
 
-    @GetMapping("/{login}")
-    fun findByLogin(@PathVariable login: String) = userService.findByLogin(login)
+    @GetMapping("/{username}")
+    fun findByUsername(@PathVariable username: String) = userService.findByUsername(username)
             .map { u -> ResponseEntity(u, HttpStatus.OK) }
             .otherwiseIfEmpty(ResponseEntity.notFound().build<User>().toMono())
 

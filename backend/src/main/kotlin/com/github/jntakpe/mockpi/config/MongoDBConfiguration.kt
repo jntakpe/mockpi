@@ -33,11 +33,12 @@ class MongoDBConfiguration(val mongoProperties: MongoProperties) : AbstractReact
 
     private fun initUsers(userRepository: UserRepository) {
         val users = Flux.just(
-                User("jntakpe", "Joss", "jntakpe@mail.com"),
-                User("cbarillet", "Vyril", "cbarillet@mail.com"),
-                User("bpoindron", "Brubru", "bpoindron@mail.com"),
-                User("crinfray", "Coco", "crinfray@mail.com"),
-                User("todelete", "To Delete", "todelete@mail.com")
+                User("jntakpe", "Joss", "jntakpe@mail.com", "pwd"),
+                User("cbarillet", "Vyril", "cbarillet@mail.com", "pwd"),
+                User("bpoindron", "Brubru", "bpoindron@mail.com", "pwd"),
+                User("jmadih", "Jaja", "jaja@mail.com", "pwd"),
+                User("crinfray", "Coco", "crinfray@mail.com", "pwd"),
+                User("todelete", "To Delete", "todelete@mail.com", "pwd")
         )
         userRepository.deleteAll().thenMany(userRepository.save(users)).blockLast()
     }

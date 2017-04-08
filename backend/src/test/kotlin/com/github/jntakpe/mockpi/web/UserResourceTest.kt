@@ -33,40 +33,40 @@ class UserResourceTest {
     }
 
     @Test
-    fun `should get user by login`() {
-        val result = client.get().uri(Urls.USERS_API + "/{login}", "jntakpe")
+    fun `should get user by username`() {
+        val result = client.get().uri(Urls.USERS_API + "/{username}", "jntakpe")
                 .exchange()
                 .expectStatus().isOk
                 .expectHeader().contentType(MediaType.APPLICATION_JSON_UTF8)
                 .expectBody(User::class.java)
                 .returnResult<User>()
         result.responseBody.test().consumeNextWith {
-            (login, name, email) ->
-            assertThat(login).isEqualTo("jntakpe")
+            (username, name, email) ->
+            assertThat(username).isEqualTo("jntakpe")
             assertThat(name).isEqualTo("Joss")
             assertThat(email).isEqualTo("jntakpe@mail.com")
         }.verifyComplete()
     }
 
     @Test
-    fun `should get user by login ignoring case`() {
-        val result = client.get().uri(Urls.USERS_API + "/{login}", "JNtakpe")
+    fun `should get user by username ignoring case`() {
+        val result = client.get().uri(Urls.USERS_API + "/{username}", "JNtakpe")
                 .exchange()
                 .expectStatus().isOk
                 .expectHeader().contentType(MediaType.APPLICATION_JSON_UTF8)
                 .expectBody(User::class.java)
                 .returnResult<User>()
         result.responseBody.test().consumeNextWith {
-            (login, name, email) ->
-            assertThat(login).isEqualTo("jntakpe")
+            (username, name, email) ->
+            assertThat(username).isEqualTo("jntakpe")
             assertThat(name).isEqualTo("Joss")
             assertThat(email).isEqualTo("jntakpe@mail.com")
         }.verifyComplete()
     }
 
     @Test
-    fun `should not get user by login if unknown login`() {
-        client.get().uri(Urls.USERS_API + "/{login}", "unknown")
+    fun `should not get user by username if unknown username`() {
+        client.get().uri(Urls.USERS_API + "/{username}", "unknown")
                 .exchange()
                 .expectStatus().isNotFound
     }
@@ -74,24 +74,24 @@ class UserResourceTest {
     @Test
     fun `should create new user`() {
         val result = client.post().uri(Urls.USERS_API).accept(MediaType.APPLICATION_JSON_UTF8)
-                .body(User("postUser", "Post user", "postUser@mail.com").toMono(), User::class.java)
+                .body(User("postUser", "Post user", "postUser@mail.com", "pwd").toMono(), User::class.java)
                 .exchange()
                 .expectStatus().isCreated
                 .expectHeader().contentType(MediaType.APPLICATION_JSON_UTF8)
                 .expectBody(User::class.java)
                 .returnResult<User>()
         result.responseBody.test().consumeNextWith {
-            (login, name, email) ->
-            assertThat(login).isEqualTo("postuser")
+            (username, name, email) ->
+            assertThat(username).isEqualTo("postuser")
             assertThat(name).isEqualTo("Post user")
             assertThat(email).isEqualTo("postuser@mail.com")
         }.verifyComplete()
     }
 
     @Test
-    fun `should not create new user cuz login taken`() {
+    fun `should not create new user cuz username taken`() {
         client.post().uri(Urls.USERS_API).accept(MediaType.APPLICATION_JSON_UTF8)
-                .body(User("jntakpe", "Joss", "jntakpe@mail.com").toMono(), User::class.java)
+                .body(User("jntakpe", "Joss", "jntakpe@mail.com", "pwd").toMono(), User::class.java)
                 .exchange()
                 .expectStatus().isEqualTo(HttpStatus.CONFLICT)
     }

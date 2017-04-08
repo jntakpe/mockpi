@@ -23,73 +23,73 @@ class UserServiceTest {
     lateinit var userRepository: UserRepository
 
     @Test
-    fun `should find user by login because exact match`() {
-        val login = "jntakpe"
-        userService.findByLogin(login).test()
+    fun `should find user by username because exact match`() {
+        val username = "jntakpe"
+        userService.findByUsername(username).test()
                 .expectSubscription()
                 .consumeNextWith { user ->
                     assertThat(user).isNotNull()
-                    assertThat(user.login).isEqualTo(login)
+                    assertThat(user.username).isEqualTo(username)
                 }
                 .verifyComplete()
     }
 
     @Test
-    fun `should find user by login because ignoring case`() {
-        val login = "JNtaKpe"
-        userService.findByLogin(login).test()
+    fun `should find user by username because ignoring case`() {
+        val username = "JNtaKpe"
+        userService.findByUsername(username).test()
                 .expectSubscription()
                 .consumeNextWith { user ->
                     assertThat(user).isNotNull()
-                    assertThat(user.login).isEqualTo(login.toLowerCase())
+                    assertThat(user.username).isEqualTo(username.toLowerCase())
                 }
                 .verifyComplete()
     }
 
     @Test
-    fun `should not find user by login because unknown login`() {
-        val login = "unknown"
-        userService.findByLogin(login).test()
+    fun `should not find user by username because unknown username`() {
+        val username = "unknown"
+        userService.findByUsername(username).test()
                 .expectSubscription()
                 .expectNextCount(0)
                 .verifyComplete()
     }
 
     @Test
-    fun `should accept login because none existing`() {
-        val newlogin = "newlogin"
-        userService.verifyLoginAvailable(newlogin).test()
+    fun `should accept username because none existing`() {
+        val newusername = "newusername"
+        userService.verifyUsernameAvailable(newusername).test()
                 .expectSubscription()
-                .expectNext(newlogin)
+                .expectNext(newusername)
                 .verifyComplete()
     }
 
     @Test
-    fun `should refuse login because same login exist`() {
-        userService.verifyLoginAvailable("JNtakpe").test()
+    fun `should refuse username because same username exist`() {
+        userService.verifyUsernameAvailable("JNtakpe").test()
                 .expectSubscription()
                 .verifyError(ConflictKeyException::class.java)
     }
 
     @Test
-    fun `should accept login because old login is the same`() {
-        val login = "JNtakpe"
-        userService.verifyLoginAvailable(login, "jntakpe").test()
+    fun `should accept username because old username is the same`() {
+        val username = "JNtakpe"
+        userService.verifyUsernameAvailable(username, "jntakpe").test()
                 .expectSubscription()
-                .expectNext(login)
+                .expectNext(username)
                 .verifyComplete()
     }
 
     @Test
-    fun `should refuse login because old login is not the same`() {
-        userService.verifyLoginAvailable("JNtakpe", "oldlogin").test()
+    fun `should refuse username because old username is not the same`() {
+        userService.verifyUsernameAvailable("JNtakpe", "oldusername").test()
                 .expectSubscription()
                 .verifyError(ConflictKeyException::class.java)
     }
 
     @Test
-    fun `should register a new user with new login`() {
-        val rjansem = User("rjansem", "Rudy", "rjansem@mail.com")
+    fun `should register a new user with new username`() {
+        val rjansem = User("rjansem", "Rudy", "rjansem@mail.com", "pwd")
         userService.register(rjansem).test()
                 .expectSubscription()
                 .expectNext(rjansem)
@@ -101,13 +101,13 @@ class UserServiceTest {
     }
 
     @Test
-    fun `should register a new user with new login with lowercase mail and login`() {
-        val uppercase = User("UpperCase", "Upper Case", "UpperCase@mail.com")
+    fun `should register a new user with new username with lowercase mail and username`() {
+        val uppercase = User("UpperCase", "Upper Case", "UpperCase@mail.com", "pwd")
         userService.register(uppercase).test()
                 .expectSubscription()
                 .consumeNextWith {
-                    (login, _, email) ->
-                    assertThat(login).isEqualTo("uppercase")
+                    (username, _, email) ->
+                    assertThat(username).isEqualTo("uppercase")
                     assertThat(email).isEqualTo("uppercase@mail.com")
                 }
                 .verifyComplete()
@@ -118,8 +118,8 @@ class UserServiceTest {
     }
 
     @Test
-    fun `should not register a new user because login unavailable`() {
-        val rjansem = User("jntakpe", "Joss", "joss@mail.com")
+    fun `should not register a new user because username unavailable`() {
+        val rjansem = User("jntakpe", "Joss", "joss@mail.com", "pwd")
         userService.register(rjansem).test()
                 .expectSubscription()
                 .expectError(ConflictKeyException::class.java)
@@ -128,7 +128,7 @@ class UserServiceTest {
 
     @Test
     fun `should not register a new user because email unavailable`() {
-        val rjansem = User("jntakpe2", "Joss", "jntakpe@mail.com")
+        val rjansem = User("jntakpe2", "Joss", "jntakpe@mail.com", "pwd")
         userService.register(rjansem).test()
                 .expectSubscription()
                 .expectError(ConflictKeyException::class.java)
@@ -136,13 +136,13 @@ class UserServiceTest {
     }
 
     @Test
-    fun `should update a user keeping login`() {
-        val updated = User("CBarillet", "Updated", "UpdatedCBA@mail.com")
+    fun `should update a user keeping username`() {
+        val updated = User("CBarillet", "Updated", "UpdatedCBA@mail.com", "pwd")
         userService.update(updated, "cbarillet").test()
                 .expectSubscription()
                 .consumeNextWith {
-                    (login, name, email) ->
-                    assertThat(login).isEqualTo("cbarillet")
+                    (username, name, email) ->
+                    assertThat(username).isEqualTo("cbarillet")
                     assertThat(name).isEqualTo("Updated")
                     assertThat(email).isEqualTo("updatedcba@mail.com")
                 }
@@ -154,14 +154,14 @@ class UserServiceTest {
     }
 
     @Test
-    fun `should update a user not uppercasing mail and login`() {
-        val updated = User("BPoindron", "Updated", "BPoindron@mail.com")
-        userService.update(updated, "bpoindron").test()
+    fun `should update a user not uppercasing mail and username`() {
+        val updated = User("JMADIh", "Updated", "JAJAMAIL@mail.com", "pwd")
+        userService.update(updated, "jmadih").test()
                 .expectSubscription()
                 .consumeNextWith {
-                    (login, _, email) ->
-                    assertThat(login).isEqualTo("bpoindron")
-                    assertThat(email).isEqualTo("bpoindron@mail.com")
+                    (username, _, email) ->
+                    assertThat(username).isEqualTo("jmadih")
+                    assertThat(email).isEqualTo("jajamail@mail.com")
                 }
                 .verifyComplete()
         userRepository.exists("cbarillet").test()
@@ -171,8 +171,8 @@ class UserServiceTest {
     }
 
     @Test
-    fun `should update a user changing login`() {
-        val updated = User("updated", "Updated", "updated@mail.com")
+    fun `should update a user changing username`() {
+        val updated = User("updated", "Updated", "updated@mail.com", "pwd")
         userService.update(updated, "bpoindron").test()
                 .expectSubscription()
                 .expectNext(updated)
@@ -188,8 +188,8 @@ class UserServiceTest {
     }
 
     @Test
-    fun `should not update a user because login unavailable`() {
-        val corentin = User("crinfray", "Coco", "coco@mail.com")
+    fun `should not update a user because username unavailable`() {
+        val corentin = User("crinfray", "Coco", "coco@mail.com", "pwd")
         userService.update(corentin, "jntakpe").test()
                 .expectSubscription()
                 .verifyError(ConflictKeyException::class.java)
@@ -197,15 +197,15 @@ class UserServiceTest {
 
     @Test
     fun `should not update a user because email unavailable`() {
-        val corentin = User("crinfray", "Coco", "jntakpe@mail.com")
+        val corentin = User("crinfray", "Coco", "jntakpe@mail.com", "pwd")
         userService.update(corentin, "crinfray").test()
                 .expectSubscription()
                 .verifyError(ConflictKeyException::class.java)
     }
 
     @Test
-    fun `should not update a user because old login doesn't exist`() {
-        val corentin = User("toto", "Coco", "coco@mail.com")
+    fun `should not update a user because old username doesn't exist`() {
+        val corentin = User("toto", "Coco", "coco@mail.com", "pwd")
         userService.update(corentin, "unknown").test()
                 .expectSubscription()
                 .verifyError(IdNotFoundException::class.java)

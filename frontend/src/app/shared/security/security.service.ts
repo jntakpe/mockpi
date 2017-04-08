@@ -55,11 +55,11 @@ export class SecurityService {
   }
 
   private accessTokenRequest(username: string, password: string): Observable<Response> {
-    return this.http.post('auth-service/oauth/token', this.buildTokenRequestBody(username, password), this.buildTokenRequestOption());
+    return this.http.post('/oauth/token', this.buildTokenRequestBody(username, password), this.buildTokenRequestOption());
   }
 
   private refreshTokenRequest(refreshToken: string): Observable<Response> {
-    return this.http.post('auth-service/oauth/token', this.buildRefreshTokenRequestBody(refreshToken), this.buildTokenRequestOption());
+    return this.http.post('/oauth/token', this.buildRefreshTokenRequestBody(refreshToken), this.buildTokenRequestOption());
   }
 
   private buildTokenRequestBody(username: string, password: string): string {
