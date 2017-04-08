@@ -40,8 +40,8 @@ export class RegisterComponent implements OnInit {
   }
 
   register() {
-    const {username,} = this.registerForm.value;
-    this.registerService.register()
+    const {username, name, email, pwdForm: {password}} = this.registerForm.value;
+    this.registerService.register({username, name, email}, password).subscribe();
   }
 
 

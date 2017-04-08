@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, inject, TestBed } from '@angular/core/testing';
 
 import { RegisterComponent } from './register.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -6,6 +6,9 @@ import { MaterialModule } from '@angular/material';
 import { ReactiveFormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 import { changeInputValueAndDispatch } from '../shared/testing/testing-utils.spec';
+import { RegisterService } from './register.service';
+import { Observable } from 'rxjs/Observable';
+import { user } from './register.service.spec';
 
 describe('RegisterComponent', () => {
   let component: RegisterComponent;
@@ -15,7 +18,13 @@ describe('RegisterComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [RegisterComponent],
-      imports: [MaterialModule, BrowserAnimationsModule, ReactiveFormsModule]
+      imports: [MaterialModule, BrowserAnimationsModule, ReactiveFormsModule],
+      providers: [{
+        provide: RegisterService,
+        useValue: {
+          register: () => Observable.of(user)
+        }
+      }]
     })
       .compileComponents();
   }));
@@ -121,5 +130,23 @@ describe('RegisterComponent', () => {
     expect(mdError).toBeTruthy();
     expect(mdError.textContent).toContain('match');
   }));
+
+  it('should register user', async(inject([RegisterService], (registerService: RegisterService) => {
+    const usernameInput = fixture.debugElement.query(By.css('input[formControlName="username"]'));
+    const nameInput = fixture.debugElement.query(By.css('input[formControlName="name"]'));
+    const mailInput = fixture.debugElement.query(By.css('input[formControlName="email"]'));
+    const passwordInput = fixture.debugElement.query(By.css('input[formControlName="password"]'));
+    const confirmPasswordInput = fixture.debugElement.query(By.css('input[formControlName="confirmPassword"]'));
+    changeInputValueAndDispatch(usernameInput, 'jntakpe');
+    changeInputValueAndDispatch(nameInput, 'Jocelyn');
+    changeInputValueAndDispatch(mailInput, 'jntakpe@mail.com');
+    changeInputValueAndDispatch(passwordInput, 'testPwd');
+    changeInputValueAndDispatch(confirmPasswordInput, 'testPwd');
+    fixture.detectChanges();
+    spyOn(registerService, 'register').and.returnValue(Observable.of({}));
+    compiled.querySelector('button[type="submit"]').click();
+    fixture.detectChanges();
+    expect(registerService.register).toHaveBeenCalledWith({username: 'jntakpe', name: 'Jocelyn', email: 'jntakpe@mail.com'}, 'testPwd');
+  })));
 
 });

@@ -1,7 +1,7 @@
 <md-toolbar>Register</md-toolbar>
 <md-card class="m-3" fxLayoutAlign="center">
   <md-card-content fxFlex.gt-md="50">
-    <form [formGroup]="registerForm" fxLayout="column">
+    <form [formGroup]="registerForm" fxLayout="column" (ngSubmit)="register()">
       <md-input-container>
         <span mdPrefix><md-icon>person</md-icon>&nbsp;</span>
         <input mdInput type="text" placeholder="Username" formControlName="username" #username>
