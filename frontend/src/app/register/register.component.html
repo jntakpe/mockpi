@@ -4,28 +4,28 @@
     <form [formGroup]="registerForm" fxLayout="column" (ngSubmit)="register()">
       <md-input-container>
         <span mdPrefix><md-icon>person</md-icon>&nbsp;</span>
-        <input mdInput type="text" placeholder="Username" formControlName="username" #username>
-        <md-error *ngIf="registerForm.get('username').touched && registerForm.get('username').hasError('required')">
+        <input mdInput type="text" placeholder="Username" formControlName="username">
+        <md-error *ngIf="registerForm.get('username').hasError('required')">
           Username is required
         </md-error>
-        <md-error *ngIf="registerForm.get('username').touched && registerForm.get('username').hasError('minlength')">
+        <md-error *ngIf="registerForm.get('username').hasError('minlength')">
           Username must contain at least 3 characters
         </md-error>
       </md-input-container>
       <md-input-container>
         <span mdPrefix><md-icon>mail</md-icon>&nbsp;</span>
         <input mdInput type="text" placeholder="Email" formControlName="email">
-        <md-error *ngIf="registerForm.get('email').touched && registerForm.get('email').hasError('required')">
+        <md-error *ngIf="registerForm.get('email').hasError('required')">
           Email address is required
         </md-error>
-        <md-error *ngIf="registerForm.get('email').touched && registerForm.get('email').hasError('email')">
+        <md-error *ngIf="registerForm.get('email').hasError('email')">
           Email address must be valid
         </md-error>
       </md-input-container>
       <md-input-container>
         <span mdPrefix><md-icon>face</md-icon>&nbsp;</span>
         <input mdInput type="text" placeholder="Name" formControlName="name">
-        <md-error *ngIf="registerForm.get('name').touched && registerForm.get('name').hasError('required')">
+        <md-error *ngIf="registerForm.get('name').hasError('required')">
           Name is required
         </md-error>
       </md-input-container>
@@ -33,17 +33,16 @@
         <md-input-container>
           <span mdPrefix><md-icon>lock</md-icon>&nbsp;</span>
           <input mdInput type="password" placeholder="Password" formControlName="password">
-          <md-error *ngIf="registerForm.get('pwdForm').get('password').touched &&
-            registerForm.get('pwdForm').get('password').hasError('required')">
+          <md-error *ngIf="registerForm.get('pwdForm').get('password').hasError('required')">
             Password is required
           </md-error>
         </md-input-container>
         <md-input-container>
           <span mdPrefix><md-icon>lock_outline</md-icon>&nbsp;</span>
           <input mdInput type="password" placeholder="Confirm password" formControlName="confirmPassword">
-          <md-hint *ngIf="registerForm.get('pwdForm').get('confirmPassword').dirty && registerForm.get('pwdForm').hasError('pwdMatch')">
+          <md-error *ngIf="registerForm.get('pwdForm').hasError('pwdMatch')">
             Password confirmation must match password
-          </md-hint>
+          </md-error>
         </md-input-container>
       </section>
       <section class="mt-3">
