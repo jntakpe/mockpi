@@ -1,6 +1,7 @@
 export const appConst = {
   api: {
-    baseUrl: '/api'
+    baseUrl: '/api',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']
   },
   snackBar: {
     closeBtnLabel: 'Close'

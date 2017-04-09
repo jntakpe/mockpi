@@ -1,3 +1,50 @@
-<p>
-  mock-edit works!
-</p>
+<md-toolbar>Create mock</md-toolbar>
+<md-card class="m-3">
+  <md-card-content>
+    <form [formGroup]="mockForm" fxLayout="column" (ngSubmit)="save()">
+      <md-input-container>
+        <input mdInput type="text" placeholder="Name" formControlName="name">
+        <md-error *ngIf="mockForm.get('name').hasError('required')">
+          Name is required
+        </md-error>
+      </md-input-container>
+      <md-input-container>
+        <input mdInput type="text" placeholder="Collection" formControlName="collection">
+      </md-input-container>
+      <md-input-container>
+        <input mdInput type="number" placeholder="Delay" formControlName="delay">
+      </md-input-container>
+      <md-input-container>
+        <textarea mdInput placeholder="Description" formControlName="description"></textarea>
+      </md-input-container>
+      <section formGroupName="request">
+        <md-input-container>
+          <input mdInput type="text" placeholder="Path" formControlName="path">
+          <md-error *ngIf="mockForm.get('request').get('path').hasError('required')">
+            Request path is required
+          </md-error>
+        </md-input-container>
+        <md-radio-group formControlName="method">
+          <md-radio-button *ngFor="let method of methods" [value]="method">
+            {{method}}
+          </md-radio-button>
+        </md-radio-group>
+      </section>
+      <section formGroupName="response">
+        <md-input-container>
+          <textarea mdInput placeholder="Body" formControlName="body"></textarea>
+        </md-input-container>
+        <section>
+          <md-input-container>
+            <input mdInput placeholder="Status" [mdAutocomplete]="auto" formControlName="status">
+          </md-input-container>
+          <md-autocomplete #auto="mdAutocomplete">
+            <md-option *ngFor="let status of filteredStatus | async" [value]="status">
+              {{ status }}
+            </md-option>
+          </md-autocomplete>
+        </section>
+      </section>
+    </form>
+  </md-card-content>
+</md-card>
