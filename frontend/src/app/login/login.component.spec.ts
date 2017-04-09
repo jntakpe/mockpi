@@ -1,7 +1,6 @@
 import { async, ComponentFixture, inject, TestBed } from '@angular/core/testing';
 
 import { LoginComponent } from './login.component';
-import { MaterialModule } from '@angular/material';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { LoginService } from './login.service';
 import { By } from '@angular/platform-browser';
@@ -11,6 +10,7 @@ import { User } from '../shared/security/user';
 import { Observable } from 'rxjs/Observable';
 import '../shared/rxjs.extension';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MockpiMaterialModule } from '../shared/mockpi-material.module';
 
 describe('LoginComponent', () => {
   let component: LoginComponent;
@@ -38,7 +38,7 @@ describe('LoginComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MaterialModule, ReactiveFormsModule, BrowserAnimationsModule],
+      imports: [MockpiMaterialModule, ReactiveFormsModule, BrowserAnimationsModule],
       providers: [{
         provide: LoginService,
         useClass: MockLoginService

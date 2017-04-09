@@ -3,7 +3,7 @@ import { async, fakeAsync, inject, TestBed } from '@angular/core/testing';
 import { LoginService } from './login.service';
 import { SecurityService } from '../shared/security/security.service';
 import { RouterTestingModule } from '@angular/router/testing';
-import { MaterialModule, MdSnackBar } from '@angular/material';
+import { MdSnackBar } from '@angular/material';
 import { Observable } from 'rxjs/Observable';
 import '../shared/rxjs.extension';
 import { User } from '../shared/security/user';
@@ -13,6 +13,7 @@ import { Location } from '@angular/common';
 import { Component } from '@angular/core';
 import { Response, ResponseOptions } from '@angular/http';
 import { appConst } from '../shared/constants';
+import { MockpiMaterialModule } from '../shared/mockpi-material.module';
 
 describe('LoginService', () => {
 
@@ -32,7 +33,7 @@ describe('LoginService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [TestComponent, FakeHomeComponent, RootComponent, FakeLoginComponent],
-      imports: [RouterTestingModule.withRoutes(routes), MaterialModule],
+      imports: [RouterTestingModule.withRoutes(routes), MockpiMaterialModule],
       providers: [LoginService, {
         provide: SecurityService,
         useValue: {login: (username, password) => Observable.of(new User('jntakpe', 'Joss', ['ADMIN']))}

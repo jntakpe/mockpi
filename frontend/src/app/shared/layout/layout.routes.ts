@@ -3,6 +3,7 @@ import { LayoutComponent } from './layout.component';
 import { HomeComponent } from '../../home/home.component';
 import { RegisterComponent } from '../../register/register.component';
 import { MocksComponent } from '../../mocks/mocks.component';
+import { MockEditComponent } from '../../mocks/edit/mock-edit.component';
 
 export const layoutRoutes: Routes = [
   {
@@ -12,6 +13,7 @@ export const layoutRoutes: Routes = [
       {path: '', redirectTo: 'home', pathMatch: 'full'},
       {path: 'register', component: RegisterComponent},
       {path: 'mocks', component: MocksComponent},
+      {path: 'mocks/', component: MockEditComponent},
     ]
   }
 ];

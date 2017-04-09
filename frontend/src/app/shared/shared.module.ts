@@ -3,10 +3,10 @@ import { CommonModule } from '@angular/common';
 import { HttpModule } from '@angular/http';
 import { RouterModule } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
-import { MaterialModule, MaterialRootModule } from '@angular/material';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { SecurityModule } from './security/security.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MockpiMaterialModule } from './mockpi-material.module';
 
 @NgModule({
   imports: [
@@ -15,7 +15,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     HttpModule,
     RouterModule,
     ReactiveFormsModule,
-    MaterialModule,
+    MockpiMaterialModule,
     FlexLayoutModule,
     SecurityModule
   ],
@@ -25,7 +25,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     HttpModule,
     RouterModule,
     ReactiveFormsModule,
-    MaterialRootModule,
+    MockpiMaterialModule,
     FlexLayoutModule,
     SecurityModule
   ]

@@ -4,7 +4,7 @@ import { RegisterService } from './register.service';
 import { Component } from '@angular/core';
 import { Router, Routes } from '@angular/router';
 import { advance, createRoot, FakeHomeComponent, FakeLoginComponent, RootComponent } from '../shared/testing/testing-utils.spec';
-import { MaterialModule, MdSnackBar } from '@angular/material';
+import { MdSnackBar } from '@angular/material';
 import { RouterTestingModule } from '@angular/router/testing';
 import { MockBackend, MockConnection } from '@angular/http/testing';
 import { BaseRequestOptions, Http, Response, ResponseOptions } from '@angular/http';
@@ -12,6 +12,7 @@ import { appConst } from '../shared/constants';
 import { User } from '../shared/api.model';
 import { Location } from '@angular/common';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MockpiMaterialModule } from '../shared/mockpi-material.module';
 
 export const user: User = {
   username: 'jntakpe',
@@ -38,7 +39,7 @@ describe('RegisterService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [TestComponent, FakeHomeComponent, RootComponent, FakeLoginComponent],
-      imports: [RouterTestingModule.withRoutes(routes), MaterialModule, BrowserAnimationsModule],
+      imports: [RouterTestingModule.withRoutes(routes), MockpiMaterialModule, BrowserAnimationsModule],
       providers: [
         RegisterService,
         MockBackend,

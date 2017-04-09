@@ -4,7 +4,7 @@ import { Observable } from 'rxjs/Observable';
 import '../../../rxjs.extension';
 import { NavSignService } from './nav-sign.service';
 import { By } from '@angular/platform-browser';
-import { MaterialModule } from '@angular/material';
+import { MockpiMaterialModule } from '../../../mockpi-material.module';
 
 describe('NavSignComponent', () => {
   let component: NavSignComponent;
@@ -13,7 +13,7 @@ describe('NavSignComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [NavSignComponent],
-      imports: [MaterialModule],
+      imports: [MockpiMaterialModule],
       providers: [{
         provide: NavSignService,
         useValue: {username: () => Observable.of('jntakpe'), logoutThenRedirectHome: () => Observable.of(true)}

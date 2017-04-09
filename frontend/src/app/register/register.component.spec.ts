@@ -2,13 +2,13 @@ import { async, ComponentFixture, inject, TestBed } from '@angular/core/testing'
 
 import { RegisterComponent } from './register.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MaterialModule } from '@angular/material';
 import { ReactiveFormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 import { changeInputValueAndDispatch } from '../shared/testing/testing-utils.spec';
 import { RegisterService } from './register.service';
 import { Observable } from 'rxjs/Observable';
 import { user } from './register.service.spec';
+import { MockpiMaterialModule } from '../shared/mockpi-material.module';
 
 describe('RegisterComponent', () => {
   let component: RegisterComponent;
@@ -18,7 +18,7 @@ describe('RegisterComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [RegisterComponent],
-      imports: [MaterialModule, BrowserAnimationsModule, ReactiveFormsModule],
+      imports: [MockpiMaterialModule, BrowserAnimationsModule, ReactiveFormsModule],
       providers: [{
         provide: RegisterService,
         useValue: {
