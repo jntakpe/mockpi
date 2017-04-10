@@ -17,6 +17,8 @@ export class MockEditComponent implements OnInit {
 
   filteredStatus: Observable<number[]>;
 
+  filteredContentTypes: Observable<string[]>;
+
   constructor(private formBuilder: FormBuilder) {
   }
 
@@ -24,7 +26,7 @@ export class MockEditComponent implements OnInit {
     this.mockForm = this.formBuilder.group({
       name: '',
       collection: '',
-      delay: 0,
+      delay: null,
       description: '',
       request: this.formBuilder.group({
         path: '',
@@ -35,11 +37,11 @@ export class MockEditComponent implements OnInit {
       response: this.formBuilder.group({
         body: '',
         status: '',
-        contentType: '',
-        encoding: ''
+        contentType: ''
       })
     });
     this.filteredStatus = this.filterStatuses();
+    this.filteredContentTypes = this.filterContentType();
   }
 
   private filterStatuses(): Observable<number[]> {
@@ -47,6 +49,13 @@ export class MockEditComponent implements OnInit {
     return this.mockForm.get('response').get('status').valueChanges
       .startWith('')
       .map(v => v ? statuses.map(s => s.toString()).filter(s => new RegExp(`^${v.toString()}`, 'gi').test(s)) : statuses);
+  }
+
+  private filterContentType(): Observable<string[]> {
+    const contentTypes = ['application/json', 'application/text', 'text/plain'];
+    return this.mockForm.get('response').get('contentType').valueChanges
+      .startWith('')
+      .map(v => v ? contentTypes.map(s => s).filter(s => new RegExp(`^${v}`, 'gi').test(s)) : contentTypes);
   }
 
 }

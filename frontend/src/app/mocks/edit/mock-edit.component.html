@@ -1,50 +1,76 @@
 <md-toolbar>Create mock</md-toolbar>
 <md-card class="m-3">
   <md-card-content>
-    <form [formGroup]="mockForm" fxLayout="column" (ngSubmit)="save()">
-      <md-input-container>
-        <input mdInput type="text" placeholder="Name" formControlName="name">
-        <md-error *ngIf="mockForm.get('name').hasError('required')">
-          Name is required
-        </md-error>
-      </md-input-container>
-      <md-input-container>
-        <input mdInput type="text" placeholder="Collection" formControlName="collection">
-      </md-input-container>
-      <md-input-container>
-        <input mdInput type="number" placeholder="Delay" formControlName="delay">
-      </md-input-container>
-      <md-input-container>
-        <textarea mdInput placeholder="Description" formControlName="description"></textarea>
-      </md-input-container>
-      <section formGroupName="request">
-        <md-input-container>
-          <input mdInput type="text" placeholder="Path" formControlName="path">
-          <md-error *ngIf="mockForm.get('request').get('path').hasError('required')">
-            Request path is required
-          </md-error>
-        </md-input-container>
-        <md-radio-group formControlName="method">
-          <md-radio-button *ngFor="let method of methods" [value]="method">
-            {{method}}
-          </md-radio-button>
-        </md-radio-group>
-      </section>
-      <section formGroupName="response">
-        <md-input-container>
-          <textarea mdInput placeholder="Body" formControlName="body"></textarea>
-        </md-input-container>
-        <section>
-          <md-input-container>
-            <input mdInput placeholder="Status" [mdAutocomplete]="auto" formControlName="status">
+    <form [formGroup]="mockForm" (ngSubmit)="save()">
+      <md-card>
+        <md-card-subtitle>Mock</md-card-subtitle>
+        <md-card-content fxLayout.gt-sm="row" fxLayout="column">
+          <md-input-container fxFlex.gt-sm="25">
+            <input mdInput type="text" placeholder="Name" formControlName="name">
+            <md-error *ngIf="mockForm.get('name').hasError('required')">
+              Name is required
+            </md-error>
           </md-input-container>
-          <md-autocomplete #auto="mdAutocomplete">
-            <md-option *ngFor="let status of filteredStatus | async" [value]="status">
-              {{ status }}
-            </md-option>
-          </md-autocomplete>
-        </section>
-      </section>
+          <md-input-container fxFlex.gt-sm="25">
+            <input mdInput type="text" placeholder="Collection" formControlName="collection">
+          </md-input-container>
+          <md-input-container fxFlex.gt-sm="5">
+            <input mdInput type="number" placeholder="Delay" formControlName="delay">
+          </md-input-container>
+          <md-input-container fxFlex.gt-sm="45">
+            <textarea mdInput placeholder="Description" formControlName="description" rows="1"></textarea>
+          </md-input-container>
+        </md-card-content>
+      </md-card>
+      <md-card formGroupName="request">
+        <md-card-subtitle>Request</md-card-subtitle>
+        <md-card-content fxLayout.gt-sm="row" fxLayout="column">
+          <md-input-container fxFlex.gt-sm="50" fxFlex.gt-md="30">
+            <input mdInput type="text" placeholder="Path" formControlName="path">
+            <md-error *ngIf="mockForm.get('request').get('path').hasError('required')">
+              Request path is required
+            </md-error>
+          </md-input-container>
+          <div fxFlex.gt-sm="50" fxFlex.gt-md="30">
+            <div>Method</div>
+            <md-radio-group formControlName="method" fxLayoutAlign.gt-sm="space-around" fxLayout.gt-sm="row" fxLayout="column">
+              <md-radio-button *ngFor="let method of methods" [value]="method">
+                {{method}}
+              </md-radio-button>
+            </md-radio-group>
+          </div>
+        </md-card-content>
+      </md-card>
+      <md-card formGroupName="response">
+        <md-card-subtitle>Response</md-card-subtitle>
+        <md-card-content fxLayout.gt-sm="row" fxLayout="column">
+          <md-input-container fxFlex.gt-sm="60">
+            <textarea mdInput placeholder="Body" formControlName="body" rows="10"></textarea>
+          </md-input-container>
+          <div fxFlex.gt-sm>
+            <div>
+              <md-input-container fxFlex.gt-sm="30">
+                <input mdInput placeholder="Status" [mdAutocomplete]="autoStatus" formControlName="status">
+              </md-input-container>
+              <md-autocomplete #autoStatus="mdAutocomplete">
+                <md-option *ngFor="let status of filteredStatus | async" [value]="status">
+                  {{ status }}
+                </md-option>
+              </md-autocomplete>
+            </div>
+            <div>
+              <md-input-container fxFlex.gt-sm="50">
+                <input mdInput placeholder="Content type" [mdAutocomplete]="autoContentType" formControlName="contentType">
+              </md-input-container>
+              <md-autocomplete #autoContentType="mdAutocomplete">
+                <md-option *ngFor="let contentType of filteredContentTypes | async" [value]="contentType">
+                  {{ contentType }}
+                </md-option>
+              </md-autocomplete>
+            </div>
+          </div>
+        </md-card-content>
+      </md-card>
     </form>
   </md-card-content>
 </md-card>
