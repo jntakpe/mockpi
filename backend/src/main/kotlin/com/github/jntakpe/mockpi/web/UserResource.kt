@@ -18,7 +18,6 @@ class UserResource(private val userService: UserService) {
             .map { u -> ResponseEntity(u, HttpStatus.OK) }
             .otherwiseIfEmpty(ResponseEntity.notFound().build<User>().toMono())
 
-
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     fun register(@RequestBody @Valid user: User) = userService.register(user)
