@@ -40,9 +40,9 @@
         <md-input-container>
           <span mdPrefix><md-icon>lock_outline</md-icon>&nbsp;</span>
           <input mdInput type="password" placeholder="Confirm password" formControlName="confirmPassword">
-          <md-error *ngIf="registerForm.get('pwdForm').hasError('pwdMatch')">
+          <md-hint *ngIf="registerForm.get('pwdForm').hasError('pwdMatch')">
             Password confirmation must match password
-          </md-error>
+          </md-hint>
         </md-input-container>
       </section>
       <section class="mt-3">
