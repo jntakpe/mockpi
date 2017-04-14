@@ -6,7 +6,6 @@ import com.github.jntakpe.mockpi.exceptions.IdNotFoundException
 import com.github.jntakpe.mockpi.repository.UserRepository
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.core.publisher.toMono
 
@@ -26,7 +25,6 @@ class UserService(private val userRepository: UserRepository) {
                 .filter { it.username != oldUsername }
                 .flatMap { ConflictKeyException("Username $username is not available").toMono<String>() }
                 .defaultIfEmpty(username)
-                .single()
     }
 
     fun verifyEmailAvailable(email: String, oldMail: String = ""): Mono<String> {
@@ -35,7 +33,6 @@ class UserService(private val userRepository: UserRepository) {
                 .filter { it.email != oldMail }
                 .flatMap { ConflictKeyException("Email $email is not available").toMono<String>() }
                 .defaultIfEmpty(email)
-                .single()
     }
 
     fun register(user: User): Mono<User> {
@@ -43,7 +40,6 @@ class UserService(private val userRepository: UserRepository) {
         return Mono.`when`(verifyUsernameAvailable(user.username), verifyEmailAvailable(user.email))
                 .map { lowerCaseUsernameAndMail(user) }
                 .flatMap { u -> userRepository.insert(u) }
-                .single()
     }
 
     fun update(user: User, oldUsername: String): Mono<User> {
@@ -55,22 +51,19 @@ class UserService(private val userRepository: UserRepository) {
                 .map { lowerCaseUsernameAndMail(user) }
                 .flatMap { u -> userRepository.save(u) }
                 .flatMap { u -> deleteOldUsername(oldUsername, u) }
-                .singleOrEmpty()
     }
 
     fun delete(username: String): Mono<Void> {
         logger.info("Deleting user {}", username)
-        return findByUsernameOrThrow(username)
-                .flatMap { (username) -> userRepository.delete(username) }
-                .singleOrEmpty()
+        return findByUsernameOrThrow(username).flatMap { (username) -> userRepository.delete(username) }
     }
 
     private fun lowerCaseUsernameAndMail(user: User) = user.copy(username = user.username.toLowerCase(), email = user.email.toLowerCase())
 
     private fun findByUsernameOrThrow(username: String) = findByUsername(username)
-            .otherwiseIfEmpty(IdNotFoundException("Username $username doest not exist").toMono<User>())
+            .switchIfEmpty(IdNotFoundException("Username $username doest not exist").toMono<User>())
 
-    private fun deleteOldUsername(oldUsername: String, user: User): Flux<User>? = user.toMono()
+    private fun deleteOldUsername(oldUsername: String, user: User): Mono<User>? = user.toMono()
             .filter { it.username != oldUsername }
             .flatMap { u -> userRepository.delete(oldUsername).map { u } }
             .defaultIfEmpty(user)

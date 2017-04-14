@@ -21,7 +21,7 @@ class MockResource(private val mockService: MockService) {
     fun findByName(@PathVariable name: String): Mono<ResponseEntity<Mock>> {
         return mockService.findByName(name)
                 .map { m -> ResponseEntity(m, HttpStatus.OK) }
-                .otherwiseIfEmpty(ResponseEntity.notFound().build<Mock>().toMono())
+                .switchIfEmpty(ResponseEntity.notFound().build<Mock>().toMono())
     }
 
     @PostMapping

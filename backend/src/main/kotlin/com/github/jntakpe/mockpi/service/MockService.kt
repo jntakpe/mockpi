@@ -32,7 +32,6 @@ class MockService(private val mockRepository: MockRepository) {
                 .filter { it.name != oldName }
                 .flatMap { ConflictKeyException("Name $name is not available").toMono<String>() }
                 .defaultIfEmpty(name)
-                .single()
     }
 
     fun verifyRequestAvailable(request: Request, oldRequest: Request? = null): Mono<Request> {
@@ -41,7 +40,6 @@ class MockService(private val mockRepository: MockRepository) {
                 .filter { it.request != oldRequest }
                 .flatMap { ConflictKeyException("Request $request is not available").toMono<Request>() }
                 .defaultIfEmpty(request)
-                .single()
     }
 
     fun findMatchingMock(request: Request): Mono<Mock> {
@@ -59,7 +57,6 @@ class MockService(private val mockRepository: MockRepository) {
         return Mono.`when`(verifyNameAvailable(mock.name), verifyRequestAvailable(mock.request))
                 .map { mock.copy(name = mock.name.toLowerCase()) }
                 .flatMap { mockRepository.insert(it) }
-                .single()
     }
 
     fun update(mock: Mock, oldName: String): Mono<Mock> {
@@ -70,14 +67,11 @@ class MockService(private val mockRepository: MockRepository) {
                 }
                 .map { mock.copy(name = mock.name.toLowerCase()) }
                 .flatMap { mockRepository.save(it) }
-                .single()
     }
 
     fun delete(name: String): Mono<Void> {
         logger.info("Deleting mock {}", name)
-        return findByNameOrThrow(name)
-                .flatMap { mockRepository.delete(it.name) }
-                .singleOrEmpty()
+        return findByNameOrThrow(name).flatMap { mockRepository.delete(it.name) }
     }
 
     private fun matchHeadersRelaxed(mockHeaders: Map<String, String>, requestHeaders: Map<String, String>): Boolean {
@@ -85,5 +79,5 @@ class MockService(private val mockRepository: MockRepository) {
     }
 
     private fun findByNameOrThrow(name: String): Mono<Mock> = findByName(name)
-            .otherwiseIfEmpty(IdNotFoundException("Mock $name doest not exist").toMono<Mock>())
+            .switchIfEmpty(IdNotFoundException("Mock $name doest not exist").toMono<Mock>())
 }

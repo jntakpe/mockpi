@@ -16,7 +16,7 @@ class UserResource(private val userService: UserService) {
     @GetMapping("/{username}")
     fun findByUsername(@PathVariable username: String) = userService.findByUsername(username)
             .map { u -> ResponseEntity(u, HttpStatus.OK) }
-            .otherwiseIfEmpty(ResponseEntity.notFound().build<User>().toMono())
+            .switchIfEmpty(ResponseEntity.notFound().build<User>().toMono())
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
