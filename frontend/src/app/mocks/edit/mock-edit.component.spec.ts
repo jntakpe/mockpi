@@ -4,6 +4,8 @@ import {MockEditComponent} from './mock-edit.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {MockpiMaterialModule} from '../../shared/mockpi-material.module';
 import {ReactiveFormsModule} from '@angular/forms';
+import {MocksService} from '../mocks.service';
+import {FakeMocksService} from '../mocks.service.spec';
 
 describe('MockEditComponent', () => {
   let component: MockEditComponent;
@@ -13,7 +15,11 @@ describe('MockEditComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [MockEditComponent],
-      imports: [MockpiMaterialModule, BrowserAnimationsModule, ReactiveFormsModule]
+      imports: [MockpiMaterialModule, BrowserAnimationsModule, ReactiveFormsModule],
+      providers: [{
+        provide: MocksService,
+        useClass: FakeMocksService
+      }]
     })
       .compileComponents();
   }));

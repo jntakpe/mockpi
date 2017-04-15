@@ -4,6 +4,7 @@ import {appConst} from '../../shared/constants';
 import '../../shared/rxjs.extension';
 import {Observable} from 'rxjs/Observable';
 import {Mock} from '../../shared/api.model';
+import {MocksService} from '../mocks.service';
 
 @Component({
   selector: 'mpi-mock-edit',
@@ -20,7 +21,9 @@ export class MockEditComponent implements OnInit {
 
   filteredContentTypes: Observable<string[]>;
 
-  constructor(private formBuilder: FormBuilder) {
+  initialName: string;
+
+  constructor(private formBuilder: FormBuilder, private mocksService: MocksService) {
   }
 
   ngOnInit() {
@@ -30,6 +33,10 @@ export class MockEditComponent implements OnInit {
   }
 
   save() {
+    this.mocksService.save(this.mockForm.value, this.initialName).subscribe(
+      () => this.mocksService.redirectMocks(),
+      err => this.mocksService.displaySaveError(err)
+    );
   }
 
   private initializeForm(mock: Mock): FormGroup {
@@ -41,8 +48,8 @@ export class MockEditComponent implements OnInit {
       request: this.formBuilder.group({
         path: [mock ? mock.request.path : '', [Validators.required]],
         method: [mock ? mock.request.method : 'GET', [Validators.required]],
-        params: [mock ? mock.request.params : ''],
-        headers: [mock ? mock.request.headers : '']
+        params: [mock ? mock.request.params : {}],
+        headers: [mock ? mock.request.headers : {}]
       }),
       response: this.formBuilder.group({
         body: [mock ? mock.response.body : '', [Validators.required]],
