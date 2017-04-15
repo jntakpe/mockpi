@@ -1,6 +1,9 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { MockEditComponent } from './mock-edit.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MockpiMaterialModule } from '../../shared/mockpi-material.module';
+import { ReactiveFormsModule } from '@angular/forms';
 
 describe('MockEditComponent', () => {
   let component: MockEditComponent;
@@ -8,7 +11,8 @@ describe('MockEditComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [MockEditComponent]
+      declarations: [MockEditComponent],
+      imports: [MockpiMaterialModule, BrowserAnimationsModule, ReactiveFormsModule]
     })
       .compileComponents();
   }));

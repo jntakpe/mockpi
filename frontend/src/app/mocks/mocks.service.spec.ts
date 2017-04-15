@@ -4,6 +4,8 @@ import { MockBackend } from '@angular/http/testing';
 import { BaseRequestOptions, Http, HttpModule, Response, ResponseOptions } from '@angular/http';
 import { Mock } from '../shared/api.model';
 import { Observable } from 'rxjs/Observable';
+import { RouterTestingModule } from '@angular/router/testing';
+import { MdSnackBarModule } from '@angular/material';
 
 const firstMock: Mock = {
   name: 'firstmock',
@@ -16,8 +18,7 @@ const firstMock: Mock = {
   response: {
     body: 'strBody',
     status: 200,
-    contentType: 'application/json',
-    encoding: 'UTF-8'
+    contentType: 'application/json'
   },
   collection: 'default',
   delay: 10,
@@ -35,8 +36,7 @@ const secondMock: Mock = {
   response: {
     body: 'strBody',
     status: 200,
-    contentType: 'application/json',
-    encoding: 'UTF-8'
+    contentType: 'application/json'
   },
   collection: 'default',
   delay: 10,
@@ -46,7 +46,7 @@ const secondMock: Mock = {
 export class FakeMocksService extends MocksService {
 
   constructor() {
-    super(null);
+    super(null, null, null);
   }
 
   findMocks(): Observable<Mock[]> {
@@ -58,7 +58,7 @@ export class FakeMocksService extends MocksService {
 describe('MocksService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpModule],
+      imports: [HttpModule, RouterTestingModule, MdSnackBarModule],
       providers: [
         MocksService,
         MockBackend,
@@ -85,5 +85,14 @@ describe('MocksService', () => {
       expect(mocks.length).toBe(2);
     });
   })));
+
+  it('should save mock', async(inject([MocksService, MockBackend], (mocksService: MocksService, mockBackend: MockBackend) => {
+    mockBackend.connections.subscribe(c => c.mockRespond(new Response(new ResponseOptions({body: firstMock}))));
+    mocksService.save(firstMock).subscribe(mock => {
+      expect(mock).toBeTruthy();
+      expect(mock.name).toBe('firstmock');
+    });
+  })));
+
 
 });

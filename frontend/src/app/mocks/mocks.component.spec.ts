@@ -5,6 +5,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MocksService } from './mocks.service';
 import { FakeMocksService } from './mocks.service.spec';
 import { MockpiMaterialModule } from '../shared/mockpi-material.module';
+import { RouterTestingModule } from '@angular/router/testing';
 
 describe('MocksComponent', () => {
   let component: MocksComponent;
@@ -13,7 +14,7 @@ describe('MocksComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [MocksComponent],
-      imports: [MockpiMaterialModule, BrowserAnimationsModule],
+      imports: [MockpiMaterialModule, BrowserAnimationsModule, RouterTestingModule],
       providers: [{provide: MocksService, useClass: FakeMocksService}]
     })
       .compileComponents();

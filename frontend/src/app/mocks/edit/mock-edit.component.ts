@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { appConst } from '../../shared/constants';
 import '../../shared/rxjs.extension';
 import { Observable } from 'rxjs/Observable';
+import { Mock } from '../../shared/api.model';
 
 @Component({
   selector: 'mpi-mock-edit',
@@ -23,25 +24,33 @@ export class MockEditComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.mockForm = this.formBuilder.group({
-      name: '',
-      collection: '',
-      delay: null,
-      description: '',
-      request: this.formBuilder.group({
-        path: '',
-        method: 'GET',
-        params: '',
-        headers: ''
-      }),
-      response: this.formBuilder.group({
-        body: '',
-        status: '',
-        contentType: ''
-      })
-    });
+    this.mockForm = this.initializeForm(null);
     this.filteredStatus = this.filterStatuses();
     this.filteredContentTypes = this.filterContentType();
+  }
+
+  save() {
+
+  }
+
+  private initializeForm(mock: Mock): FormGroup {
+    return this.formBuilder.group({
+      name: mock ? mock.name : '',
+      collection: mock ? mock.collection : '',
+      delay: mock ? mock.delay : null,
+      description: mock ? mock.description : '',
+      request: this.formBuilder.group({
+        path: mock ? mock.request.path : '',
+        method: mock ? mock.request.method : 'GET',
+        params: mock ? mock.request.params : '',
+        headers: mock ? mock.request.headers : ''
+      }),
+      response: this.formBuilder.group({
+        body: mock ? mock.response.body : '',
+        status: mock ? mock.response.status : '',
+        contentType: mock ? mock.response.status : ''
+      })
+    });
   }
 
   private filterStatuses(): Observable<number[]> {
