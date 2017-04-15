@@ -1,14 +1,14 @@
-import { async, ComponentFixture, inject, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, inject, TestBed} from '@angular/core/testing';
 
-import { RegisterComponent } from './register.component';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { ReactiveFormsModule } from '@angular/forms';
-import { By } from '@angular/platform-browser';
-import { changeInputValueAndDispatch } from '../shared/testing/testing-utils.spec';
-import { RegisterService } from './register.service';
-import { Observable } from 'rxjs/Observable';
-import { user } from './register.service.spec';
-import { MockpiMaterialModule } from '../shared/mockpi-material.module';
+import {RegisterComponent} from './register.component';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {ReactiveFormsModule} from '@angular/forms';
+import {By} from '@angular/platform-browser';
+import {changeInputValueAndDispatch} from '../shared/testing/testing-utils.spec';
+import {RegisterService} from './register.service';
+import {Observable} from 'rxjs/Observable';
+import {user} from './register.service.spec';
+import {MockpiMaterialModule} from '../shared/mockpi-material.module';
 
 describe('RegisterComponent', () => {
   let component: RegisterComponent;
@@ -41,11 +41,11 @@ describe('RegisterComponent', () => {
   });
 
   it('should have empty form', async(() => {
-    expect(compiled.querySelector('input[formControlName="username"]').value).toBe('');
-    expect(compiled.querySelector('input[formControlName="name"]').value).toBe('');
-    expect(compiled.querySelector('input[formControlName="email"]').value).toBe('');
-    expect(compiled.querySelector('input[formControlName="password"]').value).toBe('');
-    expect(compiled.querySelector('input[formControlName="confirmPassword"]').value).toBe('');
+    expect(compiled.querySelector('input[formcontrolname="username"]').value).toBe('');
+    expect(compiled.querySelector('input[formcontrolname="name"]').value).toBe('');
+    expect(compiled.querySelector('input[formcontrolname="email"]').value).toBe('');
+    expect(compiled.querySelector('input[formcontrolname="password"]').value).toBe('');
+    expect(compiled.querySelector('input[formcontrolname="confirmPassword"]').value).toBe('');
   }));
 
   it('should disable form submit if empty fields', async(() => {
@@ -53,11 +53,11 @@ describe('RegisterComponent', () => {
   }));
 
   it('should enable form submit if form is valid', async(() => {
-    const usernameInput = fixture.debugElement.query(By.css('input[formControlName="username"]'));
-    const nameInput = fixture.debugElement.query(By.css('input[formControlName="name"]'));
-    const mailInput = fixture.debugElement.query(By.css('input[formControlName="email"]'));
-    const passwordInput = fixture.debugElement.query(By.css('input[formControlName="password"]'));
-    const confirmPasswordInput = fixture.debugElement.query(By.css('input[formControlName="confirmPassword"]'));
+    const usernameInput = fixture.debugElement.query(By.css('input[formcontrolname="username"]'));
+    const nameInput = fixture.debugElement.query(By.css('input[formcontrolname="name"]'));
+    const mailInput = fixture.debugElement.query(By.css('input[formcontrolname="email"]'));
+    const passwordInput = fixture.debugElement.query(By.css('input[formcontrolname="password"]'));
+    const confirmPasswordInput = fixture.debugElement.query(By.css('input[formcontrolname="confirmPassword"]'));
     changeInputValueAndDispatch(usernameInput, 'jntakpe');
     changeInputValueAndDispatch(nameInput, 'Jocelyn');
     changeInputValueAndDispatch(mailInput, 'jntakpe@mail.com');
@@ -77,7 +77,7 @@ describe('RegisterComponent', () => {
 
   it('should display error if username too short', async(() => {
     component.registerForm.get('username').markAsTouched();
-    const usernameInput = fixture.debugElement.query(By.css('input[formControlName="username"]'));
+    const usernameInput = fixture.debugElement.query(By.css('input[formcontrolname="username"]'));
     changeInputValueAndDispatch(usernameInput, 'j');
     fixture.detectChanges();
     const mdError = compiled.querySelector('md-error');
@@ -103,7 +103,7 @@ describe('RegisterComponent', () => {
 
   it('should display error if email invalid', async(() => {
     component.registerForm.get('email').markAsTouched();
-    const emailInput = fixture.debugElement.query(By.css('input[formControlName="email"]'));
+    const emailInput = fixture.debugElement.query(By.css('input[formcontrolname="email"]'));
     changeInputValueAndDispatch(emailInput, 'invalid.mail.com');
     fixture.detectChanges();
     const mdError = compiled.querySelector('md-error');
@@ -121,9 +121,9 @@ describe('RegisterComponent', () => {
 
   it('should display error if password not same', async(() => {
     component.registerForm.get('pwdForm').get('password').markAsTouched();
-    const passwordInput = fixture.debugElement.query(By.css('input[formControlName="password"]'));
+    const passwordInput = fixture.debugElement.query(By.css('input[formcontrolname="password"]'));
     changeInputValueAndDispatch(passwordInput, 'somePwd');
-    const confirmInput = fixture.debugElement.query(By.css('input[formControlName="confirmPassword"]'));
+    const confirmInput = fixture.debugElement.query(By.css('input[formcontrolname="confirmPassword"]'));
     changeInputValueAndDispatch(confirmInput, 'otherPwd');
     fixture.detectChanges();
     const mdError = compiled.querySelector('md-hint');
@@ -132,11 +132,11 @@ describe('RegisterComponent', () => {
   }));
 
   it('should register user', async(inject([RegisterService], (registerService: RegisterService) => {
-    const usernameInput = fixture.debugElement.query(By.css('input[formControlName="username"]'));
-    const nameInput = fixture.debugElement.query(By.css('input[formControlName="name"]'));
-    const mailInput = fixture.debugElement.query(By.css('input[formControlName="email"]'));
-    const passwordInput = fixture.debugElement.query(By.css('input[formControlName="password"]'));
-    const confirmPasswordInput = fixture.debugElement.query(By.css('input[formControlName="confirmPassword"]'));
+    const usernameInput = fixture.debugElement.query(By.css('input[formcontrolname="username"]'));
+    const nameInput = fixture.debugElement.query(By.css('input[formcontrolname="name"]'));
+    const mailInput = fixture.debugElement.query(By.css('input[formcontrolname="email"]'));
+    const passwordInput = fixture.debugElement.query(By.css('input[formcontrolname="password"]'));
+    const confirmPasswordInput = fixture.debugElement.query(By.css('input[formcontrolname="confirmPassword"]'));
     changeInputValueAndDispatch(usernameInput, 'jntakpe');
     changeInputValueAndDispatch(nameInput, 'Jocelyn');
     changeInputValueAndDispatch(mailInput, 'jntakpe@mail.com');

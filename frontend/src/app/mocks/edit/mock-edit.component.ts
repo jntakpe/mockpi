@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { appConst } from '../../shared/constants';
+import {Component, OnInit} from '@angular/core';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {appConst} from '../../shared/constants';
 import '../../shared/rxjs.extension';
-import { Observable } from 'rxjs/Observable';
-import { Mock } from '../../shared/api.model';
+import {Observable} from 'rxjs/Observable';
+import {Mock} from '../../shared/api.model';
 
 @Component({
   selector: 'mpi-mock-edit',
@@ -30,25 +30,24 @@ export class MockEditComponent implements OnInit {
   }
 
   save() {
-
   }
 
   private initializeForm(mock: Mock): FormGroup {
     return this.formBuilder.group({
-      name: mock ? mock.name : '',
-      collection: mock ? mock.collection : '',
-      delay: mock ? mock.delay : null,
-      description: mock ? mock.description : '',
+      name: [mock ? mock.name : '', [Validators.required]],
+      collection: [mock ? mock.collection : ''],
+      delay: [mock ? mock.delay : null],
+      description: [mock ? mock.description : ''],
       request: this.formBuilder.group({
-        path: mock ? mock.request.path : '',
-        method: mock ? mock.request.method : 'GET',
-        params: mock ? mock.request.params : '',
-        headers: mock ? mock.request.headers : ''
+        path: [mock ? mock.request.path : '', [Validators.required]],
+        method: [mock ? mock.request.method : 'GET', [Validators.required]],
+        params: [mock ? mock.request.params : ''],
+        headers: [mock ? mock.request.headers : '']
       }),
       response: this.formBuilder.group({
-        body: mock ? mock.response.body : '',
-        status: mock ? mock.response.status : '',
-        contentType: mock ? mock.response.status : ''
+        body: [mock ? mock.response.body : '', [Validators.required]],
+        status: [mock ? mock.response.status : ''],
+        contentType: [mock ? mock.response.contentType : '']
       })
     });
   }

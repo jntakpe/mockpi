@@ -71,7 +71,7 @@
           </div>
         </md-card-content>
         <md-card-actions fxLayoutAlign="end">
-          <button md-fab type="submit">
+          <button md-fab type="submit" [disabled]="mockForm.invalid">
             <md-icon>add</md-icon>
           </button>
         </md-card-actions>

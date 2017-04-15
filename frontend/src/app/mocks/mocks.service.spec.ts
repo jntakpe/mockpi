@@ -1,11 +1,17 @@
-import { async, inject, TestBed } from '@angular/core/testing';
-import { MocksService } from './mocks.service';
-import { MockBackend } from '@angular/http/testing';
-import { BaseRequestOptions, Http, HttpModule, Response, ResponseOptions } from '@angular/http';
-import { Mock } from '../shared/api.model';
-import { Observable } from 'rxjs/Observable';
-import { RouterTestingModule } from '@angular/router/testing';
-import { MdSnackBarModule } from '@angular/material';
+import {async, fakeAsync, inject, TestBed} from '@angular/core/testing';
+import {MocksService} from './mocks.service';
+import {MockBackend} from '@angular/http/testing';
+import {BaseRequestOptions, Http, HttpModule, Response, ResponseOptions} from '@angular/http';
+import {Mock} from '../shared/api.model';
+import {Observable} from 'rxjs/Observable';
+import {RouterTestingModule} from '@angular/router/testing';
+import {MdSnackBar, MdSnackBarModule} from '@angular/material';
+import {Router, Routes} from '@angular/router';
+import {advance, createRoot, FakeFeatureComponent, FakeHomeComponent, RootComponent} from '../shared/testing/testing-utils.spec';
+import {Location} from '@angular/common';
+import {Component} from '@angular/core';
+import {appConst} from '../shared/constants';
+
 
 const firstMock: Mock = {
   name: 'firstmock',
@@ -54,11 +60,25 @@ export class FakeMocksService extends MocksService {
   }
 }
 
-
 describe('MocksService', () => {
+
+  const routes: Routes = [
+    {path: '', component: RootComponent},
+    {path: 'home', component: FakeHomeComponent},
+    {path: 'mocks', component: FakeFeatureComponent}
+  ];
+
+  @Component({
+    template: `
+      <div>Simple component</div>`,
+  })
+  class TestComponent {
+  }
+
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpModule, RouterTestingModule, MdSnackBarModule],
+      imports: [HttpModule, RouterTestingModule.withRoutes(routes), MdSnackBarModule],
+      declarations: [RootComponent, FakeHomeComponent, FakeFeatureComponent, TestComponent],
       providers: [
         MocksService,
         MockBackend,
@@ -94,5 +114,30 @@ describe('MocksService', () => {
     });
   })));
 
+  it('should redirect to mocks page', fakeAsync(inject([MocksService, Router, Location],
+    (mocksService: MocksService, router: Router, location: Location) => {
+      const fixture = createRoot(router, RootComponent);
+      mocksService.redirectMocks();
+      advance(fixture);
+      expect(location.path()).toBe('/mocks');
+    })));
+
+  it('should call display 400 error message', fakeAsync(inject([MocksService, MdSnackBar],
+    (mocksService: MocksService, mdSnackBar: MdSnackBar) => {
+      spyOn(mdSnackBar, 'open');
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+      mocksService.displaySaveError(new Response(new ResponseOptions({status: 400})));
+      expect(mdSnackBar.open).toHaveBeenCalledWith('Invalid fields error', appConst.snackBar.closeBtnLabel);
+    })));
+
+  it('should call display 500 error message', fakeAsync(inject([MocksService, MdSnackBar],
+    (mocksService: MocksService, mdSnackBar: MdSnackBar) => {
+      spyOn(mdSnackBar, 'open');
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+      mocksService.displaySaveError(new Response(new ResponseOptions({status: 500})));
+      expect(mdSnackBar.open).toHaveBeenCalledWith('Server error', appConst.snackBar.closeBtnLabel);
+    })));
 
 });
