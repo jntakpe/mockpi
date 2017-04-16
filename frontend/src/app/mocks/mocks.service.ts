@@ -28,18 +28,32 @@ export class MocksService {
     return Observable.fromPromise(this.router.navigate(['/mocks']));
   }
 
-  displaySaveError({status}: Response): void {
-    if (status === 400) {
-      this.mdSnackBar.open('Invalid fields error', appConst.snackBar.closeBtnLabel);
-    } else {
-      this.mdSnackBar.open('Server error', appConst.snackBar.closeBtnLabel);
-    }
-  }
-
   mapKeyValueToLiteral(keyValueArray: Array<{ [key: string]: string }>): any {
     return keyValueArray
       .map(o => ({[o.key]: o.value}))
       .reduce((a, c) => Object.assign(a, c), {});
+  }
+
+  findByName(name: string): Observable<Mock> {
+    return this.http.get(`${appConst.api.baseUrl}/mocks/${name}`)
+      .map(res => res.json());
+  }
+
+  displaySaveError({status}: Response): void {
+    if (status === 400) {
+      this.mdSnackBar.open('Invalid fields error', appConst.snackBar.closeBtnLabel);
+    } else {
+      this.defaultServerError();
+    }
+  }
+
+  displayFindByNameError({status}: Response, name: string): void {
+    console.log(status);
+    if (status === 404) {
+      this.mdSnackBar.open(`Mock with name ${name} doesn't exist`, appConst.snackBar.closeBtnLabel);
+    } else {
+      this.defaultServerError();
+    }
   }
 
   private formatRequestParams(mock: Mock): Mock {
@@ -50,4 +64,7 @@ export class MocksService {
     return mock;
   }
 
+  private defaultServerError(): void {
+    this.mdSnackBar.open('Server error', appConst.snackBar.closeBtnLabel);
+  }
 }

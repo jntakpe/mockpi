@@ -69,6 +69,11 @@ export class FakeMocksService extends MocksService {
 
   displaySaveError({status}: Response): void {
   }
+
+
+  findByName(name): Observable<Mock> {
+    return Observable.of(firstMock);
+  }
 }
 
 describe('MocksService', () => {

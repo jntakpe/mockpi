@@ -10,6 +10,7 @@ import {By} from '@angular/platform-browser';
 import {changeInputValueAndDispatch} from '../../shared/testing/testing-utils.spec';
 import {Observable} from 'rxjs/Observable';
 import {Response, ResponseOptions} from '@angular/http';
+import {RouterTestingModule} from '@angular/router/testing';
 
 describe('MockEditComponent', () => {
   let component: MockEditComponent;
@@ -19,7 +20,7 @@ describe('MockEditComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [MockEditComponent],
-      imports: [MockpiMaterialModule, BrowserAnimationsModule, ReactiveFormsModule],
+      imports: [MockpiMaterialModule, BrowserAnimationsModule, ReactiveFormsModule, RouterTestingModule],
       providers: [{
         provide: MocksService,
         useClass: FakeMocksService

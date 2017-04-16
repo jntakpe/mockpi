@@ -5,6 +5,7 @@ import '../../shared/rxjs.extension';
 import {Observable} from 'rxjs/Observable';
 import {Mock} from '../../shared/api.model';
 import {MocksService} from '../mocks.service';
+import {ActivatedRoute} from '@angular/router';
 
 @Component({
   selector: 'mpi-mock-edit',
@@ -27,13 +28,17 @@ export class MockEditComponent implements OnInit {
 
   initialName: string;
 
-  constructor(private formBuilder: FormBuilder, private mocksService: MocksService) {
+  constructor(private formBuilder: FormBuilder, private mocksService: MocksService, private route: ActivatedRoute) {
   }
 
   ngOnInit() {
-    this.mockForm = this.initializeForm(null);
-    this.filteredStatus = this.filterStatuses();
-    this.filteredContentTypes = this.filterContentType();
+    this.route.data
+      .map(d => d.mock)
+      .subscribe((mock: Mock) => {
+        this.mockForm = this.initializeForm(mock);
+        this.filteredStatus = this.filterStatuses();
+        this.filteredContentTypes = this.filterContentType();
+      });
   }
 
   save(): void {
