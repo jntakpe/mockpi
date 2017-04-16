@@ -19,7 +19,7 @@ export class MocksService {
       .map((m: Mock[]) => m.map(this.formatRequestParams));
   }
 
-  save(mock: any, name?: string): Observable<Mock> {
+  save(mock: Mock, name?: string): Observable<Mock> {
     const req = name ? this.http.put(`${appConst.api.baseUrl}/mocks/${name}`, mock) : this.http.post(`${appConst.api.baseUrl}/mocks`, mock);
     return req.map(res => res.json());
   }
@@ -36,6 +36,11 @@ export class MocksService {
     }
   }
 
+  mapKeyValueToLiteral(keyValueArray: Array<{ [key: string]: string }>): any {
+    return keyValueArray
+      .map(o => ({[o.key]: o.value}))
+      .reduce((a, c) => Object.assign(a, c), {});
+  }
 
   private formatRequestParams(mock: Mock): Mock {
     const params = mock.request.params;

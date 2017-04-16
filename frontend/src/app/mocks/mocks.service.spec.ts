@@ -58,6 +58,17 @@ export class FakeMocksService extends MocksService {
   findMocks(): Observable<Mock[]> {
     return Observable.of([firstMock, secondMock]);
   }
+
+  save(mock: any, name?: string): Observable<Mock> {
+    return Observable.of(firstMock);
+  }
+
+  redirectMocks(): Observable<boolean> {
+    return Observable.of(true);
+  }
+
+  displaySaveError({status}: Response): void {
+  }
 }
 
 describe('MocksService', () => {
@@ -139,5 +150,14 @@ describe('MocksService', () => {
       mocksService.displaySaveError(new Response(new ResponseOptions({status: 500})));
       expect(mdSnackBar.open).toHaveBeenCalledWith('Server error', appConst.snackBar.closeBtnLabel);
     })));
+
+  it('should map key value array to literal', inject([MocksService], (mocksService: MocksService) => {
+    const keyValArray = [{key: 'k0', value: 'v0'}, {key: 'k1', value: 'v1'}, {key: 'k2', value: 'v2'}];
+    expect(mocksService.mapKeyValueToLiteral(keyValArray)).toEqual({k0: 'v0', k1: 'v1', k2: 'v2'});
+  }));
+
+  it('should map empty array to empty literal', inject([MocksService], (mocksService: MocksService) => {
+    expect(mocksService.mapKeyValueToLiteral([])).toEqual({});
+  }));
 
 });

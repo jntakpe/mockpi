@@ -66,6 +66,8 @@ describe('MockEditComponent', () => {
 
   it('should call save basic form', async(inject([MocksService], (mocksService: MocksService) => {
     const expected = initializeForm();
+    expected.request.params = {};
+    expected.request.headers = {};
     spyOn(mocksService, 'save').and.returnValue(Observable.of({}));
     compiled.querySelector('button[type="submit"]').click();
     fixture.detectChanges();
@@ -146,7 +148,8 @@ describe('MockEditComponent', () => {
 
   it('should call save form with params', async(inject([MocksService], (mocksService: MocksService) => {
     const expected = initializeForm();
-    expected.request.params = [{key: 'k0', value: 'v0'}, {key: 'k1', value: 'v1'}];
+    expected.request.params = {k0: 'v0', k1: 'v1'};
+    expected.request.headers = {};
     compiled.querySelector('button#add-param').click();
     fixture.detectChanges();
     compiled.querySelector('button#add-param').click();
@@ -169,7 +172,8 @@ describe('MockEditComponent', () => {
 
   it('should call save form with headers', async(inject([MocksService], (mocksService: MocksService) => {
     const expected = initializeForm();
-    expected.request.headers = [{key: 'k0', value: 'v0'}, {key: 'k1', value: 'v1'}];
+    expected.request.headers = {k0: 'v0', k1: 'v1'};
+    expected.request.params = {};
     compiled.querySelector('button#add-header').click();
     fixture.detectChanges();
     compiled.querySelector('button#add-header').click();

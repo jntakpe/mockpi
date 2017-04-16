@@ -37,7 +37,10 @@ export class MockEditComponent implements OnInit {
   }
 
   save(): void {
-    this.mocksService.save(this.mockForm.value, this.initialName).subscribe(
+    const mockForm = this.mockForm.value;
+    mockForm.request.params = this.mocksService.mapKeyValueToLiteral(mockForm.request.params);
+    mockForm.request.headers = this.mocksService.mapKeyValueToLiteral(mockForm.request.headers);
+    this.mocksService.save(mockForm, this.initialName).subscribe(
       () => this.mocksService.redirectMocks(),
       err => this.mocksService.displaySaveError(err)
     );
