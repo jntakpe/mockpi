@@ -1,6 +1,6 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { LoginService } from './login.service';
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {LoginService} from './login.service';
 
 @Component({
   selector: 'mpi-login',
@@ -24,7 +24,7 @@ export class LoginComponent implements OnInit {
     this.focusLoginInput();
   }
 
-  signIn() {
+  signIn(): void {
     const formValue = this.loginForm.value;
     this.loginService.login(formValue.username, formValue.password).subscribe(
       user => this.loginService.redirectHome(),
