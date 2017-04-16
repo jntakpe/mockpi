@@ -38,8 +38,7 @@ class UserResourceTest {
                 .exchange()
                 .expectStatus().isOk
                 .expectHeader().contentType(MediaType.APPLICATION_JSON_UTF8)
-                .expectBody(User::class.java)
-                .returnResult<User>()
+                .returnResult(User::class.java)
         result.responseBody.test().consumeNextWith {
             (username, name, email) ->
             assertThat(username).isEqualTo("jntakpe")
@@ -54,8 +53,7 @@ class UserResourceTest {
                 .exchange()
                 .expectStatus().isOk
                 .expectHeader().contentType(MediaType.APPLICATION_JSON_UTF8)
-                .expectBody(User::class.java)
-                .returnResult<User>()
+                .returnResult(User::class.java)
         result.responseBody.test().consumeNextWith {
             (username, name, email) ->
             assertThat(username).isEqualTo("jntakpe")
@@ -78,8 +76,7 @@ class UserResourceTest {
                 .exchange()
                 .expectStatus().isCreated
                 .expectHeader().contentType(MediaType.APPLICATION_JSON_UTF8)
-                .expectBody(User::class.java)
-                .returnResult<User>()
+                .returnResult(User::class.java)
         result.responseBody.test().consumeNextWith {
             (username, name, email) ->
             assertThat(username).isEqualTo("postuser")

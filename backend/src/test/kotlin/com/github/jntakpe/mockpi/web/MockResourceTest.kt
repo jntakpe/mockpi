@@ -46,8 +46,7 @@ class MockResourceTest {
                 .exchange()
                 .expectStatus().isOk
                 .expectHeader().contentType(APPLICATION_JSON_UTF8)
-                .expectBody(Mock::class.java)
-                .returnResult<Mock>()
+                .returnResult(Mock::class.java)
         result.responseBody.test()
                 .expectNextCount(count)
                 .expectComplete()
@@ -61,8 +60,7 @@ class MockResourceTest {
                 .exchange()
                 .expectStatus().isOk
                 .expectHeader().contentType(APPLICATION_JSON_UTF8)
-                .expectBody(Mock::class.java)
-                .returnResult<Mock>()
+                .returnResult(Mock::class.java)
         result.responseBody.test().consumeNextWith {
             (name, request, response) ->
             assertThat(name).isEqualTo(demo1Name)
@@ -78,8 +76,7 @@ class MockResourceTest {
                 .exchange()
                 .expectStatus().isOk
                 .expectHeader().contentType(APPLICATION_JSON_UTF8)
-                .expectBody(Mock::class.java)
-                .returnResult<Mock>()
+                .returnResult(Mock::class.java)
         result.responseBody.test().consumeNextWith {
             (name, request, response) ->
             assertThat(name).isEqualTo(name)
@@ -105,8 +102,7 @@ class MockResourceTest {
                 .exchange()
                 .expectStatus().isCreated
                 .expectHeader().contentType(APPLICATION_JSON_UTF8)
-                .expectBody(Mock::class.java)
-                .returnResult<Mock>()
+                .returnResult(Mock::class.java)
         result.responseBody.test().consumeNextWith {
             (name, request, response) ->
             assertThat(name).isEqualTo(mockName.toLowerCase())
@@ -135,8 +131,7 @@ class MockResourceTest {
                 .exchange()
                 .expectStatus().isOk
                 .expectHeader().contentType(APPLICATION_JSON_UTF8)
-                .expectBody(Mock::class.java)
-                .returnResult<Mock>()
+                .returnResult(Mock::class.java)
         result.responseBody.test().consumeNextWith {
             (name, request, response) ->
             assertThat(name).isEqualTo(updatedName)
