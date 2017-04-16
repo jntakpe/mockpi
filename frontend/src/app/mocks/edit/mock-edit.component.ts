@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {appConst} from '../../shared/constants';
 import '../../shared/rxjs.extension';
 import {Observable} from 'rxjs/Observable';
@@ -14,6 +14,10 @@ import {MocksService} from '../mocks.service';
 export class MockEditComponent implements OnInit {
 
   mockForm: FormGroup;
+
+  paramsFormArray: FormArray;
+
+  headersFormArray: FormArray;
 
   methods: string[] = appConst.api.methods;
 
@@ -32,14 +36,24 @@ export class MockEditComponent implements OnInit {
     this.filteredContentTypes = this.filterContentType();
   }
 
-  save() {
+  save(): void {
     this.mocksService.save(this.mockForm.value, this.initialName).subscribe(
       () => this.mocksService.redirectMocks(),
       err => this.mocksService.displaySaveError(err)
     );
   }
 
+  addToFormArray(formArray: FormArray): void {
+    formArray.push(this.keyValueGroup());
+  }
+
+  removeFromFormArray(formArray: FormArray, index: number): void {
+    formArray.removeAt(index);
+  }
+
   private initializeForm(mock: Mock): FormGroup {
+    this.paramsFormArray = this.initKeyValueFormArray(mock ? mock.request.params : null);
+    this.headersFormArray = this.initKeyValueFormArray(mock ? mock.request.headers : null);
     return this.formBuilder.group({
       name: [mock ? mock.name : '', [Validators.required]],
       collection: [mock ? mock.collection : ''],
@@ -48,14 +62,28 @@ export class MockEditComponent implements OnInit {
       request: this.formBuilder.group({
         path: [mock ? mock.request.path : '', [Validators.required]],
         method: [mock ? mock.request.method : 'GET', [Validators.required]],
-        params: [mock ? mock.request.params : {}],
-        headers: [mock ? mock.request.headers : {}]
+        params: this.paramsFormArray,
+        headers: this.headersFormArray
       }),
       response: this.formBuilder.group({
         body: [mock ? mock.response.body : '', [Validators.required]],
         status: [mock ? mock.response.status : ''],
         contentType: [mock ? mock.response.contentType : '']
       })
+    });
+  }
+
+  private initKeyValueFormArray(map: { [key: string]: string }): FormArray {
+    if (!map) {
+      return this.formBuilder.array([]);
+    }
+    return this.formBuilder.array(Object.keys(map).map(k => this.keyValueGroup(k, map[k])));
+  }
+
+  private keyValueGroup(key: string = '', value: string = ''): FormGroup {
+    return this.formBuilder.group({
+      key: this.formBuilder.control(key, Validators.required),
+      value: this.formBuilder.control(value, Validators.required)
     });
   }
 

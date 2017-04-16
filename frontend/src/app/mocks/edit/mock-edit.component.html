@@ -40,6 +40,64 @@
             </md-radio-group>
           </div>
         </md-card-content>
+        <div fxLayout.gt-md="row" fxLayout="column" fxLayoutAlign.gt-md="space-around">
+          <md-card fxFlex.gt-md="48">
+            <md-card-subtitle>Request params</md-card-subtitle>
+            <md-card-content fxLayout="row">
+              <button type="button" md-mini-fab color="primary" (click)="addToFormArray(paramsFormArray)" id="add-param">
+                <md-icon>add</md-icon>
+              </button>
+              <div class="ml-4" formArrayName="params" fxLayout="column" fxFlex>
+                <div *ngFor="let param of paramsFormArray.controls; let i = index" [formGroupName]="i" fxLayout="row"
+                     fxLayoutAlign="space-between">
+                  <md-input-container fxFlex="40">
+                    <input mdInput type="text" placeholder="Name" formControlName="key">
+                    <md-error *ngIf="param.get('key').hasError('required')">
+                      Request param name is required
+                    </md-error>
+                  </md-input-container>
+                  <md-input-container fxFlex="40">
+                    <input mdInput type="text" placeholder="Value" formControlName="value">
+                    <md-error *ngIf="param.get('value').hasError('required')">
+                      Request param value is required
+                    </md-error>
+                  </md-input-container>
+                  <button type="button" md-mini-fab color="warn" (click)="removeFromFormArray(paramsFormArray, i)" id="remove-param">
+                    <md-icon>remove</md-icon>
+                  </button>
+                </div>
+              </div>
+            </md-card-content>
+          </md-card>
+          <md-card fxFlex.gt-md="48">
+            <md-card-subtitle>Request headers</md-card-subtitle>
+            <md-card-content fxLayout="row">
+              <button type="button" md-mini-fab color="primary" (click)="addToFormArray(headersFormArray)" id="add-header">
+                <md-icon>add</md-icon>
+              </button>
+              <div class="ml-4" formArrayName="headers" fxLayout="column" fxFlex>
+                <div *ngFor="let header of headersFormArray.controls; let i = index" [formGroupName]="i" fxLayout="row"
+                     fxLayoutAlign="space-between">
+                  <md-input-container fxFlex="40">
+                    <input mdInput type="text" placeholder="Name" formControlName="key">
+                    <md-error *ngIf="header.get('key').hasError('required')">
+                      Request header name is required
+                    </md-error>
+                  </md-input-container>
+                  <md-input-container fxFlex="40">
+                    <input mdInput type="text" placeholder="Value" formControlName="value">
+                    <md-error *ngIf="header.get('value').hasError('required')">
+                      Request header value is required
+                    </md-error>
+                  </md-input-container>
+                  <button type="button" md-mini-fab color="warn" (click)="removeFromFormArray(headersFormArray, i)" id="remove-header">
+                    <md-icon>remove</md-icon>
+                  </button>
+                </div>
+              </div>
+            </md-card-content>
+          </md-card>
+        </div>
       </md-card>
       <md-card formGroupName="response">
         <md-card-subtitle>Response</md-card-subtitle>
@@ -52,7 +110,7 @@
               <md-input-container fxFlex.gt-sm="30">
                 <input mdInput placeholder="Status" [mdAutocomplete]="autoStatus" formControlName="status">
               </md-input-container>
-              <md-autocomplete #autoStatus="mdAutocomplete">
+              <md-autocomplete #autoStatus="mdAutocomplete" id="status-autocomplete">
                 <md-option *ngFor="let status of filteredStatus | async" [value]="status">
                   {{ status }}
                 </md-option>
