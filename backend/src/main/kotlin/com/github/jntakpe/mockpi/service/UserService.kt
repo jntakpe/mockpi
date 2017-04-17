@@ -39,7 +39,7 @@ class UserService(private val userRepository: UserRepository) {
         logger.info("Creating {}", user)
         return Mono.`when`(verifyUsernameAvailable(user.username), verifyEmailAvailable(user.email))
                 .map { lowerCaseUsernameAndMail(user) }
-                .flatMap { u -> userRepository.insert(u) }
+                .flatMap(userRepository::insert)
     }
 
     fun update(user: User, oldUsername: String): Mono<User> {
@@ -49,13 +49,15 @@ class UserService(private val userRepository: UserRepository) {
                     Mono.`when`(verifyUsernameAvailable(user.username, username), verifyEmailAvailable(user.email, email))
                 }
                 .map { lowerCaseUsernameAndMail(user) }
-                .flatMap { u -> userRepository.save(u) }
+                .flatMap(userRepository::save)
                 .flatMap { u -> deleteOldUsername(oldUsername, u) }
     }
 
     fun delete(username: String): Mono<Void> {
         logger.info("Deleting user {}", username)
-        return findByUsernameOrThrow(username).flatMap { (username) -> userRepository.delete(username) }
+        return findByUsernameOrThrow(username)
+                .map(User::username)
+                .flatMap(userRepository::delete)
     }
 
     private fun lowerCaseUsernameAndMail(user: User) = user.copy(username = user.username.toLowerCase(), email = user.email.toLowerCase())

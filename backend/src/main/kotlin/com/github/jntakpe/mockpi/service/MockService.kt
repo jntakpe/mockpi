@@ -1,5 +1,6 @@
 package com.github.jntakpe.mockpi.service
 
+import com.github.jntakpe.mockpi.config.ApiProperties
 import com.github.jntakpe.mockpi.domain.Mock
 import com.github.jntakpe.mockpi.domain.Request
 import com.github.jntakpe.mockpi.exceptions.ConflictKeyException
@@ -12,7 +13,7 @@ import reactor.core.publisher.Mono
 import reactor.core.publisher.toMono
 
 @Service
-class MockService(private val mockRepository: MockRepository) {
+class MockService(private val mockRepository: MockRepository, private val apiProperties: ApiProperties) {
 
     val logger = LoggerFactory.getLogger(javaClass.simpleName)
 
@@ -52,8 +53,6 @@ class MockService(private val mockRepository: MockRepository) {
 
     fun create(mock: Mock): Mono<Mock> {
         logger.info("Creating {}", mock)
-        //TODO check la même request n'existe pas
-        //TODO générer un name quand il n'est pas renseigné
         return Mono.`when`(verifyNameAvailable(mock.name), verifyRequestAvailable(mock.request))
                 .map { mock.copy(name = mock.name.toLowerCase()) }
                 .flatMap { mockRepository.insert(it) }
@@ -66,7 +65,7 @@ class MockService(private val mockRepository: MockRepository) {
                     Mono.`when`(verifyNameAvailable(mock.name, name), verifyRequestAvailable(mock.request, request))
                 }
                 .map { mock.copy(name = mock.name.toLowerCase()) }
-                .flatMap { mockRepository.save(it) }
+                .flatMap(mockRepository::save)
     }
 
     fun delete(name: String): Mono<Void> {
@@ -80,4 +79,6 @@ class MockService(private val mockRepository: MockRepository) {
 
     private fun findByNameOrThrow(name: String): Mono<Mock> = findByName(name)
             .switchIfEmpty(IdNotFoundException("Mock $name doest not exist").toMono<Mock>())
+
+
 }
