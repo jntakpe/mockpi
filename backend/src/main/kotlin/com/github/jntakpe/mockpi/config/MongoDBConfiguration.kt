@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.data.mongodb.config.AbstractReactiveMongoConfiguration
 import org.springframework.http.HttpHeaders.*
 import org.springframework.http.HttpMethod.GET
+import org.springframework.http.MediaType
 import reactor.core.publisher.Flux
 
 @Configuration
@@ -58,7 +59,10 @@ class MongoDBConfiguration(val mongoProperties: MongoProperties) : AbstractReact
                 Mock("toupdateapi", Request("/mockpi/toupdate/api", GET), Response("{\"name\": \"jntakpe\"}")),
                 Mock("toupdatepath", Request("/mockpi/toupdate/path", GET), Response("{\"name\": \"jntakpe\"}")),
                 Mock("todelete", Request("/mockpi/todelete/api", GET), Response("{\"name\": \"jntakpe\"}")),
-                Mock("todeleteapi", Request("/mockpi/todelete/api", GET), Response("{\"name\": \"jntakpe\"}"))
+                Mock("todeleteapi", Request("/mockpi/todelete/api", GET), Response("{\"name\": \"jntakpe\"}")),
+                Mock("delayed", Request("/mockpi/delayed", GET), Response("{\"name\": \"jntakpe\"}"), "", 1000L, "delayed desc"),
+                Mock("pristine", Request("/mockpi/pristine", GET), Response("pristinebody")),
+                Mock("pristineCustom", Request("/mockpi/pristine/custom", GET), Response("custombody", 201, MediaType.TEXT_PLAIN_VALUE))
         )
         mockRepository.deleteAll().thenMany(mockRepository.save(mocks)).blockLast()
     }

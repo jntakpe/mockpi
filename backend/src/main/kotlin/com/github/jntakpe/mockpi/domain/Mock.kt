@@ -10,7 +10,7 @@ data class Mock @PersistenceConstructor constructor(@Id @NotBlank val name: Stri
                                                     val request: Request,
                                                     val response: Response,
                                                     val collection: String,
-                                                    val delay: Int,
+                                                    val delay: Long,
                                                     val description: String) {
 
     constructor(name: String, request: Request, response: Response) : this(

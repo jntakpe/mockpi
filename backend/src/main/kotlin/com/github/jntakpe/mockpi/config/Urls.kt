@@ -4,4 +4,5 @@ object Urls {
     const val USERS_API = "/api/mockpi/users"
     const val MOCK_API = "/api/mocks"
     const val BY_NAME = "/{name}"
+    const val FAKE_PREFIX = "/mockpi"
 }

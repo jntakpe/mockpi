@@ -1,6 +1,6 @@
 package com.github.jntakpe.mockpi.service
 
-import com.github.jntakpe.mockpi.config.ApiProperties
+import com.github.jntakpe.mockpi.config.Urls
 import com.github.jntakpe.mockpi.domain.Mock
 import com.github.jntakpe.mockpi.domain.Request
 import com.github.jntakpe.mockpi.exceptions.ConflictKeyException
@@ -14,7 +14,7 @@ import reactor.core.publisher.Mono
 import reactor.core.publisher.toMono
 
 @Service
-class MockService(private val mockRepository: MockRepository, private val apiProperties: ApiProperties) {
+class MockService(private val mockRepository: MockRepository) {
 
     val logger = LoggerFactory.getLogger(javaClass.simpleName)
 
@@ -87,7 +87,7 @@ class MockService(private val mockRepository: MockRepository, private val apiPro
             .switchIfEmpty(IdNotFoundException("Mock $name doest not exist").toMono<Mock>())
 
     private fun addPrefixIfRequired(request: Request): Request {
-        val apiPath = StringUtils.prependIfMissing(apiProperties.fakeContextRoot, "/")
+        val apiPath = StringUtils.prependIfMissing(Urls.FAKE_PREFIX, "/")
         var path = StringUtils.prependIfMissing(request.path, "/")
         path = StringUtils.prependIfMissing(path, apiPath)
         return request.copy(path = path)
