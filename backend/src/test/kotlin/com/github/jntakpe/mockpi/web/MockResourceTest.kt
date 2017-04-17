@@ -1,5 +1,6 @@
 package com.github.jntakpe.mockpi.web
 
+import com.github.jntakpe.mockpi.config.ApiProperties
 import com.github.jntakpe.mockpi.config.Urls
 import com.github.jntakpe.mockpi.domain.Mock
 import com.github.jntakpe.mockpi.domain.Request
@@ -29,6 +30,9 @@ class MockResourceTest {
 
     @Autowired
     lateinit var mockRepository: MockRepository
+
+    @Autowired
+    lateinit var apiProperties: ApiProperties
 
     @Autowired
     lateinit var webAdvising: WebAdvising
@@ -66,7 +70,7 @@ class MockResourceTest {
             (name, request, response) ->
             assertThat(name).isEqualTo(demo1Name)
             assertThat(request).isNotNull()
-            assertThat(request.path).isEqualTo("/mockpi/users/1")
+            assertThat(request.path).isEqualTo("${apiProperties.fakeContextRoot}/users/1")
             assertThat(response).isNotNull()
         }.verifyComplete()
     }
@@ -82,7 +86,7 @@ class MockResourceTest {
             (name, request, response) ->
             assertThat(name).isEqualTo(name)
             assertThat(request).isNotNull()
-            assertThat(request.path).isEqualTo("/mockpi/users/1")
+            assertThat(request.path).isEqualTo("${apiProperties.fakeContextRoot}/users/1")
             assertThat(response).isNotNull()
         }.verifyComplete()
     }
@@ -108,7 +112,7 @@ class MockResourceTest {
             (name, request, response) ->
             assertThat(name).isEqualTo(mockName.toLowerCase())
             assertThat(request).isNotNull()
-            assertThat(request.path).isEqualTo("/post/mock")
+            assertThat(request.path).isEqualTo("${apiProperties.fakeContextRoot}/post/mock")
             assertThat(response).isNotNull()
             assertThat(response.body).isEqualTo(mockBody)
         }.verifyComplete()
@@ -125,7 +129,7 @@ class MockResourceTest {
     @Test
     fun `should update mock`() {
         val updatedName = "updatedfromapi"
-        val updatedPath = "/updated/from/api"
+        val updatedPath = "${apiProperties.fakeContextRoot}/updated/from/api"
         val updatedBody = "updatedBody"
         val result = client.put().uri(Urls.MOCK_API + Urls.BY_NAME, "toupdateapi").accept(APPLICATION_JSON_UTF8)
                 .body(Mock(updatedName, Request(updatedPath, POST), Response(updatedBody)).toMono(), Mock::class.java)

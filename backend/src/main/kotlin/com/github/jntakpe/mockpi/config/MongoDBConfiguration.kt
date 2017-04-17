@@ -56,6 +56,7 @@ class MongoDBConfiguration(val mongoProperties: MongoProperties) : AbstractReact
                 Mock("toupdate", Request("/mockpi/toupdate/1", GET), Response("{\"name\": \"jntakpe\"}")),
                 Mock("toupdate2", Request("/mockpi/toupdate/2", GET), Response("{\"name\": \"jntakpe\"}")),
                 Mock("toupdateapi", Request("/mockpi/toupdate/api", GET), Response("{\"name\": \"jntakpe\"}")),
+                Mock("toupdatepath", Request("/mockpi/toupdate/path", GET), Response("{\"name\": \"jntakpe\"}")),
                 Mock("todelete", Request("/mockpi/todelete/api", GET), Response("{\"name\": \"jntakpe\"}")),
                 Mock("todeleteapi", Request("/mockpi/todelete/api", GET), Response("{\"name\": \"jntakpe\"}"))
         )

@@ -1,6 +1,7 @@
 package com.github.jntakpe.mockpi.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.github.jntakpe.mockpi.config.ApiProperties
 import com.github.jntakpe.mockpi.domain.Mock
 import com.github.jntakpe.mockpi.domain.Request
 import com.github.jntakpe.mockpi.domain.Response
@@ -27,6 +28,9 @@ class MockServiceTest {
 
     @Autowired
     lateinit var mockRepository: MockRepository
+
+    @Autowired
+    lateinit var apiProperties: ApiProperties
 
     @Test
     fun `should find all mocks`() {
@@ -91,7 +95,7 @@ class MockServiceTest {
         val name = "DEmo1"
         mockService.verifyNameAvailable(name, "demo1").test()
                 .expectSubscription()
-                .expectNext(name)
+                .expectNext(name.toLowerCase())
                 .verifyComplete()
     }
 
@@ -112,14 +116,14 @@ class MockServiceTest {
 
     @Test
     fun `shoud refuse request because same request exist`() {
-        mockService.verifyRequestAvailable(Request("/mockpi/users/1", GET)).test()
+        mockService.verifyRequestAvailable(Request("${apiProperties.fakeContextRoot}/users/1", GET)).test()
                 .expectSubscription()
                 .verifyError(ConflictKeyException::class.java)
     }
 
     @Test
     fun `should accept request because old request is the the same`() {
-        mockService.verifyRequestAvailable(Request("/mockpi/users/1", GET), Request("/mockpi/users/1", GET)).test()
+        mockService.verifyRequestAvailable(Request("${apiProperties.fakeContextRoot}/users/1", GET), Request("${apiProperties.fakeContextRoot}/users/1", GET)).test()
                 .expectSubscription()
                 .expectNextCount(1)
                 .verifyComplete()
@@ -127,14 +131,14 @@ class MockServiceTest {
 
     @Test
     fun `should refuse request because old request is not the same`() {
-        mockService.verifyRequestAvailable(Request("/mockpi/users/1", GET), Request("/mockpi/users/1", POST)).test()
+        mockService.verifyRequestAvailable(Request("${apiProperties.fakeContextRoot}/users/1", GET), Request("${apiProperties.fakeContextRoot}/users/1", POST)).test()
                 .expectSubscription()
                 .verifyError(ConflictKeyException::class.java)
     }
 
     @Test
     fun `should find one response with request path and method`() {
-        mockService.findMatchingMock(Request("/mockpi/users/1", GET)).test()
+        mockService.findMatchingMock(Request("${apiProperties.fakeContextRoot}/users/1", GET)).test()
                 .expectSubscription()
                 .consumeNextWith { response ->
                     assertThat(response).isNotNull()
@@ -153,7 +157,7 @@ class MockServiceTest {
 
     @Test
     fun `should find none cuz method missmatch`() {
-        mockService.findMatchingMock(Request("/mockpi/users/1", POST)).test()
+        mockService.findMatchingMock(Request("${apiProperties.fakeContextRoot}/users/1", POST)).test()
                 .expectSubscription()
                 .expectNextCount(0)
                 .verifyComplete()
@@ -161,7 +165,7 @@ class MockServiceTest {
 
     @Test
     fun `should find one response with request path, method and one param`() {
-        mockService.findMatchingMock(Request("/mockpi/users/1", GET, mapOf(Pair("age", "20")), emptyMap())).test()
+        mockService.findMatchingMock(Request("${apiProperties.fakeContextRoot}/users/1", GET, mapOf(Pair("age", "20")), emptyMap())).test()
                 .expectSubscription()
                 .consumeNextWith { response ->
                     assertThat(response).isNotNull()
@@ -172,7 +176,7 @@ class MockServiceTest {
 
     @Test
     fun `should find one response with request path, method and two params`() {
-        val request = Request("/mockpi/users/1", GET, mapOf(Pair("gender", "M"), Pair("age", "20")), emptyMap())
+        val request = Request("${apiProperties.fakeContextRoot}/users/1", GET, mapOf(Pair("gender", "M"), Pair("age", "20")), emptyMap())
         mockService.findMatchingMock(request).test()
                 .expectSubscription()
                 .consumeNextWith { response ->
@@ -184,7 +188,7 @@ class MockServiceTest {
 
     @Test
     fun `should find none because param missmatch`() {
-        val request = Request("/mockpi/users/1", GET, mapOf(Pair("gender", "Mme"), Pair("age", "20")), emptyMap())
+        val request = Request("${apiProperties.fakeContextRoot}/users/1", GET, mapOf(Pair("gender", "Mme"), Pair("age", "20")), emptyMap())
         mockService.findMatchingMock(request).test()
                 .expectSubscription()
                 .expectNextCount(0)
@@ -194,7 +198,7 @@ class MockServiceTest {
 
     @Test
     fun `should find one response with request path, method and no headers matching`() {
-        val request = Request("/mockpi/users/1", GET, emptyMap(), mapOf(Pair(ACCEPT, "*")))
+        val request = Request("${apiProperties.fakeContextRoot}/users/1", GET, emptyMap(), mapOf(Pair(ACCEPT, "*")))
         mockService.findMatchingMock(request).test()
                 .expectSubscription()
                 .consumeNextWith { response ->
@@ -206,7 +210,7 @@ class MockServiceTest {
 
     @Test
     fun `should find one response with request path, method and one headers matching`() {
-        val request = Request("/mockpi/users/2", GET, emptyMap(), mapOf(Pair(ACCEPT, "*")))
+        val request = Request("${apiProperties.fakeContextRoot}/users/2", GET, emptyMap(), mapOf(Pair(ACCEPT, "*")))
         mockService.findMatchingMock(request).test()
                 .expectSubscription()
                 .consumeNextWith { response ->
@@ -218,7 +222,7 @@ class MockServiceTest {
 
     @Test
     fun `should find one response with request path, method and two headers matching`() {
-        val request = Request("/mockpi/users/2", GET, emptyMap(), mapOf(Pair(CACHE_CONTROL, "no-cache"), Pair(CONTENT_TYPE, "application/json")))
+        val request = Request("${apiProperties.fakeContextRoot}/users/2", GET, emptyMap(), mapOf(Pair(CACHE_CONTROL, "no-cache"), Pair(CONTENT_TYPE, "application/json")))
         mockService.findMatchingMock(request).test()
                 .expectSubscription()
                 .consumeNextWith { response ->
@@ -230,7 +234,7 @@ class MockServiceTest {
 
     @Test
     fun `should not find because accept header missing`() {
-        val request = Request("/mockpi/users/2", GET, emptyMap(), mapOf(Pair(CONTENT_TYPE, "application/json")))
+        val request = Request("${apiProperties.fakeContextRoot}/users/2", GET, emptyMap(), mapOf(Pair(CONTENT_TYPE, "application/json")))
         mockService.findMatchingMock(request).test()
                 .expectSubscription()
                 .expectNextCount(0)
@@ -239,7 +243,7 @@ class MockServiceTest {
 
     @Test
     fun `should not find because accept header wrong value`() {
-        val request = Request("/mockpi/users/2", GET, emptyMap(), mapOf(Pair(ACCEPT, "ALL")))
+        val request = Request("${apiProperties.fakeContextRoot}/users/2", GET, emptyMap(), mapOf(Pair(ACCEPT, "ALL")))
         mockService.findMatchingMock(request).test()
                 .expectSubscription()
                 .expectNextCount(0)
@@ -253,11 +257,22 @@ class MockServiceTest {
         val mock = Mock(mockName, Request(path, GET), Response(ObjectMapper().writeValueAsString(Pair("basic", "mock"))))
         mockService.create(mock).test()
                 .expectSubscription()
-                .consumeNextWith {
-                    (name, request) ->
-                    assertThat(name).isEqualTo(mockName)
-                    assertThat(request.path).isEqualTo(path)
-                }
+                .consumeNextWith { assertThat(it.name).isEqualTo(mockName) }
+                .verifyComplete()
+        mockRepository.exists(mockName).test()
+                .expectSubscription()
+                .expectNext(true)
+                .verifyComplete()
+    }
+
+    @Test
+    fun `should create mock adding api path`() {
+        val mockName = "changingpathmock"
+        val path = "/changingpathmock"
+        val mock = Mock(mockName, Request(path, GET), Response(ObjectMapper().writeValueAsString(Pair("basic", "mock"))))
+        mockService.create(mock).test()
+                .expectSubscription()
+                .consumeNextWith { assertThat(it.request.path).isEqualTo(apiProperties.fakeContextRoot + path) }
                 .verifyComplete()
         mockRepository.exists(mockName).test()
                 .expectSubscription()
@@ -275,7 +290,7 @@ class MockServiceTest {
 
     @Test
     fun `should not create because request taken`() {
-        val mock = Mock("unknownNameForSure", Request("/mockpi/users/1", GET), Response(ObjectMapper().writeValueAsString(Pair("basic", "mock"))))
+        val mock = Mock("unknownNameForSure", Request("${apiProperties.fakeContextRoot}/users/1", GET), Response(ObjectMapper().writeValueAsString(Pair("basic", "mock"))))
         mockService.create(mock).test()
                 .expectSubscription()
                 .verifyError(ConflictKeyException::class.java)
@@ -293,6 +308,17 @@ class MockServiceTest {
     }
 
     @Test
+    fun `should update mock changing request path`() {
+        val name = "toupdatepath"
+        val path = "/notapipath"
+        val mock = mockRepository.findByNameIgnoreCase(name).block().copy(request = Request(path, GET))
+        mockService.update(mock, name).test()
+                .expectSubscription()
+                .consumeNextWith { assertThat(it.request.path).isEqualTo(apiProperties.fakeContextRoot + path) }
+                .verifyComplete()
+    }
+
+    @Test
     fun `should update mock changing name`() {
         val name = "toupdate"
         val updatedName = "updatedName"
@@ -301,7 +327,7 @@ class MockServiceTest {
                 .expectSubscription()
                 .consumeNextWith {
                     assertThat(it.name).isEqualTo(updatedName.toLowerCase())
-                    assertThat(it.request.path).isEqualTo("/mockpi/toupdate/1")
+                    assertThat(it.request.path).isEqualTo("${apiProperties.fakeContextRoot}/toupdate/1")
                 }
                 .verifyComplete()
         mockRepository.findByNameIgnoreCase(name).test()
