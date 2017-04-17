@@ -2,3 +2,5 @@ spring:
   data:
     mongodb:
       database: mockpi
+api:
+  fakeContextRoot: /mockpi

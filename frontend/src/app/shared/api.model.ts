@@ -1,4 +1,4 @@
-// Generated using typescript-generator version 1.21.304 on 2017-04-16 12:48:36.
+// Generated using typescript-generator version 1.21.304 on 2017-04-17 02:49:52.
 
 export interface Mock {
     name: string;
@@ -11,7 +11,7 @@ export interface Mock {
 
 export interface Request {
     path: string;
-    method: RequestMethod;
+  method: HttpMethod;
     params: { [index: string]: string };
     headers: { [index: string]: string };
 }
@@ -28,4 +28,4 @@ export interface User {
     email: string;
 }
 
-export type RequestMethod = 'GET' | 'HEAD' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS' | 'TRACE';
+export type HttpMethod = 'GET' | 'HEAD' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS' | 'TRACE';

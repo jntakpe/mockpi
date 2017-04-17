@@ -11,11 +11,12 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.http.HttpMethod.GET
+import org.springframework.http.HttpMethod.POST
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType.APPLICATION_JSON_UTF8
 import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.test.web.reactive.server.WebTestClient
-import org.springframework.web.bind.annotation.RequestMethod
 import reactor.core.publisher.test
 import reactor.core.publisher.toMono
 
@@ -65,7 +66,7 @@ class MockResourceTest {
             (name, request, response) ->
             assertThat(name).isEqualTo(demo1Name)
             assertThat(request).isNotNull()
-            assertThat(request.path).isEqualTo("/users/1")
+            assertThat(request.path).isEqualTo("/mockpi/users/1")
             assertThat(response).isNotNull()
         }.verifyComplete()
     }
@@ -81,7 +82,7 @@ class MockResourceTest {
             (name, request, response) ->
             assertThat(name).isEqualTo(name)
             assertThat(request).isNotNull()
-            assertThat(request.path).isEqualTo("/users/1")
+            assertThat(request.path).isEqualTo("/mockpi/users/1")
             assertThat(response).isNotNull()
         }.verifyComplete()
     }
@@ -98,7 +99,7 @@ class MockResourceTest {
         val mockName = "postMock"
         val mockBody = "mockBody"
         val result = client.post().uri(Urls.MOCK_API).accept(APPLICATION_JSON_UTF8)
-                .body(Mock(mockName, Request("/post/mock", RequestMethod.GET), Response(mockBody)).toMono(), Mock::class.java)
+                .body(Mock(mockName, Request("/post/mock", GET), Response(mockBody)).toMono(), Mock::class.java)
                 .exchange()
                 .expectStatus().isCreated
                 .expectHeader().contentType(APPLICATION_JSON_UTF8)
@@ -116,7 +117,7 @@ class MockResourceTest {
     @Test
     fun `should not create new mock cuz login taken`() {
         client.post().uri(Urls.MOCK_API).accept(APPLICATION_JSON_UTF8)
-                .body(Mock("dEMo1", Request("/some", RequestMethod.GET), Response("test")).toMono(), Mock::class.java)
+                .body(Mock("dEMo1", Request("/some", GET), Response("test")).toMono(), Mock::class.java)
                 .exchange()
                 .expectStatus().isEqualTo(HttpStatus.CONFLICT)
     }
@@ -127,7 +128,7 @@ class MockResourceTest {
         val updatedPath = "/updated/from/api"
         val updatedBody = "updatedBody"
         val result = client.put().uri(Urls.MOCK_API + Urls.BY_NAME, "toupdateapi").accept(APPLICATION_JSON_UTF8)
-                .body(Mock(updatedName, Request(updatedPath, RequestMethod.POST), Response(updatedBody)).toMono(), Mock::class.java)
+                .body(Mock(updatedName, Request(updatedPath, POST), Response(updatedBody)).toMono(), Mock::class.java)
                 .exchange()
                 .expectStatus().isOk
                 .expectHeader().contentType(APPLICATION_JSON_UTF8)
@@ -145,7 +146,7 @@ class MockResourceTest {
     @Test
     fun `should not update mock because name taken`() {
         client.put().uri(Urls.MOCK_API + Urls.BY_NAME, "toupdateapi").accept(APPLICATION_JSON_UTF8)
-                .body(Mock("demo1", Request("/path", RequestMethod.POST), Response("body")).toMono(), Mock::class.java)
+                .body(Mock("demo1", Request("/path", POST), Response("body")).toMono(), Mock::class.java)
                 .exchange()
                 .expectStatus().isEqualTo(HttpStatus.CONFLICT)
     }
