@@ -1,10 +1,20 @@
 form {
   md-card {
+    padding: 12px;
     margin-bottom: 2vh;
+    md-card-subtitle {
+      margin-bottom: 0;
+    }
     md-card-content {
       md-input-container {
         margin: 0 2vw;
       }
+      button {
+        margin-top: 2vh;
+      }
+    }
+    md-card-actions {
+      margin: 0 6px 6px 0;
     }
   }
 }

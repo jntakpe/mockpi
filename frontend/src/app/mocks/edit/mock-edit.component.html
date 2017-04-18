@@ -2,26 +2,23 @@
 <md-card class="m-3">
   <md-card-content>
     <form [formGroup]="mockForm" (ngSubmit)="save()">
-      <md-card>
-        <md-card-subtitle>Mock</md-card-subtitle>
-        <md-card-content fxLayout.gt-sm="row" fxLayout="column">
-          <md-input-container fxFlex.gt-sm="25">
-            <input mdInput type="text" placeholder="Name" formControlName="name">
-            <md-error *ngIf="mockForm.get('name').hasError('required')">
-              Name is required
-            </md-error>
-          </md-input-container>
-          <md-input-container fxFlex.gt-sm="25">
-            <input mdInput type="text" placeholder="Collection" formControlName="collection">
-          </md-input-container>
-          <md-input-container fxFlex.gt-sm="5">
-            <input mdInput type="number" placeholder="Delay" formControlName="delay">
-          </md-input-container>
-          <md-input-container fxFlex.gt-sm="45">
-            <textarea mdInput placeholder="Description" formControlName="description" rows="1"></textarea>
-          </md-input-container>
-        </md-card-content>
-      </md-card>
+      <section fxLayout.gt-sm="row" fxLayout="column">
+        <md-input-container fxFlex.gt-sm="25">
+          <input mdInput type="text" placeholder="Name" formControlName="name">
+          <md-error *ngIf="mockForm.get('name').hasError('required')">
+            Name is required
+          </md-error>
+        </md-input-container>
+        <md-input-container fxFlex.gt-sm="25">
+          <input mdInput type="text" placeholder="Collection" formControlName="collection">
+        </md-input-container>
+        <md-input-container fxFlex.gt-sm="5">
+          <input mdInput type="number" placeholder="Delay" formControlName="delay">
+        </md-input-container>
+        <md-input-container fxFlex.gt-sm="45">
+          <textarea mdInput placeholder="Description" formControlName="description" rows="1"></textarea>
+        </md-input-container>
+      </section>
       <md-card formGroupName="request">
         <md-card-subtitle>Request</md-card-subtitle>
         <md-card-content fxLayout.gt-sm="row" fxLayout="column">
@@ -43,11 +40,13 @@
         <div fxLayout.gt-md="row" fxLayout="column" fxLayoutAlign.gt-md="space-around">
           <md-card fxFlex.gt-md="48">
             <md-card-subtitle>Request params</md-card-subtitle>
-            <md-card-content fxLayout="row">
-              <button type="button" md-mini-fab color="primary" (click)="addToFormArray(paramsFormArray)" id="add-param">
-                <md-icon>add</md-icon>
-              </button>
-              <div class="ml-4" formArrayName="params" fxLayout="column" fxFlex>
+            <md-card-content fxLayout.lt-md="column">
+              <div fxLayoutAlign="center end">
+                <button type="button" md-mini-fab color="primary" (click)="addToFormArray(paramsFormArray)" id="add-param">
+                  <md-icon>add</md-icon>
+                </button>
+              </div>
+              <div class="ml-4" formArrayName="params" fxFlex>
                 <div *ngFor="let param of paramsFormArray.controls; let i = index" [formGroupName]="i" fxLayout="row"
                      fxLayoutAlign="space-between">
                   <md-input-container fxFlex="40">
@@ -71,11 +70,13 @@
           </md-card>
           <md-card fxFlex.gt-md="48">
             <md-card-subtitle>Request headers</md-card-subtitle>
-            <md-card-content fxLayout="row">
-              <button type="button" md-mini-fab color="primary" (click)="addToFormArray(headersFormArray)" id="add-header">
-                <md-icon>add</md-icon>
-              </button>
-              <div class="ml-4" formArrayName="headers" fxLayout="column" fxFlex>
+            <md-card-content fxLayout.lt-md="column">
+              <div fxLayoutAlign="center end">
+                <button type="button" md-mini-fab color="primary" (click)="addToFormArray(headersFormArray)" id="add-header">
+                  <md-icon>add</md-icon>
+                </button>
+              </div>
+              <div class="ml-4" formArrayName="headers" fxFlex>
                 <div *ngFor="let header of headersFormArray.controls; let i = index" [formGroupName]="i" fxLayout="row"
                      fxLayoutAlign="space-between">
                   <md-input-container fxFlex="40">
