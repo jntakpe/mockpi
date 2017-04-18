@@ -1,11 +1,11 @@
-import {Component, OnInit} from '@angular/core';
-import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {appConst} from '../../shared/constants';
+import { Component, OnInit } from '@angular/core';
+import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { appConst } from '../../shared/constants';
 import '../../shared/rxjs.extension';
-import {Observable} from 'rxjs/Observable';
-import {Mock} from '../../shared/api.model';
-import {MocksService} from '../mocks.service';
-import {ActivatedRoute} from '@angular/router';
+import { Observable } from 'rxjs/Observable';
+import { Mock } from '../../shared/api.model';
+import { MocksService } from '../mocks.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'mpi-mock-edit',
@@ -35,6 +35,7 @@ export class MockEditComponent implements OnInit {
     this.route.data
       .map(d => d.mock)
       .subscribe((mock: Mock) => {
+        this.initialName = mock && mock.name;
         this.mockForm = this.initializeForm(mock);
         this.filteredStatus = this.filterStatuses();
         this.filteredContentTypes = this.filterContentType();
@@ -65,7 +66,7 @@ export class MockEditComponent implements OnInit {
     return this.formBuilder.group({
       name: [mock ? mock.name : '', [Validators.required]],
       collection: [mock ? mock.collection : ''],
-      delay: [mock ? mock.delay : null],
+      delay: [mock ? mock.delay.toString() : null],
       description: [mock ? mock.description : ''],
       request: this.formBuilder.group({
         path: [mock ? mock.request.path : '', [Validators.required]],

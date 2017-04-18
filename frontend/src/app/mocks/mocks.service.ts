@@ -1,11 +1,11 @@
-import {Injectable} from '@angular/core';
-import {Http, Response, URLSearchParams} from '@angular/http';
-import {Observable} from 'rxjs/Observable';
-import {appConst} from '../shared/constants';
+import { Injectable } from '@angular/core';
+import { Http, Response, URLSearchParams } from '@angular/http';
+import { Observable } from 'rxjs/Observable';
+import { appConst } from '../shared/constants';
 import '../shared/rxjs.extension';
-import {Mock} from '../shared/api.model';
-import {Router} from '@angular/router';
-import {MdSnackBar} from '@angular/material';
+import { Mock } from '../shared/api.model';
+import { Router } from '@angular/router';
+import { MdSnackBar } from '@angular/material';
 
 @Injectable()
 export class MocksService {
@@ -48,7 +48,6 @@ export class MocksService {
   }
 
   displayFindByNameError({status}: Response, name: string): void {
-    console.log(status);
     if (status === 404) {
       this.mdSnackBar.open(`Mock with name ${name} doesn't exist`, appConst.snackBar.closeBtnLabel);
     } else {

@@ -1,4 +1,4 @@
-<md-toolbar>Create mock</md-toolbar>
+<md-toolbar>{{ initialName ? 'Edit mock' : 'Create mock'}}</md-toolbar>
 <md-card class="m-3">
   <md-card-content>
     <form [formGroup]="mockForm" (ngSubmit)="save()">
@@ -131,7 +131,7 @@
         </md-card-content>
         <md-card-actions fxLayoutAlign="end">
           <button md-fab type="submit" [disabled]="mockForm.invalid">
-            <md-icon>add</md-icon>
+            <md-icon>{{ initialName ? 'edit' : 'add'}}</md-icon>
           </button>
         </md-card-actions>
       </md-card>
