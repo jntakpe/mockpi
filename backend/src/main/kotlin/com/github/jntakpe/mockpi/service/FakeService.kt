@@ -20,7 +20,9 @@ class FakeService(private val mockService: MockService) {
                 .elapsed()
                 .flatMap { t -> Mono.delay(resolveDelay(t.t1, t.t2.delay)).map { t.t2 } }
                 .map { it.response.toResponseEntity() }
-                .switchIfEmpty(ResponseEntity.notFound().build<String>().toMono())
+                .doOnNext { logger.debug("Returning fake response {} to request {}", it, req) }
+                .switchIfEmpty(ResponseEntity.notFound().build<String>().toMono()
+                        .doOnNext { logger.debug("No fake response found for request {}", req) })
     }
 
     private fun resolveDelay(elapsed: Long, delay: Long) = Duration.ofMillis(if (elapsed >= delay) 0 else delay - elapsed)

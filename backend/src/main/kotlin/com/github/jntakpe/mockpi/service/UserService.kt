@@ -17,6 +17,7 @@ class UserService(private val userRepository: UserRepository) {
     fun findByUsername(username: String): Mono<User> {
         logger.debug("Searching user with username {}", username)
         return userRepository.findByUsernameIgnoreCase(username)
+                .doOnNext { logger.debug("User {} matched with username {}", it, username) }
     }
 
     fun verifyUsernameAvailable(username: String, oldUsername: String = ""): Mono<String> {
@@ -25,6 +26,7 @@ class UserService(private val userRepository: UserRepository) {
                 .filter { it.username != oldUsername }
                 .flatMap { ConflictKeyException("Username $username is not available").toMono<String>() }
                 .defaultIfEmpty(username)
+                .doOnNext { logger.debug("Username {} is available", username) }
     }
 
     fun verifyEmailAvailable(email: String, oldMail: String = ""): Mono<String> {
@@ -33,31 +35,34 @@ class UserService(private val userRepository: UserRepository) {
                 .filter { it.email != oldMail }
                 .flatMap { ConflictKeyException("Email $email is not available").toMono<String>() }
                 .defaultIfEmpty(email)
+                .doOnNext { logger.debug("Email {} is available", email) }
     }
 
     fun register(user: User): Mono<User> {
-        logger.info("Creating {}", user)
+        logger.debug("Creating {}", user)
         return Mono.`when`(verifyUsernameAvailable(user.username), verifyEmailAvailable(user.email))
                 .map { lowerCaseUsernameAndMail(user) }
                 .flatMap(userRepository::insert)
+                .doOnNext { logger.info("User {} successfully created", user) }
     }
 
     fun update(user: User, oldUsername: String): Mono<User> {
-        logger.info("Updating {} to {}", oldUsername, user)
+        logger.debug("Updating {} to {}", oldUsername, user)
         return findByUsernameOrThrow(oldUsername)
-                .flatMap { (username, _, email) ->
-                    Mono.`when`(verifyUsernameAvailable(user.username, username), verifyEmailAvailable(user.email, email))
-                }
+                .flatMap { Mono.`when`(verifyUsernameAvailable(user.username, it.username), verifyEmailAvailable(user.email, it.email)) }
                 .map { lowerCaseUsernameAndMail(user) }
                 .flatMap(userRepository::save)
+                .doOnNext { logger.info("User {} successfully updated", user) }
                 .flatMap { u -> deleteOldUsername(oldUsername, u) }
     }
 
     fun delete(username: String): Mono<Void> {
-        logger.info("Deleting user {}", username)
+        logger.debug("Deleting user {}", username)
         return findByUsernameOrThrow(username)
                 .map(User::username)
                 .flatMap(userRepository::delete)
+                .doOnNext { logger.info("User with username {} successfully deleted", username) }
+
     }
 
     private fun lowerCaseUsernameAndMail(user: User) = user.copy(username = user.username.toLowerCase(), email = user.email.toLowerCase())
@@ -67,7 +72,7 @@ class UserService(private val userRepository: UserRepository) {
 
     private fun deleteOldUsername(oldUsername: String, user: User): Mono<User>? = user.toMono()
             .filter { it.username != oldUsername }
-            .flatMap { u -> userRepository.delete(oldUsername).map { u } }
+            .flatMap { u -> delete(oldUsername).map { u } }
             .defaultIfEmpty(user)
 
 }

@@ -53,7 +53,7 @@ class FakeResourceTest {
     }
 
     @Test
-    fun `shoul find custom mocked resource response`() {
+    fun `should find custom mocked resource response`() {
         val result = client.get().uri("${Urls.FAKE_PREFIX}/pristine/custom")
                 .exchange()
                 .expectStatus().isCreated

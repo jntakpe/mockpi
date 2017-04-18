@@ -1,5 +1,6 @@
 package com.github.jntakpe.mockpi.service
 
+import com.github.jntakpe.mockpi.config.StringsMap
 import com.github.jntakpe.mockpi.config.Urls
 import com.github.jntakpe.mockpi.domain.Mock
 import com.github.jntakpe.mockpi.domain.Request
@@ -26,6 +27,7 @@ class MockService(private val mockRepository: MockRepository) {
     fun findByName(name: String): Mono<Mock> {
         logger.debug("Searching mock with name {}", name)
         return mockRepository.findByNameIgnoreCase(name)
+                .doOnNext { logger.debug("Mock {} matched with name {}", it, name) }
     }
 
     fun verifyNameAvailable(name: String, oldName: String? = null): Mono<String> {
@@ -35,6 +37,7 @@ class MockService(private val mockRepository: MockRepository) {
                 .flatMap { ConflictKeyException("Name $name is not available").toMono<String>() }
                 .defaultIfEmpty(name)
                 .map(String::toLowerCase)
+                .doOnNext { logger.debug("Name {} is available", name) }
     }
 
     fun verifyRequestAvailable(request: Request, oldRequest: Request? = null): Mono<Request> {
@@ -44,6 +47,7 @@ class MockService(private val mockRepository: MockRepository) {
                 .filter { it.request != oldRequest }
                 .flatMap { ConflictKeyException("Request $prefixedRequest is not available").toMono<Request>() }
                 .defaultIfEmpty(prefixedRequest)
+                .doOnNext { logger.debug("Request {} is available", request) }
     }
 
     fun findMatchingMock(request: Request): Mono<Mock> {
@@ -53,38 +57,41 @@ class MockService(private val mockRepository: MockRepository) {
                 .flatMapMany { mockRepository.findByRequest_PathAndRequest_Method(it.path, it.method) }
                 .filter { it.request.params == request.params }
                 .filter { matchHeadersRelaxed(it.request.headers, request.headers) }
+                .doOnNext { logger.debug("Found matching mock {} for request {}", it, request) }
                 .singleOrEmpty()
+                .switchIfEmpty(Mono.empty<Mock>().doOnSuccess { logger.debug("Unable to find any mock matching request {}", request) })
     }
 
     fun create(mock: Mock): Mono<Mock> {
-        logger.info("Creating {}", mock)
+        logger.debug("Creating {}", mock)
         return verifyNameAndRequestAvailable(mock, null)
                 .flatMap { mockRepository.insert(it) }
+                .doOnNext { logger.info("Mock {} successfully created", it) }
     }
 
     fun update(mock: Mock, oldName: String): Mono<Mock> {
-        logger.info("Updating {} to {}", oldName, mock)
+        logger.debug("Updating {} to {}", oldName, mock)
         return findByNameOrThrow(oldName)
                 .flatMap { verifyNameAndRequestAvailable(mock, it) }
                 .flatMap(mockRepository::save)
+                .doOnNext { logger.info("Mock {} successfully updated", it) }
     }
 
     fun delete(name: String): Mono<Void> {
-        logger.info("Deleting mock {}", name)
-        return findByNameOrThrow(name).flatMap { mockRepository.delete(it.name) }
+        logger.debug("Deleting mock {}", name)
+        return findByNameOrThrow(name)
+                .flatMap { mockRepository.delete(it.name) }
+                .doOnNext { logger.info("Mock with name {} successfully deleted") }
     }
 
-    private fun verifyNameAndRequestAvailable(current: Mock, existing: Mock?): Mono<Mock> {
-        return Mono.`when`(verifyNameAvailable(current.name, existing?.name), verifyRequestAvailable(current.request, existing?.request))
-                .map { current.copy(name = it.t1, request = it.t2) }
-    }
+    private fun verifyNameAndRequestAvailable(current: Mock, existing: Mock?) = Mono.`when`(
+            verifyNameAvailable(current.name, existing?.name),
+            verifyRequestAvailable(current.request, existing?.request))
+            .map { current.copy(name = it.t1, request = it.t2) }
 
-    private fun matchHeadersRelaxed(mockHeaders: Map<String, String>, requestHeaders: Map<String, String>): Boolean {
-        return mockHeaders.filter { (k, v) -> requestHeaders[k] != v }.none()
-    }
+    private fun matchHeadersRelaxed(headers: StringsMap, reqHeaders: StringsMap) = headers.filter { (k, v) -> reqHeaders[k] != v }.none()
 
-    private fun findByNameOrThrow(name: String): Mono<Mock> = findByName(name)
-            .switchIfEmpty(IdNotFoundException("Mock $name doest not exist").toMono<Mock>())
+    private fun findByNameOrThrow(name: String) = findByName(name).switchIfEmpty(IdNotFoundException("Mock $name not found").toMono<Mock>())
 
     private fun addPrefixIfRequired(request: Request): Request {
         val apiPath = StringUtils.prependIfMissing(Urls.FAKE_PREFIX, "/")
