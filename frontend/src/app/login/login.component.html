@@ -6,7 +6,7 @@
       <md-card-subtitle fxLayoutAlign="center center">Mock portal interface</md-card-subtitle>
     </md-card-header>
     <md-card-content>
-      <form class="signin-form" [formGroup]="loginForm" (ngSubmit)="signIn()" autocomplete="on" fxLayout="column" fxFlex="50">
+      <form class="signin-form" [formGroup]="loginForm" (ngSubmit)="signIn()" autocomplete="on" fxLayout="column" fxFlex>
         <md-input-container>
           <span md-prefix><md-icon>person</md-icon></span>
           <input mdInput type="text" placeholder="Username" formControlName="username" #username>
