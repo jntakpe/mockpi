@@ -7,6 +7,7 @@ import { FakeMocksService, firstMock } from './mocks.service.spec';
 import { MockpiMaterialModule } from '../shared/mockpi-material.module';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Observable } from 'rxjs/Observable';
+import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 
 describe('MocksComponent', () => {
   let component: MocksComponent;
@@ -16,7 +17,7 @@ describe('MocksComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [MocksComponent],
-      imports: [MockpiMaterialModule, BrowserAnimationsModule, RouterTestingModule, BrowserAnimationsModule],
+      imports: [MockpiMaterialModule, BrowserAnimationsModule, RouterTestingModule, BrowserAnimationsModule, NgxDatatableModule],
       providers: [{provide: MocksService, useClass: FakeMocksService}]
     })
       .compileComponents();
@@ -41,18 +42,10 @@ describe('MocksComponent', () => {
     expect(mocksService.remove).toHaveBeenCalled();
   })));
 
-  it('should call find mocks after remove', async(inject([MocksService], (mocksService: MocksService) => {
-    spyOn(mocksService, 'remove').and.returnValue(Observable.of(null));
-    spyOn(mocksService, 'findMocks').and.returnValue(Observable.of([firstMock]));
-    component.remove(firstMock);
-    expect(mocksService.remove).toHaveBeenCalled();
-    expect(mocksService.findMocks).toHaveBeenCalled();
-  })));
-
   it('should call display error when remove failed', async(inject([MocksService], (mocksService: MocksService) => {
     spyOn(mocksService, 'remove').and.returnValue(Observable.throw(new Error('Some error')));
     spyOn(mocksService, 'findMocks').and.returnValue(Observable.of([firstMock]));
-    spyOn(mocksService, 'displayRemoveError').and.returnValue(Observable.of(true));
+    spyOn(mocksService, 'displayRemoveError').and.returnValue(Observable.empty());
     component.remove(firstMock);
     fixture.detectChanges();
     expect(mocksService.remove).toHaveBeenCalled();

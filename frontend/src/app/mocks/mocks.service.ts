@@ -29,8 +29,8 @@ export class MocksService {
       .map(res => res.json());
   }
 
-  redirectMocks(): Observable<boolean> {
-    return Observable.fromPromise(this.router.navigate(['/mocks']));
+  redirectMocks(): Observable<any> {
+    return Observable.fromPromise(this.router.navigate(['/mocks'])).flatMap(() => Observable.empty());
   }
 
   mapKeyValueToLiteral(keyValueArray: Array<{ [key: string]: string }>): any {
@@ -52,12 +52,12 @@ export class MocksService {
     }
   }
 
-  displayRemoveError(name: string): Observable<boolean> {
+  displayRemoveError(name: string): Observable<any> {
     this.mdSnackBar.open(`Unable to remove mock with name ${name}`, appConst.snackBar.closeBtnLabel);
     return this.redirectMocks();
   }
 
-  displayFindByNameError({status}: Response, name: string): Observable<boolean> {
+  displayFindByNameError({status}: Response, name: string): Observable<any> {
     if (status === 404) {
       this.mdSnackBar.open(`Mock with name ${name} doesn't exist`, appConst.snackBar.closeBtnLabel);
     } else {
