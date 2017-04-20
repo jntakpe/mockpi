@@ -24,6 +24,11 @@ export class MocksService {
     return req.map(res => res.json());
   }
 
+  remove({name}: Mock): Observable<void> {
+    return this.http.delete(`${appConst.api.baseUrl}/mocks/${name}`)
+      .map(res => res.json());
+  }
+
   redirectMocks(): Observable<boolean> {
     return Observable.fromPromise(this.router.navigate(['/mocks']));
   }
@@ -47,12 +52,18 @@ export class MocksService {
     }
   }
 
-  displayFindByNameError({status}: Response, name: string): void {
+  displayRemoveError(name: string): Observable<boolean> {
+    this.mdSnackBar.open(`Unable to remove mock with name ${name}`, appConst.snackBar.closeBtnLabel);
+    return this.redirectMocks();
+  }
+
+  displayFindByNameError({status}: Response, name: string): Observable<boolean> {
     if (status === 404) {
       this.mdSnackBar.open(`Mock with name ${name} doesn't exist`, appConst.snackBar.closeBtnLabel);
     } else {
       this.defaultServerError();
     }
+    return this.redirectMocks();
   }
 
   private formatRequestParams(mock: Mock): Mock {

@@ -19,4 +19,9 @@ export class MocksComponent implements OnInit {
     this.mocks$ = this.mocksService.findMocks();
   }
 
+  remove(mock: Mock): void {
+    this.mocksService.remove(mock)
+      .subscribe(() => this.mocks$ = this.mocksService.findMocks(), () => this.mocksService.displayRemoveError(mock.name));
+  }
+
 }

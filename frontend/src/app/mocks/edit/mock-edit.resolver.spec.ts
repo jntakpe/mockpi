@@ -1,13 +1,13 @@
-import {fakeAsync, inject, TestBed} from '@angular/core/testing';
-import {FakeMocksService} from '../mocks.service.spec';
-import {MocksService} from '../mocks.service';
-import {Router, Routes} from '@angular/router';
-import {advance, createRoot, FakeFeatureComponent, FakeHomeComponent, RootComponent} from '../../shared/testing/testing-utils.spec';
-import {MockEditResolver} from './mock-edit.resolver';
-import {RouterTestingModule} from '@angular/router/testing';
-import {Observable} from 'rxjs/Observable';
-import {Location} from '@angular/common';
-import {Response, ResponseOptions} from '@angular/http';
+import { fakeAsync, inject, TestBed } from '@angular/core/testing';
+import { FakeMocksService } from '../mocks.service.spec';
+import { MocksService } from '../mocks.service';
+import { Router, Routes } from '@angular/router';
+import { advance, createRoot, FakeFeatureComponent, FakeHomeComponent, RootComponent } from '../../shared/testing/testing-utils.spec';
+import { MockEditResolver } from './mock-edit.resolver';
+import { RouterTestingModule } from '@angular/router/testing';
+import { Observable } from 'rxjs/Observable';
+import { Location } from '@angular/common';
+import { Response, ResponseOptions } from '@angular/http';
 
 describe('MockEditResolver', () => {
 
@@ -65,16 +65,14 @@ describe('MockEditResolver', () => {
       expect(mocksService.findByName).not.toHaveBeenCalled();
     })));
 
-  it('should redirect to MocksComponent cuz unable to retrieve mock', fakeAsync(inject([Router, MocksService],
+  it('should call display error cuz unable to retrieve mock', fakeAsync(inject([Router, MocksService],
     (router: Router, mocksService: MocksService) => {
       spyOn(mocksService, 'findByName').and.returnValue(Observable.throw(new Response(new ResponseOptions({status: 400}))));
-      spyOn(mocksService, 'displayFindByNameError');
-      spyOn(mocksService, 'redirectMocks');
+      spyOn(mocksService, 'displayFindByNameError').and.returnValue(Observable.of(true));
       const fixture = createRoot(router, RootComponent);
       router.navigate(['mocks', 'error']);
       advance(fixture);
       expect(mocksService.displayFindByNameError).toHaveBeenCalled();
-      expect(mocksService.redirectMocks).toHaveBeenCalled();
     })));
 
 

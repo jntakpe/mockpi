@@ -20,7 +20,7 @@
         <td class="mdl-data-table__cell--non-numeric">{{mock.request.fmtParams}}</td>
         <td class="mdl-data-table__cell--non-numeric">{{mock.response.body}}</td>
         <td class="mdl-data-table__cell--non-numeric">
-          <button md-icon-button [mdMenuTriggerFor]="menu">
+          <button class="actions-btn" md-icon-button [mdMenuTriggerFor]="menu">
             <md-icon>more_vert</md-icon>
           </button>
           <md-menu #menu="mdMenu">
@@ -28,7 +28,7 @@
               <md-icon>edit</md-icon>
               <span>Edit</span>
             </button>
-            <button md-menu-item>
+            <button class="remove-btn" md-menu-item (click)="remove(mock)">
               <md-icon>delete_forever</md-icon>
               <span>Delete</span>
             </button>

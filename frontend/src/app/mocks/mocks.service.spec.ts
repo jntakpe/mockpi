@@ -63,6 +63,10 @@ export class FakeMocksService extends MocksService {
     return Observable.of(firstMock);
   }
 
+  remove({name}: Mock): Observable<void> {
+    return Observable.of(null);
+  }
+
   redirectMocks(): Observable<boolean> {
     return Observable.of(true);
   }
@@ -130,6 +134,13 @@ describe('MocksService', () => {
     });
   })));
 
+  it('should remove mock', async(inject([MocksService, MockBackend], (mocksService: MocksService, mockBackend: MockBackend) => {
+    mockBackend.connections.subscribe(c => c.mockRespond(new Response(new ResponseOptions({status: 204}))));
+    mocksService.remove(firstMock).subscribe(nocontent => {
+      expect(nocontent).toBeFalsy();
+    });
+  })));
+
   it('should redirect to mocks page', fakeAsync(inject([MocksService, Router, Location],
     (mocksService: MocksService, router: Router, location: Location) => {
       const fixture = createRoot(router, RootComponent);
@@ -138,7 +149,7 @@ describe('MocksService', () => {
       expect(location.path()).toBe('/mocks');
     })));
 
-  it('should call display 400 error message', fakeAsync(inject([MocksService, MdSnackBar],
+  it('should call display 400 error message on save', fakeAsync(inject([MocksService, MdSnackBar],
     (mocksService: MocksService, mdSnackBar: MdSnackBar) => {
       spyOn(mdSnackBar, 'open');
       const fixture = TestBed.createComponent(TestComponent);
@@ -147,13 +158,43 @@ describe('MocksService', () => {
       expect(mdSnackBar.open).toHaveBeenCalledWith('Invalid fields error', appConst.snackBar.closeBtnLabel);
     })));
 
-  it('should call display 500 error message', fakeAsync(inject([MocksService, MdSnackBar],
+  it('should call display 500 error message on save', fakeAsync(inject([MocksService, MdSnackBar],
     (mocksService: MocksService, mdSnackBar: MdSnackBar) => {
       spyOn(mdSnackBar, 'open');
       const fixture = TestBed.createComponent(TestComponent);
       fixture.detectChanges();
       mocksService.displaySaveError(new Response(new ResponseOptions({status: 500})));
       expect(mdSnackBar.open).toHaveBeenCalledWith('Server error', appConst.snackBar.closeBtnLabel);
+    })));
+
+  it('should call display 404 error message on find', fakeAsync(inject([MocksService, MdSnackBar],
+    (mocksService: MocksService, mdSnackBar: MdSnackBar) => {
+      spyOn(mdSnackBar, 'open');
+      spyOn(mocksService, 'redirectMocks').and.returnValue(Observable.of(true));
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+      mocksService.displayFindByNameError(new Response(new ResponseOptions({status: 404})), 'somemock');
+      expect(mdSnackBar.open).toHaveBeenCalledWith('Mock with name somemock doesn\'t exist', appConst.snackBar.closeBtnLabel);
+    })));
+
+  it('should call display 500 error message on save', fakeAsync(inject([MocksService, MdSnackBar],
+    (mocksService: MocksService, mdSnackBar: MdSnackBar) => {
+      spyOn(mdSnackBar, 'open');
+      spyOn(mocksService, 'redirectMocks').and.returnValue(Observable.of(true));
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+      mocksService.displayFindByNameError(new Response(new ResponseOptions({status: 500})), 'somemock');
+      expect(mdSnackBar.open).toHaveBeenCalledWith('Server error', appConst.snackBar.closeBtnLabel);
+    })));
+
+  it('should call display delete error', fakeAsync(inject([MocksService, MdSnackBar],
+    (mocksService: MocksService, mdSnackBar: MdSnackBar) => {
+      spyOn(mdSnackBar, 'open');
+      spyOn(mocksService, 'redirectMocks').and.returnValue(Observable.of(true));
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+      mocksService.displayRemoveError('somemock');
+      expect(mdSnackBar.open).toHaveBeenCalledWith('Unable to remove mock with name somemock', appConst.snackBar.closeBtnLabel);
     })));
 
   it('should map key value array to literal', inject([MocksService], (mocksService: MocksService) => {
