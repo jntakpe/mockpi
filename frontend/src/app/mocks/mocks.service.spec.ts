@@ -1,16 +1,17 @@
-import { async, fakeAsync, inject, TestBed } from '@angular/core/testing';
-import { MocksService } from './mocks.service';
-import { MockBackend } from '@angular/http/testing';
-import { BaseRequestOptions, Http, HttpModule, Response, ResponseOptions } from '@angular/http';
-import { Mock } from '../shared/api.model';
-import { Observable } from 'rxjs/Observable';
-import { RouterTestingModule } from '@angular/router/testing';
-import { MdSnackBar, MdSnackBarModule } from '@angular/material';
-import { Router, Routes } from '@angular/router';
-import { advance, createRoot, FakeFeatureComponent, FakeHomeComponent, RootComponent } from '../shared/testing/testing-utils.spec';
-import { Location } from '@angular/common';
-import { Component } from '@angular/core';
-import { appConst } from '../shared/constants';
+import {async, fakeAsync, inject, TestBed} from '@angular/core/testing';
+import {MocksService} from './mocks.service';
+import {MockBackend} from '@angular/http/testing';
+import {BaseRequestOptions, Http, HttpModule, Response, ResponseOptions} from '@angular/http';
+import {Mock} from '../shared/api.model';
+import {Observable} from 'rxjs/Observable';
+import {RouterTestingModule} from '@angular/router/testing';
+import {MdSnackBar, MdSnackBarModule} from '@angular/material';
+import {Router, Routes} from '@angular/router';
+import {advance, createRoot, FakeFeatureComponent, FakeHomeComponent, RootComponent} from '../shared/testing/testing-utils.spec';
+import {Location} from '@angular/common';
+import {Component} from '@angular/core';
+import {appConst} from '../shared/constants';
+import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 
 
 export const firstMock: Mock = {
@@ -117,6 +118,17 @@ describe('MocksService', () => {
   it('should create mocks service', inject([MocksService], (service: MocksService) => {
     expect(service).toBeTruthy();
   }));
+
+  it('should find mock array without filtering', async(inject([MocksService, MockBackend],
+    (mocksService: MocksService, mockBackend: MockBackend) => {
+      mockBackend.connections.subscribe(c => c.mockRespond(new Response(new ResponseOptions({body: [firstMock, secondMock]}))));
+      const search$ = new BehaviorSubject({name: ''}).asObservable();
+      const refresh$ = new BehaviorSubject('start').asObservable();
+      mocksService.findFilteredMocks(search$, refresh$).subscribe(mocks => {
+        expect(mocks).toBeTruthy();
+        expect(mocks.length).toBe(2);
+      });
+    })));
 
   it('should find mock array', async(inject([MocksService, MockBackend], (mocksService: MocksService, mockBackend: MockBackend) => {
     mockBackend.connections.subscribe(c => c.mockRespond(new Response(new ResponseOptions({body: [firstMock, secondMock]}))));

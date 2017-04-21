@@ -4,6 +4,10 @@ import {MocksService} from './mocks.service';
 import '../shared/rxjs.extension';
 import {Observable} from 'rxjs/Observable';
 import {TableColumn} from '@swimlane/ngx-datatable/release';
+import {FormBuilder, FormGroup} from '@angular/forms';
+import {Subject} from 'rxjs/Subject';
+import {BehaviorSubject} from 'rxjs/BehaviorSubject';
+import {noop} from 'rxjs/util/noop';
 
 @Component({
   selector: 'mpi-mocks',
@@ -16,20 +20,26 @@ export class MocksComponent implements OnInit {
 
   columns: TableColumn[];
 
+  searchForm: FormGroup;
+
   mocks$: Observable<Mock[]>;
 
-  constructor(private mocksService: MocksService) {
+  private refresh$: Subject<string> = new BehaviorSubject('start');
+
+  constructor(private mocksService: MocksService, private formBuilder: FormBuilder) {
   }
 
   ngOnInit() {
     this.columns = this.initColumns();
-    this.mocks$ = this.mocksService.findMocks();
+    this.searchForm = this.initForm();
+    const search$ = this.searchForm.valueChanges.startWith(this.searchForm.value);
+    this.mocks$ = this.mocksService.findFilteredMocks(search$, this.refresh$.asObservable());
   }
 
   remove(mock: Mock): void {
-    this.mocks$ = this.mocksService.remove(mock)
-      .catch(() => this.mocksService.displayRemoveError(mock.name))
-      .flatMap(() => this.mocksService.findMocks());
+    this.mocksService.remove(mock)
+      .catch(() => Observable.of(true).do(() => this.mocksService.displayRemoveError(mock.name)))
+      .subscribe(noop, noop, () => this.refresh$.next('remove'));
   }
 
   private initColumns(): TableColumn[] {
@@ -39,8 +49,18 @@ export class MocksComponent implements OnInit {
       {prop: 'request.method', name: 'Method'},
       {prop: 'request.fmtParams', name: 'Params'},
       {prop: 'response.body', name: 'Body', width: 600},
-      {cellTemplate: this.actionsTpl, name: 'Actions', maxWidth: 100}
+      {cellTemplate: this.actionsTpl, name: 'Actions', maxWidth: 100, sortable: false}
     ];
+  }
+
+  private initForm(): FormGroup {
+    return this.formBuilder.group({
+      name: '',
+      path: '',
+      method: '',
+      params: '',
+      body: ''
+    });
   }
 
 }

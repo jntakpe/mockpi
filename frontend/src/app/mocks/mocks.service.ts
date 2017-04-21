@@ -1,16 +1,21 @@
-import { Injectable } from '@angular/core';
-import { Http, Response, URLSearchParams } from '@angular/http';
-import { Observable } from 'rxjs/Observable';
-import { appConst } from '../shared/constants';
+import {Injectable} from '@angular/core';
+import {Http, Response, URLSearchParams} from '@angular/http';
+import {Observable} from 'rxjs/Observable';
+import {appConst} from '../shared/constants';
 import '../shared/rxjs.extension';
-import { Mock } from '../shared/api.model';
-import { Router } from '@angular/router';
-import { MdSnackBar } from '@angular/material';
+import {Mock} from '../shared/api.model';
+import {Router} from '@angular/router';
+import {MdSnackBar} from '@angular/material';
 
 @Injectable()
 export class MocksService {
 
   constructor(private http: Http, private router: Router, private mdSnackBar: MdSnackBar) {
+  }
+
+  findFilteredMocks(search$: Observable<any>, refresh$: Observable<any>): Observable<Mock[]> {
+    return Observable.combineLatest(search$, refresh$.mergeMap(() => this.findMocks()), (form, mocks) => ({form, mocks}))
+      .map(({form, mocks}) => this.filterMocks(form, mocks));
   }
 
   findMocks(): Observable<Mock[]> {
@@ -52,9 +57,8 @@ export class MocksService {
     }
   }
 
-  displayRemoveError(name: string): Observable<any> {
+  displayRemoveError(name: string): void {
     this.mdSnackBar.open(`Unable to remove mock with name ${name}`, appConst.snackBar.closeBtnLabel);
-    return this.redirectMocks();
   }
 
   displayFindByNameError({status}: Response, name: string): Observable<any> {
@@ -64,6 +68,10 @@ export class MocksService {
       this.defaultServerError();
     }
     return this.redirectMocks();
+  }
+
+  private filterMocks(search: any, mocks: Mock[]): Mock[] {
+    return mocks;
   }
 
   private formatRequestParams(mock: Mock): Mock {

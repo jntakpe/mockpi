@@ -1,9 +1,30 @@
 <md-toolbar>Mock list</md-toolbar>
 <md-card class="m-3">
+  <md-card class="mb-4">
+    <md-card-content>
+      <form [formGroup]="searchForm">
+        <md-input-container>
+          <input mdInput type="text" placeholder="Name" formControlName="name">
+        </md-input-container>
+        <md-input-container>
+          <input mdInput type="text" placeholder="Path" formControlName="path">
+        </md-input-container>
+        <md-input-container>
+          <input mdInput type="text" placeholder="Method" formControlName="method">
+        </md-input-container>
+        <md-input-container>
+          <input mdInput type="text" placeholder="Params" formControlName="params">
+        </md-input-container>
+        <md-input-container>
+          <input mdInput type="text" placeholder="Body" formControlName="body">
+        </md-input-container>
+      </form>
+    </md-card-content>
+  </md-card>
   <md-card-content>
     <ngx-datatable
       class="material striped"
-      [rows]="mocks$ | async "
+      [rows]="mocks$ | async"
       [columns]="columns"
       columnMode="force"
       headerHeight="50"
