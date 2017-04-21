@@ -1,9 +1,9 @@
-import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { Mock } from '../shared/api.model';
-import { MocksService } from './mocks.service';
-import { Column } from '../shared/table/table-config.model';
+import {Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import {Mock} from '../shared/api.model';
+import {MocksService} from './mocks.service';
 import '../shared/rxjs.extension';
-import { Observable } from 'rxjs/Observable';
+import {Observable} from 'rxjs/Observable';
+import {TableColumn} from '@swimlane/ngx-datatable/release';
 
 @Component({
   selector: 'mpi-mocks',
@@ -14,7 +14,7 @@ export class MocksComponent implements OnInit {
 
   @ViewChild('actionsTpl') actionsTpl: TemplateRef<any>;
 
-  columns: Column[];
+  columns: TableColumn[];
 
   mocks$: Observable<Mock[]>;
 
@@ -32,14 +32,14 @@ export class MocksComponent implements OnInit {
       .flatMap(() => this.mocksService.findMocks());
   }
 
-  private initColumns(): Column[] {
+  private initColumns(): TableColumn[] {
     return [
       {prop: 'name', name: 'Name'},
       {prop: 'request.path', name: 'Path'},
       {prop: 'request.method', name: 'Method'},
       {prop: 'request.fmtParams', name: 'Params'},
-      {prop: 'response.body', name: 'Body'},
-      {cellTemplate: this.actionsTpl, name: 'Actions'}
+      {prop: 'response.body', name: 'Body', width: 600},
+      {cellTemplate: this.actionsTpl, name: 'Actions', maxWidth: 100}
     ];
   }
 

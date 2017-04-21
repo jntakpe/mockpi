@@ -5,10 +5,11 @@
       class="material striped"
       [rows]="mocks$ | async "
       [columns]="columns"
-      [columnMode]="'force'"
-      [headerHeight]="50"
-      [footerHeight]="50"
-      [rowHeight]="'auto'">
+      columnMode="force"
+      headerHeight="50"
+      footerHeight="50"
+      rowHeight="40"
+      limit="10">
     </ngx-datatable>
     <section fxLayout="row" fxLayoutAlign="end" class="mt-4">
       <a md-fab [routerLink]="['/mocks', '']">
