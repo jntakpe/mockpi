@@ -7,8 +7,9 @@ import {FakeMocksService, firstMock} from './mocks.service.spec';
 import {MockpiMaterialModule} from '../shared/mockpi-material.module';
 import {RouterTestingModule} from '@angular/router/testing';
 import {Observable} from 'rxjs/Observable';
-import {NgxDatatableModule} from '@swimlane/ngx-datatable';
 import {ReactiveFormsModule} from '@angular/forms';
+import {TableModule} from '../shared/table/table.module';
+import {MockSearchComponent} from './search/mock-search.component';
 
 describe('MocksComponent', () => {
   let component: MocksComponent;
@@ -17,15 +18,8 @@ describe('MocksComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [MocksComponent],
-      imports: [
-        MockpiMaterialModule,
-        BrowserAnimationsModule,
-        RouterTestingModule,
-        BrowserAnimationsModule,
-        NgxDatatableModule,
-        ReactiveFormsModule
-      ],
+      declarations: [MocksComponent, MockSearchComponent],
+      imports: [MockpiMaterialModule, RouterTestingModule, BrowserAnimationsModule, TableModule, ReactiveFormsModule],
       providers: [{provide: MocksService, useClass: FakeMocksService}]
     })
       .compileComponents();
@@ -44,21 +38,24 @@ describe('MocksComponent', () => {
 
   it('should call remove mock', async(inject([MocksService], (mocksService: MocksService) => {
     spyOn(mocksService, 'remove').and.returnValue(Observable.of(null));
-    spyOn(mocksService, 'findMocks').and.returnValue(Observable.of([firstMock]));
+    spyOn(mocksService, 'findFilteredMocks').and.returnValue(Observable.of([firstMock]));
+    const refresh$ = component['refresh$'];
     component.remove(firstMock);
     fixture.detectChanges();
     expect(mocksService.remove).toHaveBeenCalled();
+    refresh$.subscribe(v => expect(v).toEqual('remove'));
   })));
 
   it('should call display error when remove failed', async(inject([MocksService], (mocksService: MocksService) => {
     spyOn(mocksService, 'remove').and.returnValue(Observable.throw(new Error('Some error')));
-    spyOn(mocksService, 'findMocks').and.returnValue(Observable.of([firstMock]));
+    spyOn(mocksService, 'findFilteredMocks').and.returnValue(Observable.of([firstMock]));
     spyOn(mocksService, 'displayRemoveError');
+    const refresh$ = component['refresh$'];
     component.remove(firstMock);
     fixture.detectChanges();
     expect(mocksService.remove).toHaveBeenCalled();
-    expect(mocksService.findMocks).toHaveBeenCalled();
     expect(mocksService.displayRemoveError).toHaveBeenCalledWith(firstMock.name);
+    refresh$.subscribe(v => expect(v).toEqual('remove'));
   })));
 
 });

@@ -6,14 +6,16 @@ import '../shared/rxjs.extension';
 import {Mock} from '../shared/api.model';
 import {Router} from '@angular/router';
 import {MdSnackBar} from '@angular/material';
+import {FilterTableService} from '../shared/table/filter-table.service';
+import {RegexType} from '../shared/table/regex-type';
 
 @Injectable()
 export class MocksService {
 
-  constructor(private http: Http, private router: Router, private mdSnackBar: MdSnackBar) {
+  constructor(private http: Http, private router: Router, private mdSnackBar: MdSnackBar, private filterTableService: FilterTableService) {
   }
 
-  findFilteredMocks(search$: Observable<any>, refresh$: Observable<any>): Observable<Mock[]> {
+  findFilteredMocks(search$: Observable<any>, refresh$: Observable<string>): Observable<Mock[]> {
     return Observable.combineLatest(search$, refresh$.mergeMap(() => this.findMocks()), (form, mocks) => ({form, mocks}))
       .map(({form, mocks}) => this.filterMocks(form, mocks));
   }
@@ -71,7 +73,7 @@ export class MocksService {
   }
 
   private filterMocks(search: any, mocks: Mock[]): Mock[] {
-    return mocks;
+    return this.filterTableService.regexFilter(mocks, search, RegexType.Contains);
   }
 
   private formatRequestParams(mock: Mock): Mock {

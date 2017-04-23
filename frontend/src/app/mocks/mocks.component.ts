@@ -4,8 +4,6 @@ import {MocksService} from './mocks.service';
 import '../shared/rxjs.extension';
 import {Observable} from 'rxjs/Observable';
 import {TableColumn} from '@swimlane/ngx-datatable/release';
-import {FormBuilder, FormGroup} from '@angular/forms';
-import {Subject} from 'rxjs/Subject';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {noop} from 'rxjs/util/noop';
 
@@ -20,26 +18,31 @@ export class MocksComponent implements OnInit {
 
   columns: TableColumn[];
 
-  searchForm: FormGroup;
-
   mocks$: Observable<Mock[]>;
 
-  private refresh$: Subject<string> = new BehaviorSubject('start');
+  private refresh$ = new BehaviorSubject('start');
 
-  constructor(private mocksService: MocksService, private formBuilder: FormBuilder) {
+  private search$ = new BehaviorSubject({});
+
+  constructor(private mocksService: MocksService) {
   }
 
   ngOnInit() {
     this.columns = this.initColumns();
-    this.searchForm = this.initForm();
-    const search$ = this.searchForm.valueChanges.startWith(this.searchForm.value);
-    this.mocks$ = this.mocksService.findFilteredMocks(search$, this.refresh$.asObservable());
+    this.mocks$ = this.mocksService.findFilteredMocks(this.search$.asObservable(), this.refresh$.asObservable());
   }
 
   remove(mock: Mock): void {
     this.mocksService.remove(mock)
-      .catch(() => Observable.of(true).do(() => this.mocksService.displayRemoveError(mock.name)))
+      .catch(() => {
+        this.mocksService.displayRemoveError(mock.name);
+        return Observable.empty();
+      })
       .subscribe(noop, noop, () => this.refresh$.next('remove'));
+  }
+
+  updateFilter(form: any): void {
+    this.search$.next(form);
   }
 
   private initColumns(): TableColumn[] {
@@ -53,14 +56,5 @@ export class MocksComponent implements OnInit {
     ];
   }
 
-  private initForm(): FormGroup {
-    return this.formBuilder.group({
-      name: '',
-      path: '',
-      method: '',
-      params: '',
-      body: ''
-    });
-  }
 
 }

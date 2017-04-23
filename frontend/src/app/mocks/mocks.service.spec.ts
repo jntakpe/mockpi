@@ -12,6 +12,7 @@ import {Location} from '@angular/common';
 import {Component} from '@angular/core';
 import {appConst} from '../shared/constants';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
+import {TableModule} from '../shared/table/table.module';
 
 
 export const firstMock: Mock = {
@@ -53,7 +54,11 @@ const secondMock: Mock = {
 export class FakeMocksService extends MocksService {
 
   constructor() {
-    super(null, null, null);
+    super(null, null, null, null);
+  }
+
+  findFilteredMocks(search$: Observable<any>, refresh$: Observable<any>): Observable<Mock[]> {
+    return Observable.of([firstMock, secondMock]);
   }
 
   findMocks(): Observable<Mock[]> {
@@ -98,7 +103,7 @@ describe('MocksService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpModule, RouterTestingModule.withRoutes(routes), MdSnackBarModule],
+      imports: [HttpModule, RouterTestingModule.withRoutes(routes), MdSnackBarModule, TableModule],
       declarations: [RootComponent, FakeHomeComponent, FakeFeatureComponent, TestComponent],
       providers: [
         MocksService,
