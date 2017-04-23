@@ -1,9 +1,9 @@
 language: java
 before_install:
-  - cd backend && ./gradlew clean
+  - cd backend && ./gradlew clean && cd ..
 install:
-  - cd frontend && yarn
-  - cd backend && ./gradlew test
+  - cd frontend && yarn && cd ..
+  - cd backend && ./gradlew test && cd ..
 cache:
   directories:
     - frontend/node_modules
