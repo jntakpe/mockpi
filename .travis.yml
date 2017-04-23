@@ -1,6 +1,7 @@
 language: java
 before_install:
   - cd backend && ./gradlew clean && cd ..
+  - cd frontend && npm install -g yarn && cd ..
 install:
   - cd frontend && yarn && cd ..
   - cd backend && ./gradlew test && cd ..
