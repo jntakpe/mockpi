@@ -1,4 +1,4 @@
-import {async, fakeAsync, inject, TestBed} from '@angular/core/testing';
+import {async, fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
 import {MocksService} from './mocks.service';
 import {MockBackend} from '@angular/http/testing';
 import {BaseRequestOptions, Http, HttpModule, Response, ResponseOptions} from '@angular/http';
@@ -24,7 +24,7 @@ export const firstMock: Mock = {
     headers: {}
   },
   response: {
-    body: 'strBody',
+    body: 'firstBody',
     status: 200,
     contentType: 'application/json'
   },
@@ -42,7 +42,7 @@ const secondMock: Mock = {
     headers: {}
   },
   response: {
-    body: 'strBody',
+    body: 'secondBody',
     status: 200,
     contentType: 'application/json'
   },
@@ -127,12 +127,98 @@ describe('MocksService', () => {
   it('should find mock array without filtering', async(inject([MocksService, MockBackend],
     (mocksService: MocksService, mockBackend: MockBackend) => {
       mockBackend.connections.subscribe(c => c.mockRespond(new Response(new ResponseOptions({body: [firstMock, secondMock]}))));
-      const search$ = new BehaviorSubject({name: ''}).asObservable();
+      const search$ = new BehaviorSubject({}).asObservable();
       const refresh$ = new BehaviorSubject('start').asObservable();
       mocksService.findFilteredMocks(search$, refresh$).subscribe(mocks => {
         expect(mocks).toBeTruthy();
         expect(mocks.length).toBe(2);
       });
+    })));
+
+  it('should find mock array without filtering cuz empty fields', async(inject([MocksService, MockBackend],
+    (mocksService: MocksService, mockBackend: MockBackend) => {
+      mockBackend.connections.subscribe(c => c.mockRespond(new Response(new ResponseOptions({body: [firstMock, secondMock]}))));
+      const searchForm = {name: '', request: {path: '', method: '', fmtParams: ''}, response: {body: ''}};
+      const search$ = new BehaviorSubject(searchForm).asObservable();
+      const refresh$ = new BehaviorSubject('start').asObservable();
+      mocksService.findFilteredMocks(search$, refresh$).subscribe(mocks => {
+        expect(mocks).toBeTruthy();
+        expect(mocks.length).toBe(2);
+      });
+    })));
+
+  it('should find mock array filtering first with name', async(inject([MocksService, MockBackend],
+    (mocksService: MocksService, mockBackend: MockBackend) => {
+      mockBackend.connections.subscribe(c => c.mockRespond(new Response(new ResponseOptions({body: [firstMock, secondMock]}))));
+      const searchForm = {name: 'first', request: {path: '', method: '', fmtParams: ''}, response: {body: ''}};
+      const search$ = new BehaviorSubject(searchForm).asObservable();
+      const refresh$ = new BehaviorSubject('start').asObservable();
+      mocksService.findFilteredMocks(search$, refresh$).subscribe(mocks => {
+        expect(mocks).toBeTruthy();
+        expect(mocks.length).toBe(1);
+        expect(mocks[0].name).toEqual(firstMock.name);
+      });
+    })));
+
+  it('should find mock array filtering first with request path and method', async(inject([MocksService, MockBackend],
+    (mocksService: MocksService, mockBackend: MockBackend) => {
+      mockBackend.connections.subscribe(c => c.mockRespond(new Response(new ResponseOptions({body: [firstMock, secondMock]}))));
+      const searchForm = {name: '', request: {path: 'first', method: 'GET', fmtParams: ''}, response: {body: ''}};
+      const search$ = new BehaviorSubject(searchForm).asObservable();
+      const refresh$ = new BehaviorSubject('start').asObservable();
+      mocksService.findFilteredMocks(search$, refresh$).subscribe(mocks => {
+        expect(mocks).toBeTruthy();
+        expect(mocks.length).toBe(1);
+        expect(mocks[0].name).toEqual(firstMock.name);
+      });
+    })));
+
+  it('should find mock array filtering missing all', async(inject([MocksService, MockBackend],
+    (mocksService: MocksService, mockBackend: MockBackend) => {
+      mockBackend.connections.subscribe(c => c.mockRespond(new Response(new ResponseOptions({body: [firstMock, secondMock]}))));
+      const searchForm = {name: '', request: {path: '', method: '', fmtParams: ''}, response: {body: 'unknownBody'}};
+      const search$ = new BehaviorSubject(searchForm).asObservable();
+      const refresh$ = new BehaviorSubject('start').asObservable();
+      mocksService.findFilteredMocks(search$, refresh$).subscribe(mocks => {
+        expect(mocks).toBeTruthy();
+        expect(mocks.length).toBe(0);
+      });
+    })));
+
+  it('should find mock and refresh when remove', fakeAsync(inject([MocksService, MockBackend],
+    (mocksService: MocksService, mockBackend: MockBackend) => {
+      let refreshed = false;
+      mockBackend.connections.subscribe(c => {
+        const single = new Response(new ResponseOptions({body: [firstMock]}));
+        const couple = new Response(new ResponseOptions({body: [firstMock, secondMock]}));
+        c.mockRespond(refreshed ? single : couple);
+      });
+      const searchForm = {name: 'second', request: {path: '', method: '', fmtParams: ''}, response: {body: ''}};
+      const search$ = new BehaviorSubject(searchForm).asObservable();
+      const refresh$ = new BehaviorSubject('start');
+      mocksService.findFilteredMocks(search$, refresh$.asObservable()).subscribe(mocks => {
+        expect(mocks).toBeTruthy();
+        expect(mocks.length).toBe(refreshed ? 0 : 1);
+      });
+      tick(50);
+      refreshed = true;
+      refresh$.next('remove');
+    })));
+
+  it('should find mock array without filtering and update with new search', fakeAsync(inject([MocksService, MockBackend],
+    (mocksService: MocksService, mockBackend: MockBackend) => {
+      mockBackend.connections.subscribe(c => c.mockRespond(new Response(new ResponseOptions({body: [firstMock, secondMock]}))));
+      const searchForm = {name: '', request: {path: '', method: '', fmtParams: ''}, response: {body: ''}};
+      const search$ = new BehaviorSubject(searchForm);
+      const refresh$ = new BehaviorSubject('start').asObservable();
+      let updated = false;
+      mocksService.findFilteredMocks(search$.asObservable(), refresh$).subscribe(mocks => {
+        expect(mocks).toBeTruthy();
+        expect(mocks.length).toBe(updated ? 1 : 2);
+      });
+      tick(50);
+      updated = true;
+      search$.next({name: 'first', request: {path: '', method: '', fmtParams: ''}, response: {body: ''}})
     })));
 
   it('should find mock array', async(inject([MocksService, MockBackend], (mocksService: MocksService, mockBackend: MockBackend) => {
