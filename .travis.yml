@@ -1,15 +1,17 @@
 language: java
+env:
+  - NODE_VERSION=6.10.2
 before_install:
   - cd backend && ./gradlew clean && cd ..
-  - cd frontend && npm install -g yarn && cd ..
-install:
-  - cd frontend && yarn && cd ..
-  - cd backend && ./gradlew test && cd ..
+  - cd frontend && nvm install $NODE_VERSION && nvm use $NODE_VERSION && npm install -g yarn && cd ..
 cache:
   directories:
     - frontend/node_modules
 jdk:
   - oraclejdk8
 services: mongodb
+install:
+  - cd frontend && yarn && cd ..
+script: cd backend && ./gradlew test
 notifications:
   email: false
