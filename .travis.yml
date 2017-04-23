@@ -1,12 +1,12 @@
 language: java
 before_install:
-  - cd /backend && ./gradlew clean
+  - cd backend && ./gradlew clean
 install:
-  - cd /frontend && yarn
-  - cd /backend && ./gradlew test
+  - cd frontend && yarn
+  - cd backend && ./gradlew test
 cache:
   directories:
-    - /frontend/node_modules
+    - frontend/node_modules
 jdk:
   - oraclejdk8
 services: mongodb
