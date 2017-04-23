@@ -17,7 +17,7 @@ import reactor.core.publisher.toMono
 @Service
 class MockService(private val mockRepository: MockRepository) {
 
-    val duplicateSuffix = "_"
+    val dupSuffix = "_"
 
     val logger = LoggerFactory.getLogger(javaClass.simpleName)
 
@@ -33,17 +33,18 @@ class MockService(private val mockRepository: MockRepository) {
     }
 
     fun findAvailableDuplicateName(name: String): Mono<String> {
-        logger.debug("Searching available mock duplicate with name {}", name)
-        val suffixedName = addDuplicateSuffixIfMissing(name)
-        return mockRepository.findByNameStartsWithIgnoreCase(suffixedName)
+        val plainName = nameWithoutSuffix(name).toLowerCase()
+        logger.debug("Searching available mock duplicate with name {}", plainName)
+        return mockRepository.findByNameStartsWith(plainName)
+                .switchIfEmpty(IdNotFoundException("Name $plainName is not found").toMono())
                 .map(Mock::name)
-                .map { it.substringAfterLast(duplicateSuffix) }
+                .map { it.substringAfterLast(dupSuffix) }
                 .filter { it.toIntOrNull() != null }
                 .map(String::toInt)
                 .collectSortedList()
-                .map { l -> findGap(l) }
+                .map { findGap(it) }
                 .defaultIfEmpty(1)
-                .map { suffixedName.toLowerCase() + it }
+                .map { "${plainName}_$it" }
                 .doOnNext { logger.debug("Name {} is available", it) }
     }
 
@@ -117,7 +118,7 @@ class MockService(private val mockRepository: MockRepository) {
         return request.copy(path = path)
     }
 
-    private fun addDuplicateSuffixIfMissing(name: String) = if (name.endsWith(duplicateSuffix)) name else name + duplicateSuffix
-
     private fun findGap(list: MutableList<Int>) = generateSequence(1) { it + 1 }.take(Int.MAX_VALUE).filter { !list.contains(it) }.first()
+
+    private fun nameWithoutSuffix(name: String) = if (name.contains(dupSuffix)) name.substringBeforeLast(dupSuffix) else name
 }

@@ -128,6 +128,22 @@ class MockServiceTest {
     }
 
     @Test
+    fun `should find duplicate ignoring full suffix`() {
+        mockService.findAvailableDuplicateName("demo_7").test()
+                .expectSubscription()
+                .expectNext("demo_6")
+                .verifyComplete()
+    }
+
+    @Test
+    fun `should find duplicate ignoring trailing underscore`() {
+        mockService.findAvailableDuplicateName("demo_").test()
+                .expectSubscription()
+                .expectNext("demo_6")
+                .verifyComplete()
+    }
+
+    @Test
     fun `should find duplicate and find gap`() {
         mockService.findAvailableDuplicateName("pristine").test()
                 .expectSubscription()
@@ -139,8 +155,7 @@ class MockServiceTest {
     fun `should find duplicate even if unknown name`() {
         mockService.findAvailableDuplicateName("unknown").test()
                 .expectSubscription()
-                .expectNext("unknown_1")
-                .verifyComplete()
+                .verifyError(IdNotFoundException::class.java)
     }
 
     @Test

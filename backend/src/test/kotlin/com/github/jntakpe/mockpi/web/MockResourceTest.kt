@@ -105,6 +105,13 @@ class MockResourceTest {
     }
 
     @Test
+    fun `should not find duplicate if unknown name`() {
+        client.get().uri(Urls.MOCK_API + Urls.BY_NAME_AVAILABLE_DUPLICATE, "unknown")
+                .exchange()
+                .expectStatus().isNotFound
+    }
+
+    @Test
     fun `should create new mock`() {
         val mockName = "postMock"
         val mockBody = "mockBody"
