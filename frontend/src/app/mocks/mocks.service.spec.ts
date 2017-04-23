@@ -276,7 +276,7 @@ describe('MocksService', () => {
       spyOn(mocksService, 'redirectMocks').and.returnValue(Observable.of(true));
       const fixture = TestBed.createComponent(TestComponent);
       fixture.detectChanges();
-      mocksService.displayFindByNameError(new Response(new ResponseOptions({status: 404})), 'somemock');
+      mocksService.displayFindByErrorThenRedirect(new Response(new ResponseOptions({status: 404})), 'somemock');
       expect(mdSnackBar.open).toHaveBeenCalledWith('Mock with name somemock doesn\'t exist', appConst.snackBar.closeBtnLabel);
     })));
 
@@ -286,7 +286,7 @@ describe('MocksService', () => {
       spyOn(mocksService, 'redirectMocks').and.returnValue(Observable.of(true));
       const fixture = TestBed.createComponent(TestComponent);
       fixture.detectChanges();
-      mocksService.displayFindByNameError(new Response(new ResponseOptions({status: 500})), 'somemock');
+      mocksService.displayFindByErrorThenRedirect(new Response(new ResponseOptions({status: 500})), 'somemock');
       expect(mdSnackBar.open).toHaveBeenCalledWith('Server error', appConst.snackBar.closeBtnLabel);
     })));
 

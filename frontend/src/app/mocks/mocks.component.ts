@@ -32,13 +32,16 @@ export class MocksComponent implements OnInit {
     this.mocks$ = this.mocksService.findFilteredMocks(this.search$.asObservable(), this.refresh$.asObservable());
   }
 
+  duplicate(mock: Mock): void {
+    this.mocksService.duplicate(mock).subscribe();
+  }
+
   remove(mock: Mock): void {
     this.mocksService.remove(mock)
       .catch(() => {
         this.mocksService.displayRemoveError(mock.name);
         return Observable.empty();
-      })
-      .subscribe(noop, noop, () => this.refresh$.next('remove'));
+      }).subscribe(noop, noop, () => this.refresh$.next('remove'));
   }
 
   updateFilter(form: any): void {

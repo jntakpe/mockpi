@@ -12,6 +12,8 @@ import {RegexType} from '../shared/table/regex-type';
 @Injectable()
 export class MocksService {
 
+  private currentDuplicate: Mock;
+
   constructor(private http: Http, private router: Router, private mdSnackBar: MdSnackBar, private filterTableService: FilterTableService) {
   }
 
@@ -29,6 +31,19 @@ export class MocksService {
   save(mock: Mock, name?: string): Observable<Mock> {
     const req = name ? this.http.put(`${appConst.api.baseUrl}/mocks/${name}`, mock) : this.http.post(`${appConst.api.baseUrl}/mocks`, mock);
     return req.map(res => res.json());
+  }
+
+  duplicate(mock: Mock): Observable<boolean> {
+    return this.findDuplicateName(mock.name)
+      .map(name => Object.assign(mock, {name}))
+      .do(m => this.currentDuplicate = m)
+      .flatMap(m => Observable.fromPromise(this.router.navigate(['/mocks'], {queryParams: {duplicate: m.name}})));
+  }
+
+  retrieveCurrentDuplicate(): Mock {
+    const duplicate = Object.assign({}, this.currentDuplicate);
+    this.currentDuplicate = null;
+    return duplicate;
   }
 
   remove({name}: Mock): Observable<void> {
@@ -63,13 +78,17 @@ export class MocksService {
     this.mdSnackBar.open(`Unable to remove mock with name ${name}`, appConst.snackBar.closeBtnLabel);
   }
 
-  displayFindByNameError({status}: Response, name: string): Observable<any> {
+  displayFindByErrorThenRedirect({status}: Response, name: string): Observable<any> {
+    this.displayFindByNameError(status, name);
+    return this.redirectMocks();
+  }
+
+  private displayFindByNameError(status: number, name: string) {
     if (status === 404) {
       this.mdSnackBar.open(`Mock with name ${name} doesn't exist`, appConst.snackBar.closeBtnLabel);
     } else {
       this.defaultServerError();
     }
-    return this.redirectMocks();
   }
 
   private filterMocks(search: any, mocks: Mock[]): Mock[] {
@@ -86,5 +105,14 @@ export class MocksService {
 
   private defaultServerError(): void {
     this.mdSnackBar.open('Server error', appConst.snackBar.closeBtnLabel);
+  }
+
+  private findDuplicateName(name: string): Observable<string> {
+    return this.http.get(`${appConst.api.baseUrl}/mocks/${name}/available`)
+      .map(res => res.text())
+      .catch(err => {
+        this.displayFindByNameError(err.status, name);
+        return Observable.empty();
+      });
   }
 }

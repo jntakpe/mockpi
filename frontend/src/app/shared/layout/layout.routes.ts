@@ -13,7 +13,7 @@ export const layoutRoutes: Routes = [
       {path: 'home', component: HomeComponent},
       {path: '', redirectTo: 'home', pathMatch: 'full'},
       {path: 'register', component: RegisterComponent},
-      {path: 'mocks', component: MocksComponent},
+      {path: 'mocks', component: MocksComponent, resolve: {mock: MockEditResolver}},
       {path: 'mocks/:name', component: MockEditComponent, resolve: {mock: MockEditResolver}},
     ]
   }

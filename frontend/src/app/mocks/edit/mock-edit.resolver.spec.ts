@@ -68,11 +68,11 @@ describe('MockEditResolver', () => {
   it('should call display error cuz unable to retrieve mock', fakeAsync(inject([Router, MocksService],
     (router: Router, mocksService: MocksService) => {
       spyOn(mocksService, 'findByName').and.returnValue(Observable.throw(new Response(new ResponseOptions({status: 400}))));
-      spyOn(mocksService, 'displayFindByNameError').and.returnValue(Observable.of(true));
+      spyOn(mocksService, 'displayFindByErrorThenRedirect').and.returnValue(Observable.of(true));
       const fixture = createRoot(router, RootComponent);
       router.navigate(['mocks', 'error']);
       advance(fixture);
-      expect(mocksService.displayFindByNameError).toHaveBeenCalled();
+      expect(mocksService.displayFindByErrorThenRedirect).toHaveBeenCalled();
     })));
 
 });
