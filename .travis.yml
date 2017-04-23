@@ -12,6 +12,8 @@ jdk:
 services: mongodb
 install:
   - cd frontend && yarn && cd ..
-script: cd backend && ./gradlew test
+before_script:
+  - npm install -g @angular/cli
+script: cd backend && ./gradlew test && cd ../frontend && ng test
 notifications:
   email: false
