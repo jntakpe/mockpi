@@ -1,0 +1,25 @@
+<md-card class="mb-4">
+  <md-card-content>
+    <form [formGroup]="searchForm" fxLayout.gt-md="row">
+      <md-input-container>
+        <input mdInput type="text" placeholder="Name" formControlName="name">
+      </md-input-container>
+      <section formGroupName="request">
+        <md-input-container>
+          <input mdInput type="text" placeholder="Path" formControlName="path">
+        </md-input-container>
+        <md-input-container>
+          <input mdInput type="text" placeholder="Method" formControlName="method">
+        </md-input-container>
+        <md-input-container>
+          <input mdInput type="text" placeholder="Params" formControlName="params">
+        </md-input-container>
+      </section>
+      <section formGroupName="response">
+        <md-input-container>
+          <input mdInput type="text" placeholder="Body" formControlName="body">
+        </md-input-container>
+      </section>
+    </form>
+  </md-card-content>
+</md-card>
