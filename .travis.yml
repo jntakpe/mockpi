@@ -1,0 +1,11 @@
+language: java
+before_install:
+  - ./backend/gradlew clean
+  - ./frontend/npm install yarn
+install:
+  - ./fronted/yarn
+jdk:
+  - oraclejdk8
+services: mongodb
+notifications:
+  email: false
