@@ -1,25 +1,33 @@
 <md-card class="mb-4">
+  <md-card-subtitle>Search</md-card-subtitle>
   <md-card-content>
     <form [formGroup]="searchForm" fxLayout.gt-md="row">
-      <md-input-container>
+      <md-input-container fxFlex.gt-md="15">
         <input mdInput type="text" placeholder="Name" formControlName="name">
       </md-input-container>
-      <section formGroupName="request">
-        <md-input-container>
+      <section formGroupName="request" fxLayout.gt-md="row" fxFlex.gt-md="40">
+        <md-input-container fxFlex.gt-md="35">
           <input mdInput type="text" placeholder="Path" formControlName="path">
         </md-input-container>
-        <md-input-container>
-          <input mdInput type="text" placeholder="Method" formControlName="method">
-        </md-input-container>
-        <md-input-container>
-          <input mdInput type="text" placeholder="Params" formControlName="params">
+        <md-select placeholder="Method" formControlName="method" fxFlex.gt-md="30">
+          <md-option value="GET">GET</md-option>
+          <md-option value="POST">POST</md-option>
+          <md-option value="PUT">PUT</md-option>
+          <md-option value="DELETE">DELETE</md-option>
+          <md-option value="PATCH">PATCH</md-option>
+        </md-select>
+        <md-input-container fxFlex.gt-md="35">
+          <input mdInput type="text" placeholder="Params" formControlName="fmtParams">
         </md-input-container>
       </section>
-      <section formGroupName="response">
-        <md-input-container>
+      <section formGroupName="response" fxLayout.gt-md="row" fxFlex.gt-md="42">
+        <md-input-container fxFlex.gt-md>
           <input mdInput type="text" placeholder="Body" formControlName="body">
         </md-input-container>
       </section>
+      <button id="reset-btn" md-mini-fab color="warn" (click)="reset()">
+        <md-icon>clear</md-icon>
+      </button>
     </form>
   </md-card-content>
 </md-card>

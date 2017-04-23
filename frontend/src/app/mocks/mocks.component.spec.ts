@@ -10,6 +10,8 @@ import {Observable} from 'rxjs/Observable';
 import {ReactiveFormsModule} from '@angular/forms';
 import {TableModule} from '../shared/table/table.module';
 import {MockSearchComponent} from './search/mock-search.component';
+import {By} from '@angular/platform-browser';
+import {changeInputValueAndDispatch} from '../shared/testing/testing-utils.spec';
 
 describe('MocksComponent', () => {
   let component: MocksComponent;
@@ -57,5 +59,24 @@ describe('MocksComponent', () => {
     expect(mocksService.displayRemoveError).toHaveBeenCalledWith(firstMock.name);
     refresh$.subscribe(v => expect(v).toEqual('remove'));
   })));
+
+  it('should call update filter', async(() => {
+    spyOn(component, 'updateFilter');
+    const nameInput = fixture.debugElement.query(By.css('input[formcontrolname="name"]'));
+    const pathInput = fixture.debugElement.query(By.css('input[formcontrolname="path"]'));
+    changeInputValueAndDispatch(nameInput, 'j');
+    fixture.detectChanges();
+    const updateFilter = component.updateFilter;
+    expect(updateFilter).toHaveBeenCalledWith({name: 'j', request: {path: '', method: '', fmtParams: ''}, response: {body: ''}});
+    expect(updateFilter).toHaveBeenCalledTimes(1);
+    changeInputValueAndDispatch(pathInput, 'f');
+    fixture.detectChanges();
+    expect(updateFilter).toHaveBeenCalledWith({name: 'j', request: {path: 'f', method: '', fmtParams: ''}, response: {body: ''}});
+    expect(updateFilter).toHaveBeenCalledTimes(2);
+    changeInputValueAndDispatch(pathInput, 'fi');
+    fixture.detectChanges();
+    expect(updateFilter).toHaveBeenCalledWith({name: 'j', request: {path: 'fi', method: '', fmtParams: ''}, response: {body: ''}});
+    expect(updateFilter).toHaveBeenCalledTimes(3);
+  }));
 
 });

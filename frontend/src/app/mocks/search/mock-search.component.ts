@@ -21,13 +21,17 @@ export class MockSearchComponent implements OnInit {
     this.searchForm.valueChanges.subscribe(v => this.searchChanges.emit(v));
   }
 
+  reset() {
+    this.searchForm.reset();
+  }
+
   private initForm(): FormGroup {
     return this.formBuilder.group({
       name: '',
       request: this.formBuilder.group({
         path: '',
         method: '',
-        params: '',
+        fmtParams: '',
       }),
       response: this.formBuilder.group({
         body: ''

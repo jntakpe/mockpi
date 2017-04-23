@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import {NgModule} from '@angular/core';
 import {
   MdAutocompleteModule,
   MdButtonModule,
@@ -7,6 +7,7 @@ import {
   MdInputModule,
   MdMenuModule,
   MdRadioModule,
+  MdSelectModule,
   MdSnackBarModule,
   MdToolbarModule
 } from '@angular/material';
@@ -14,6 +15,7 @@ import {
 @NgModule({
   imports: [
     MdInputModule,
+    MdSelectModule,
     MdSnackBarModule,
     MdButtonModule,
     MdMenuModule,
@@ -25,6 +27,7 @@ import {
   ],
   exports: [
     MdInputModule,
+    MdSelectModule,
     MdSnackBarModule,
     MdButtonModule,
     MdMenuModule,
