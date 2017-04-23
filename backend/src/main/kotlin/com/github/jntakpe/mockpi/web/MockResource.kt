@@ -24,6 +24,9 @@ class MockResource(private val mockService: MockService) {
                 .switchIfEmpty(ResponseEntity.notFound().build<Mock>().toMono())
     }
 
+    @GetMapping(Urls.BY_NAME_AVAILABLE_DUPLICATE)
+    fun findByNameAvailableDuplicate(@PathVariable name: String) = mockService.findAvailableDuplicateName(name)
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     fun create(@RequestBody @Valid mock: Mock): Mono<Mock> = mockService.create(mock)

@@ -17,6 +17,8 @@ import reactor.core.publisher.toMono
 @Service
 class MockService(private val mockRepository: MockRepository) {
 
+    val duplicateSuffix = "_"
+
     val logger = LoggerFactory.getLogger(javaClass.simpleName)
 
     fun findAll(): Flux<Mock> {
@@ -28,6 +30,21 @@ class MockService(private val mockRepository: MockRepository) {
         logger.debug("Searching mock with name {}", name)
         return mockRepository.findByNameIgnoreCase(name)
                 .doOnNext { logger.debug("Mock {} matched with name {}", it, name) }
+    }
+
+    fun findAvailableDuplicateName(name: String): Mono<String> {
+        logger.debug("Searching available mock duplicate with name {}", name)
+        val suffixedName = addDuplicateSuffixIfMissing(name)
+        return mockRepository.findByNameStartsWithIgnoreCase(suffixedName)
+                .map(Mock::name)
+                .map { it.substringAfterLast(duplicateSuffix) }
+                .filter { it.toIntOrNull() != null }
+                .map(String::toInt)
+                .collectSortedList()
+                .map { l -> findGap(l) }
+                .defaultIfEmpty(1)
+                .map { suffixedName.toLowerCase() + it }
+                .doOnNext { logger.debug("Name {} is available", it) }
     }
 
     fun verifyNameAvailable(name: String, oldName: String? = null): Mono<String> {
@@ -100,4 +117,7 @@ class MockService(private val mockRepository: MockRepository) {
         return request.copy(path = path)
     }
 
+    private fun addDuplicateSuffixIfMissing(name: String) = if (name.endsWith(duplicateSuffix)) name else name + duplicateSuffix
+
+    private fun findGap(list: MutableList<Int>) = generateSequence(1) { it + 1 }.take(Int.MAX_VALUE).filter { !list.contains(it) }.first()
 }

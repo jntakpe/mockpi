@@ -56,7 +56,7 @@ class MockResourceTest {
 
     @Test
     fun `should get mock by name`() {
-        val demo1Name = "demo1"
+        val demo1Name = "demo_1"
         val result = client.get().uri(Urls.MOCK_API + Urls.BY_NAME, demo1Name)
                 .exchange()
                 .expectStatus().isOk
@@ -73,7 +73,7 @@ class MockResourceTest {
 
     @Test
     fun `should get mock by name ignoring case`() {
-        val result = client.get().uri(Urls.MOCK_API + Urls.BY_NAME, "deMO1")
+        val result = client.get().uri(Urls.MOCK_API + Urls.BY_NAME, "deMO_1")
                 .exchange()
                 .expectStatus().isOk
                 .expectHeader().contentType(APPLICATION_JSON_UTF8)
@@ -92,6 +92,16 @@ class MockResourceTest {
         client.get().uri(Urls.MOCK_API + Urls.BY_NAME, "unknown")
                 .exchange()
                 .expectStatus().isNotFound
+    }
+
+    @Test
+    fun `should find duplicate at end`() {
+        val name = "demo"
+        val result = client.get().uri(Urls.MOCK_API + Urls.BY_NAME_AVAILABLE_DUPLICATE, name)
+                .exchange()
+                .expectStatus().isOk
+                .returnResult(String::class.java)
+        result.responseBody.test().expectNext("demo_6").verifyComplete()
     }
 
     @Test
@@ -117,7 +127,7 @@ class MockResourceTest {
     @Test
     fun `should not create new mock cuz login taken`() {
         client.post().uri(Urls.MOCK_API).accept(APPLICATION_JSON_UTF8)
-                .body(Mock("dEMo1", Request("/some", GET), Response("test")).toMono(), Mock::class.java)
+                .body(Mock("dEMo_1", Request("/some", GET), Response("test")).toMono(), Mock::class.java)
                 .exchange()
                 .expectStatus().isEqualTo(HttpStatus.CONFLICT)
     }
@@ -146,7 +156,7 @@ class MockResourceTest {
     @Test
     fun `should not update mock because name taken`() {
         client.put().uri(Urls.MOCK_API + Urls.BY_NAME, "toupdateapi").accept(APPLICATION_JSON_UTF8)
-                .body(Mock("demo1", Request("/path", POST), Response("body")).toMono(), Mock::class.java)
+                .body(Mock("demo_1", Request("/path", POST), Response("body")).toMono(), Mock::class.java)
                 .exchange()
                 .expectStatus().isEqualTo(HttpStatus.CONFLICT)
     }

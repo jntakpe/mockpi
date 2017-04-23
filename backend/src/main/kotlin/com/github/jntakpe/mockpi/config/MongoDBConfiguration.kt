@@ -46,12 +46,14 @@ class MongoDBConfiguration(val mongoProperties: MongoProperties) : AbstractReact
 
     private fun initMocks(mockRepository: MockRepository) {
         val mocks = Flux.just(
-                Mock("demo1", Request("/mockpi/users/1", GET), Response("{\"name\": \"jntakpe\"}")),
-                Mock("demo2", Request("/mockpi/users/1", GET, mapOf(Pair("age", "20")), emptyMap()), Response("{\"name\": \"jntakpe\"}")),
-                Mock("demo3", Request("/mockpi/users/1", GET, mapOf(Pair("age", "20"), Pair("gender", "M")), emptyMap()),
+                Mock("demo", Request("/mockpi/users/origin", GET), Response("{\"name\": \"jntakpe\"}")),
+                Mock("demo_1", Request("/mockpi/users/1", GET), Response("{\"name\": \"jntakpe\"}")),
+                Mock("demo_2", Request("/mockpi/users/1", GET, mapOf(Pair("age", "20")), emptyMap()), Response("{\"name\": \"jntakpe\"}")),
+                Mock("demo_3", Request("/mockpi/users/1", GET, mapOf(Pair("age", "20"), Pair("gender", "M")), emptyMap()),
                         Response("{\"name\": \"jntakpe\"}")),
-                Mock("demo4", Request("/mockpi/users/2", GET, emptyMap(), mapOf(Pair(ACCEPT, "*"))), Response("{\"name\": \"cbarillet\"}")),
-                Mock("demo5", Request("/mockpi/users/2", GET, emptyMap(),
+                Mock("demo_4", Request("/mockpi/users/2", GET, emptyMap(), mapOf(Pair(ACCEPT, "*"))),
+                        Response("{\"name\": \"cbarillet\"}")),
+                Mock("demo_5", Request("/mockpi/users/2", GET, emptyMap(),
                         mapOf(Pair(CONTENT_TYPE, "application/json"), Pair(CACHE_CONTROL, "no-cache"))),
                         Response("{\"name\": \"cbarillet\"}")),
                 Mock("toupdate", Request("/mockpi/toupdate/1", GET), Response("{\"name\": \"jntakpe\"}")),
@@ -62,7 +64,7 @@ class MongoDBConfiguration(val mongoProperties: MongoProperties) : AbstractReact
                 Mock("todeleteapi", Request("/mockpi/todelete/api", GET), Response("{\"name\": \"jntakpe\"}")),
                 Mock("delayed", Request("/mockpi/delayed", GET), Response("{\"name\": \"jntakpe\"}"), "", 1000L, "delayed desc"),
                 Mock("pristine", Request("/mockpi/pristine", GET), Response("pristinebody")),
-                Mock("pristineCustom", Request("/mockpi/pristine/custom", GET), Response("custombody", 201, MediaType.TEXT_PLAIN_VALUE))
+                Mock("pristine_2", Request("/mockpi/pristine/custom", GET), Response("custombody", 201, MediaType.TEXT_PLAIN_VALUE))
         )
         mockRepository.deleteAll().thenMany(mockRepository.save(mocks)).blockLast()
     }

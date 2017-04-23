@@ -40,7 +40,7 @@ class MockServiceTest {
 
     @Test
     fun `should find mock by name because exact match`() {
-        val name = "demo1"
+        val name = "demo_1"
         mockService.findByName(name).test()
                 .expectSubscription()
                 .consumeNextWith { mock ->
@@ -52,7 +52,7 @@ class MockServiceTest {
 
     @Test
     fun `should find mock by name ignoring case`() {
-        val name = "DEMO1"
+        val name = "DEMO_1"
         mockService.findByName(name).test()
                 .expectSubscription()
                 .consumeNextWith { mock ->
@@ -81,7 +81,7 @@ class MockServiceTest {
 
     @Test
     fun `shoud refuse name because same name exist`() {
-        val newName = "dEMO1"
+        val newName = "dEMO_1"
         mockService.verifyNameAvailable(newName).test()
                 .expectSubscription()
                 .verifyError(ConflictKeyException::class.java)
@@ -89,8 +89,8 @@ class MockServiceTest {
 
     @Test
     fun `should accept name because old name is the the same`() {
-        val name = "DEmo1"
-        mockService.verifyNameAvailable(name, "demo1").test()
+        val name = "DEmo_1"
+        mockService.verifyNameAvailable(name, "demo_1").test()
                 .expectSubscription()
                 .expectNext(name.toLowerCase())
                 .verifyComplete()
@@ -98,9 +98,49 @@ class MockServiceTest {
 
     @Test
     fun `should refuse name because old name is not the same`() {
-        mockService.verifyNameAvailable("Demo1", "oldName").test()
+        mockService.verifyNameAvailable("Demo_1", "oldName").test()
                 .expectSubscription()
                 .verifyError(ConflictKeyException::class.java)
+    }
+
+    @Test
+    fun `should find no duplicate then return 1`() {
+        mockService.findAvailableDuplicateName("delayed").test()
+                .expectSubscription()
+                .expectNext("delayed_1")
+                .verifyComplete()
+    }
+
+    @Test
+    fun `should find duplicate then iterate count`() {
+        mockService.findAvailableDuplicateName("demo").test()
+                .expectSubscription()
+                .expectNext("demo_6")
+                .verifyComplete()
+    }
+
+    @Test
+    fun `should find duplicate ignoring case then iterate count`() {
+        mockService.findAvailableDuplicateName("DEMO").test()
+                .expectSubscription()
+                .expectNext("demo_6")
+                .verifyComplete()
+    }
+
+    @Test
+    fun `should find duplicate and find gap`() {
+        mockService.findAvailableDuplicateName("pristine").test()
+                .expectSubscription()
+                .expectNext("pristine_1")
+                .verifyComplete()
+    }
+
+    @Test
+    fun `should find duplicate even if unknown name`() {
+        mockService.findAvailableDuplicateName("unknown").test()
+                .expectSubscription()
+                .expectNext("unknown_1")
+                .verifyComplete()
     }
 
     @Test
@@ -139,7 +179,7 @@ class MockServiceTest {
                 .expectSubscription()
                 .consumeNextWith { response ->
                     assertThat(response).isNotNull()
-                    assertThat(response.name).isEqualTo("demo1")
+                    assertThat(response.name).isEqualTo("demo_1")
                 }
                 .verifyComplete()
     }
@@ -166,7 +206,7 @@ class MockServiceTest {
                 .expectSubscription()
                 .consumeNextWith { response ->
                     assertThat(response).isNotNull()
-                    assertThat(response.name).isEqualTo("demo2")
+                    assertThat(response.name).isEqualTo("demo_2")
                 }
                 .verifyComplete()
     }
@@ -178,7 +218,7 @@ class MockServiceTest {
                 .expectSubscription()
                 .consumeNextWith { response ->
                     assertThat(response).isNotNull()
-                    assertThat(response.name).isEqualTo("demo3")
+                    assertThat(response.name).isEqualTo("demo_3")
                 }
                 .verifyComplete()
     }
@@ -200,7 +240,7 @@ class MockServiceTest {
                 .expectSubscription()
                 .consumeNextWith { response ->
                     assertThat(response).isNotNull()
-                    assertThat(response.name).isEqualTo("demo1")
+                    assertThat(response.name).isEqualTo("demo_1")
                 }
                 .verifyComplete()
     }
@@ -212,7 +252,7 @@ class MockServiceTest {
                 .expectSubscription()
                 .consumeNextWith { response ->
                     assertThat(response).isNotNull()
-                    assertThat(response.name).isEqualTo("demo4")
+                    assertThat(response.name).isEqualTo("demo_4")
                 }
                 .verifyComplete()
     }
@@ -224,7 +264,7 @@ class MockServiceTest {
                 .expectSubscription()
                 .consumeNextWith { response ->
                     assertThat(response).isNotNull()
-                    assertThat(response.name).isEqualTo("demo5")
+                    assertThat(response.name).isEqualTo("demo_5")
                 }
                 .verifyComplete()
     }
@@ -279,7 +319,7 @@ class MockServiceTest {
 
     @Test
     fun `should not create because name taken`() {
-        val mock = Mock("demo1", Request("someRequest/path", GET), Response(ObjectMapper().writeValueAsString(Pair("basic", "mock"))))
+        val mock = Mock("demo_1", Request("someRequest/path", GET), Response(ObjectMapper().writeValueAsString(Pair("basic", "mock"))))
         mockService.create(mock).test()
                 .expectSubscription()
                 .verifyError(ConflictKeyException::class.java)
@@ -296,7 +336,7 @@ class MockServiceTest {
     @Test
     fun `should update mock without changing name`() {
         val responseBody = "updatedresponse"
-        val name = "demo1"
+        val name = "demo_1"
         val mock = mockRepository.findByNameIgnoreCase(name).block().copy(response = Response(responseBody))
         mockService.update(mock, name).test()
                 .expectSubscription()
@@ -339,7 +379,7 @@ class MockServiceTest {
 
     @Test
     fun `should not update because name missing`() {
-        val mock = mockRepository.findByNameIgnoreCase("demo1").block()
+        val mock = mockRepository.findByNameIgnoreCase("demo_1").block()
         mockService.update(mock, "unknownname").test()
                 .expectSubscription()
                 .verifyError(IdNotFoundException::class.java)
@@ -347,8 +387,8 @@ class MockServiceTest {
 
     @Test
     fun `should not update because name taken`() {
-        val mock = mockRepository.findByNameIgnoreCase("demo1").block()
-        mockService.update(mock, "demo2").test()
+        val mock = mockRepository.findByNameIgnoreCase("demo_1").block()
+        mockService.update(mock, "demo_2").test()
                 .expectSubscription()
                 .verifyError(ConflictKeyException::class.java)
     }
@@ -356,7 +396,7 @@ class MockServiceTest {
     @Test
     fun `should not update because request taken`() {
         val mock = mockRepository.findByNameIgnoreCase("toupdate2").block()
-        val request = mockRepository.findByNameIgnoreCase("demo1").block().request
+        val request = mockRepository.findByNameIgnoreCase("demo_1").block().request
         mockService.update(mock.copy(request = request), mock.name).test()
                 .expectSubscription()
                 .verifyError(ConflictKeyException::class.java)

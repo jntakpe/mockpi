@@ -10,6 +10,8 @@ interface MockRepository : ReactiveMongoRepository<Mock, String> {
 
     fun findByNameIgnoreCase(name: String): Mono<Mock>
 
+    fun findByNameStartsWithIgnoreCase(name: String): Flux<Mock>
+
     fun findByRequest_PathAndRequest_Method(path: String, method: HttpMethod): Flux<Mock>
 
 }
