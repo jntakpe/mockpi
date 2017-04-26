@@ -24,6 +24,7 @@ class MockService(private val mockRepository: MockRepository) {
     fun findAll(): Flux<Mock> {
         logger.debug("Searching all mocks")
         return mockRepository.findAll()
+                .doOnComplete { logger.debug("All mocks retrieved") }
     }
 
     fun findByName(name: String): Mono<Mock> {

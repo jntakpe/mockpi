@@ -15,7 +15,7 @@ class FakeService(private val mockService: MockService) {
     val logger = LoggerFactory.getLogger(javaClass.simpleName)
 
     fun findFakeResponse(req: Request): Mono<ResponseEntity<String>> {
-        logger.debug("Searching mock response for request {}", req)
+        logger.debug("Searching mock response for request {}", req);
         return mockService.findMatchingMock(req)
                 .elapsed()
                 .flatMap { t -> Mono.delay(resolveDelay(t.t1, t.t2.delay)).map { t.t2 } }

@@ -20,7 +20,7 @@ class MockResource(private val mockService: MockService) {
     @GetMapping(Urls.BY_NAME)
     fun findByName(@PathVariable name: String): Mono<ResponseEntity<Mock>> {
         return mockService.findByName(name)
-                .map { m -> ResponseEntity(m, HttpStatus.OK) }
+                .map { ResponseEntity(it, HttpStatus.OK) }
                 .switchIfEmpty(ResponseEntity.notFound().build<Mock>().toMono())
     }
 
@@ -29,12 +29,12 @@ class MockResource(private val mockService: MockService) {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    fun create(@RequestBody @Valid mock: Mock): Mono<Mock> = mockService.create(mock)
+    fun create(@RequestBody @Valid mock: Mock) = mockService.create(mock)
 
     @PutMapping(Urls.BY_NAME)
-    fun update(@PathVariable name: String, @RequestBody @Valid mock: Mock): Mono<Mock> = mockService.update(mock, name)
+    fun update(@PathVariable name: String, @RequestBody @Valid mock: Mock) = mockService.update(mock, name)
 
     @DeleteMapping(Urls.BY_NAME)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    fun remove(@PathVariable name: String): Mono<Void> = mockService.delete(name)
+    fun remove(@PathVariable name: String) = mockService.delete(name)
 }
