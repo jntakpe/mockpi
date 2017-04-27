@@ -1,13 +1,13 @@
-import {Injectable} from '@angular/core';
-import {Http, Response, URLSearchParams} from '@angular/http';
-import {Observable} from 'rxjs/Observable';
-import {appConst} from '../shared/constants';
+import { Injectable } from '@angular/core';
+import { Http, Response, URLSearchParams } from '@angular/http';
+import { Observable } from 'rxjs/Observable';
+import { appConst } from '../shared/constants';
 import '../shared/rxjs.extension';
-import {Mock} from '../shared/api.model';
-import {Router} from '@angular/router';
-import {MdSnackBar} from '@angular/material';
-import {FilterTableService} from '../shared/table/filter-table.service';
-import {RegexType} from '../shared/table/regex-type';
+import { Mock } from '../shared/api.model';
+import { Router } from '@angular/router';
+import { MdSnackBar } from '@angular/material';
+import { FilterTableService } from '../shared/table/filter-table.service';
+import { RegexType } from '../shared/table/regex-type';
 
 @Injectable()
 export class MocksService {
@@ -37,13 +37,15 @@ export class MocksService {
     return this.findDuplicateName(mock.name)
       .map(name => Object.assign(mock, {name}))
       .do(m => this.currentDuplicate = m)
-      .flatMap(m => Observable.fromPromise(this.router.navigate(['/mocks'], {queryParams: {duplicate: m.name}})));
+      .flatMap(m => Observable.fromPromise(this.router.navigate(['/mock'], {queryParams: {duplicate: m.name}})));
   }
 
   retrieveCurrentDuplicate(): Mock {
-    const duplicate = Object.assign({}, this.currentDuplicate);
-    this.currentDuplicate = null;
-    return duplicate;
+    if (this.currentDuplicate) {
+      const duplicate = Object.assign({}, this.currentDuplicate);
+      this.currentDuplicate = null;
+      return duplicate;
+    }
   }
 
   remove({name}: Mock): Observable<void> {

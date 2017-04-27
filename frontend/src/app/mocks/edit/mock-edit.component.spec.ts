@@ -218,7 +218,7 @@ describe('MockEditComponent', () => {
           useClass: FakeMocksService
         }, {
           provide: ActivatedRoute,
-          useValue: {data: Observable.of({mock: firstMock})}
+          useValue: {data: Observable.of({mock: firstMock}), queryParams: Observable.empty()}
         }]
       })
         .compileComponents();
@@ -270,6 +270,71 @@ describe('MockEditComponent', () => {
       expect(firstArg.response.contentType).toEqual(firstArg.response.contentType);
     })));
   });
+
+  describe('When duplicating', () => {
+
+    beforeEach(async(() => {
+      TestBed.configureTestingModule({
+        declarations: [MockEditComponent],
+        imports: [MockpiMaterialModule, BrowserAnimationsModule, ReactiveFormsModule, RouterTestingModule],
+        providers: [{
+          provide: MocksService,
+          useClass: FakeMocksService
+        }, {
+          provide: ActivatedRoute,
+          useValue: {data: Observable.empty(), queryParams: Observable.of({duplicate: firstMock.name})}
+        }]
+      })
+        .compileComponents();
+    }));
+
+    beforeEach(() => {
+      fixture = TestBed.createComponent(MockEditComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+      compiled = fixture.debugElement.nativeElement;
+    });
+
+    it('should display create title', () => {
+      expect(compiled.querySelector('md-toolbar').textContent).toContain('Create mock');
+    });
+
+    it('should display create button', () => {
+      expect(compiled.querySelector('button[type="submit"] md-icon').textContent).toContain('add');
+    });
+
+    it('should initialize fields', () => {
+      expect(compiled.querySelector('input[formcontrolname="name"]').value).toBe(firstMock.name);
+      expect(compiled.querySelector('input[formcontrolname="collection"]').value).toBe(firstMock.collection);
+      expect(compiled.querySelector('input[formcontrolname="delay"]').value).toBe(firstMock.delay.toString());
+      expect(compiled.querySelector('textarea[formcontrolname="description"]').value).toBe(firstMock.description);
+      expect(compiled.querySelector('input[formcontrolname="path"]').value).toBe(firstMock.request.path);
+      expect(compiled.querySelector(`md-radio-group[formcontrolname="method"] 
+        md-radio-button[ng-reflect-value="${firstMock.request.method}"].mat-radio-checked`)).toBeTruthy();
+      expect(compiled.querySelector('textarea[formcontrolname="body"]').value).toBe(firstMock.response.body);
+    });
+
+    it('should call save basic form initialized by ngOnInit', async(inject([MocksService], (mocksService: MocksService) => {
+      component.mockForm.value.params = {};
+      component.mockForm.value.headers = {};
+      component.mockForm.value.request.fmtParams = {};
+      const spy = spyOn(mocksService, 'save').and.returnValue(Observable.of({}));
+      compiled.querySelector('button[type="submit"]').click();
+      fixture.detectChanges();
+      expect(mocksService.save).toHaveBeenCalled();
+      const firstArg = spy.calls.mostRecent().args[0];
+      expect(firstArg.name).toEqual(firstMock.name);
+      expect(firstArg.collection).toEqual(firstMock.collection);
+      expect(firstArg.delay).toEqual(firstMock.delay.toString());
+      expect(firstArg.description).toEqual(firstMock.description);
+      expect(firstMock.request.method).toEqual(firstMock.request.method);
+      expect(firstMock.request.path).toEqual(firstMock.request.path);
+      expect(firstArg.response.body).toEqual(firstMock.response.body);
+      expect(firstMock.response.status).toEqual(firstMock.response.status);
+      expect(firstArg.response.contentType).toEqual(firstArg.response.contentType);
+    })));
+  });
+
 
   function initializeForm(): any {
     const expected = {

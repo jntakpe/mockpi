@@ -32,14 +32,11 @@ export class MockEditComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.route.data
-      .map(d => d.mock)
-      .subscribe((mock: Mock) => {
-        this.initialName = mock && mock.name;
-        this.mockForm = this.initializeForm(mock);
-        this.filteredStatus = this.filterStatuses();
-        this.filteredContentTypes = this.filterContentType();
-      });
+    Observable.merge(this.mockFromData(), this.mockFromDuplicate()).subscribe(mock => {
+      this.mockForm = this.initializeForm(mock);
+      this.filteredStatus = this.filterStatuses();
+      this.filteredContentTypes = this.filterContentType();
+    });
   }
 
   save(): void {
@@ -108,6 +105,18 @@ export class MockEditComponent implements OnInit {
     return this.mockForm.get('response').get('contentType').valueChanges
       .startWith('')
       .map(v => v ? contentTypes.map(s => s).filter(s => new RegExp(`^${v}`, 'gi').test(s)) : contentTypes);
+  }
+
+  private mockFromData(): Observable<Mock> {
+    return this.route.data
+      .filter(d => d.mock)
+      .map(d => d.mock)
+      .do(m => this.initialName = m.name);
+  }
+
+  private mockFromDuplicate(): Observable<Mock> {
+    return this.route.queryParams
+      .map(p => p.duplicate ? this.mocksService.retrieveCurrentDuplicate() : null);
   }
 
 }

@@ -12,30 +12,31 @@
       rowHeight="40"
       limit="10">
     </ngx-datatable>
+
+    <ng-template #actionsTpl let-mock="row">
+      <button class="actions-btn" md-icon-button [mdMenuTriggerFor]="menu">
+        <md-icon>more_vert</md-icon>
+      </button>
+      <md-menu #menu="mdMenu">
+        <button class="duplicate-btn" md-menu-item (click)="duplicate(mock)">
+          <md-icon>content_copy</md-icon>
+          <span>Duplicate</span>
+        </button>
+        <button md-menu-item [routerLink]="['/mock', mock.name]">
+          <md-icon>edit</md-icon>
+          <span>Edit</span>
+        </button>
+        <button class="remove-btn" md-menu-item (click)="remove(mock)">
+          <md-icon>delete_forever</md-icon>
+          <span>Delete</span>
+        </button>
+      </md-menu>
+    </ng-template>
+
     <section fxLayout="row" fxLayoutAlign="end" class="mt-4">
-      <a md-fab [routerLink]="['/mocks', '']">
+      <a md-fab [routerLink]="['/mock', '']">
         <md-icon>add</md-icon>
       </a>
     </section>
   </md-card-content>
 </md-card>
-
-<ng-template #actionsTpl let-mock="row">
-  <button class="actions-btn" md-icon-button [mdMenuTriggerFor]="menu">
-    <md-icon>more_vert</md-icon>
-  </button>
-  <md-menu #menu="mdMenu">
-    <button class="duplicate-btn" md-menu-item (click)="duplicate(mock)">
-      <md-icon>content_copy</md-icon>
-      <span>Duplicate</span>
-    </button>
-    <button md-menu-item [routerLink]="['/mocks', mock.name]">
-      <md-icon>edit</md-icon>
-      <span>Edit</span>
-    </button>
-    <button class="remove-btn" md-menu-item (click)="remove(mock)">
-      <md-icon>delete_forever</md-icon>
-      <span>Delete</span>
-    </button>
-  </md-menu>
-</ng-template>
