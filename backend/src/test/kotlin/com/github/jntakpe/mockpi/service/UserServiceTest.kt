@@ -72,17 +72,49 @@ class UserServiceTest {
     }
 
     @Test
-    fun `should accept username because old username is the same`() {
-        val username = "JNtakpe"
-        userService.verifyUsernameAvailable(username, "jntakpe").test()
+    fun `should accept username because old id is the same`() {
+        val jntakpe = userRepository.findByUsernameIgnoreCase("jntakpe").block()
+        userService.verifyUsernameAvailable("JNtakpe", jntakpe.id).test()
                 .expectSubscription()
-                .expectNext(username)
+                .expectNext("JNtakpe")
                 .verifyComplete()
     }
 
     @Test
-    fun `should refuse username because old username is not the same`() {
-        userService.verifyUsernameAvailable("JNtakpe", "oldusername").test()
+    fun `should refuse username because old id is not the same`() {
+        userService.verifyUsernameAvailable("JNtakpe", "unknownid").test()
+                .expectSubscription()
+                .verifyError(ConflictKeyException::class.java)
+    }
+
+    @Test
+    fun `should accept mail because none existing`() {
+        val mail = "totonew@mail.com"
+        userService.verifyEmailAvailable(mail).test()
+                .expectSubscription()
+                .expectNext(mail)
+                .verifyComplete()
+    }
+
+    @Test
+    fun `should refuse mail because same mail exist`() {
+        userService.verifyEmailAvailable("jntakpe@mail.com").test()
+                .expectSubscription()
+                .verifyError(ConflictKeyException::class.java)
+    }
+
+    @Test
+    fun `should accept mail because old id is the same`() {
+        val jntakpe = userRepository.findByUsernameIgnoreCase("jntakpe").block()
+        userService.verifyEmailAvailable("jntakpe@mail.com", jntakpe.id).test()
+                .expectSubscription()
+                .expectNext(jntakpe.email)
+                .verifyComplete()
+    }
+
+    @Test
+    fun `should refuse mail because old id is not the same`() {
+        userService.verifyEmailAvailable("jntakpe@mail.com", "unknownid").test()
                 .expectSubscription()
                 .verifyError(ConflictKeyException::class.java)
     }
@@ -90,13 +122,24 @@ class UserServiceTest {
     @Test
     fun `should register a new user with new username`() {
         val rjansem = User("rjansem", "Rudy", "rjansem@mail.com", "pwd")
+        val list = mutableListOf<User>()
         userService.register(rjansem).test()
                 .expectSubscription()
-                .expectNext(rjansem)
-                .verifyComplete()
-        userRepository.exists("rjansem").test()
-                .expectSubscription()
-                .expectNext(true)
+                .recordWith { list }
+                .consumeNextWith {
+                    assertThat(it.id).isNotEmpty()
+                    assertThat(it.username).isEqualTo(rjansem.username)
+                    assertThat(it.email).isEqualTo(rjansem.email)
+                    assertThat(it.name).isEqualTo(rjansem.name)
+                    assertThat(it.password).isEqualTo(rjansem.password)
+                }
+                .then {
+                    assertThat(list).isNotEmpty.hasSize(1)
+                    userRepository.exists(list[0].id).test()
+                            .expectSubscription()
+                            .expectNext(true)
+                            .verifyComplete()
+                }
                 .verifyComplete()
     }
 
@@ -106,14 +149,9 @@ class UserServiceTest {
         userService.register(uppercase).test()
                 .expectSubscription()
                 .consumeNextWith {
-                    (username, _, email) ->
-                    assertThat(username).isEqualTo("uppercase")
-                    assertThat(email).isEqualTo("uppercase@mail.com")
+                    assertThat(it.username).isEqualTo("uppercase")
+                    assertThat(it.email).isEqualTo("uppercase@mail.com")
                 }
-                .verifyComplete()
-        userRepository.exists("uppercase").test()
-                .expectSubscription()
-                .expectNext(true)
                 .verifyComplete()
     }
 
@@ -147,10 +185,6 @@ class UserServiceTest {
                     assertThat(email).isEqualTo("updatedcba@mail.com")
                 }
                 .verifyComplete()
-        userRepository.exists("cbarillet").test()
-                .expectSubscription()
-                .expectNext(true)
-                .verifyComplete()
     }
 
     @Test
@@ -164,10 +198,6 @@ class UserServiceTest {
                     assertThat(email).isEqualTo("jajamail@mail.com")
                 }
                 .verifyComplete()
-        userRepository.exists("cbarillet").test()
-                .expectSubscription()
-                .expectNext(true)
-                .verifyComplete()
     }
 
     @Test
@@ -176,14 +206,16 @@ class UserServiceTest {
         userService.update(updated, "bpoindron").test()
                 .expectSubscription()
                 .expectNext(updated)
-                .verifyComplete()
-        userRepository.exists("updated").test()
-                .expectSubscription()
-                .expectNext(true)
-                .verifyComplete()
-        userRepository.exists("bpoindron").test()
-                .expectSubscription()
-                .expectNext(false)
+                .then {
+                    userRepository.findByUsernameIgnoreCase("updated").test()
+                            .expectSubscription()
+                            .expectNextCount(1)
+                            .verifyComplete()
+                    userRepository.findByUsernameIgnoreCase("bpoindron").test()
+                            .expectSubscription()
+                            .expectNextCount(0)
+                            .verifyComplete()
+                }
                 .verifyComplete()
     }
 

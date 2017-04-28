@@ -78,10 +78,10 @@ class UserResourceTest {
                 .expectHeader().contentType(MediaType.APPLICATION_JSON_UTF8)
                 .returnResult(User::class.java)
         result.responseBody.test().consumeNextWith {
-            (username, name, email) ->
-            assertThat(username).isEqualTo("postuser")
-            assertThat(name).isEqualTo("Post user")
-            assertThat(email).isEqualTo("postuser@mail.com")
+            assertThat(it.id).isNotBlank()
+            assertThat(it.username).isEqualTo("postuser")
+            assertThat(it.name).isEqualTo("Post user")
+            assertThat(it.email).isEqualTo("postuser@mail.com")
         }.verifyComplete()
     }
 
