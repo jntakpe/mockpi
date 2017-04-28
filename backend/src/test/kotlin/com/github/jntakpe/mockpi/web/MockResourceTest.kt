@@ -6,6 +6,7 @@ import com.github.jntakpe.mockpi.domain.Request
 import com.github.jntakpe.mockpi.domain.Response
 import com.github.jntakpe.mockpi.repository.MockRepository
 import org.assertj.core.api.Assertions.assertThat
+import org.bson.types.ObjectId
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -55,9 +56,10 @@ class MockResourceTest {
     }
 
     @Test
-    fun `should get mock by name`() {
+    fun `should get mock by id`() {
         val demo1Name = "demo_1"
-        val result = client.get().uri(Urls.MOCK_API + Urls.BY_NAME, demo1Name)
+        val mock = mockRepository.findByNameIgnoreCase(demo1Name).block()
+        val result = client.get().uri(Urls.MOCK_API + Urls.BY_ID, mock.id!!)
                 .exchange()
                 .expectStatus().isOk
                 .expectHeader().contentType(APPLICATION_JSON_UTF8)
@@ -72,24 +74,8 @@ class MockResourceTest {
     }
 
     @Test
-    fun `should get mock by name ignoring case`() {
-        val result = client.get().uri(Urls.MOCK_API + Urls.BY_NAME, "deMO_1")
-                .exchange()
-                .expectStatus().isOk
-                .expectHeader().contentType(APPLICATION_JSON_UTF8)
-                .returnResult(Mock::class.java)
-        result.responseBody.test().consumeNextWith {
-            (name, request, response) ->
-            assertThat(name).isEqualTo(name)
-            assertThat(request).isNotNull()
-            assertThat(request.path).isEqualTo("${Urls.FAKE_PREFIX}/users/1")
-            assertThat(response).isNotNull()
-        }.verifyComplete()
-    }
-
-    @Test
-    fun `should not get mock by name if unknown name`() {
-        client.get().uri(Urls.MOCK_API + Urls.BY_NAME, "unknown")
+    fun `should not get mock by id if unknown id`() {
+        client.get().uri(Urls.MOCK_API + Urls.BY_ID, ObjectId())
                 .exchange()
                 .expectStatus().isNotFound
     }
@@ -144,7 +130,8 @@ class MockResourceTest {
         val updatedName = "updatedfromapi"
         val updatedPath = "${Urls.FAKE_PREFIX}/updated/from/api"
         val updatedBody = "updatedBody"
-        val result = client.put().uri(Urls.MOCK_API + Urls.BY_NAME, "toupdateapi").accept(APPLICATION_JSON_UTF8)
+        val id = mockRepository.findByNameIgnoreCase("toupdateapi").block().id
+        val result = client.put().uri(Urls.MOCK_API + Urls.BY_ID, id!!).accept(APPLICATION_JSON_UTF8)
                 .body(Mock(updatedName, Request(updatedPath, POST), Response(updatedBody)).toMono(), Mock::class.java)
                 .exchange()
                 .expectStatus().isOk
@@ -162,7 +149,8 @@ class MockResourceTest {
 
     @Test
     fun `should not update mock because name taken`() {
-        client.put().uri(Urls.MOCK_API + Urls.BY_NAME, "toupdateapi").accept(APPLICATION_JSON_UTF8)
+        val mock = mockRepository.findByNameIgnoreCase("toupdateapi").block()
+        client.put().uri(Urls.MOCK_API + Urls.BY_ID, mock.id).accept(APPLICATION_JSON_UTF8)
                 .body(Mock("demo_1", Request("/path", POST), Response("body")).toMono(), Mock::class.java)
                 .exchange()
                 .expectStatus().isEqualTo(HttpStatus.CONFLICT)
@@ -170,14 +158,15 @@ class MockResourceTest {
 
     @Test
     fun `should delete mock`() {
-        client.delete().uri(Urls.MOCK_API + Urls.BY_NAME, "todeleteapi")
+        val mock = mockRepository.findByNameIgnoreCase("todeleteapi").block()
+        client.delete().uri(Urls.MOCK_API + Urls.BY_ID, mock.id)
                 .exchange()
                 .expectStatus().isNoContent
     }
 
     @Test
     fun `should not delete mock because missing`() {
-        client.delete().uri(Urls.MOCK_API + Urls.BY_NAME, "unknown")
+        client.delete().uri(Urls.MOCK_API + Urls.BY_ID, ObjectId().toString())
                 .exchange()
                 .expectStatus().isNotFound
     }

@@ -8,6 +8,7 @@ import com.github.jntakpe.mockpi.exceptions.ConflictKeyException
 import com.github.jntakpe.mockpi.exceptions.IdNotFoundException
 import com.github.jntakpe.mockpi.repository.MockRepository
 import org.apache.commons.lang3.StringUtils
+import org.bson.types.ObjectId
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
@@ -25,6 +26,12 @@ class MockService(private val mockRepository: MockRepository) {
         logger.debug("Searching all mocks")
         return mockRepository.findAll()
                 .doOnComplete { logger.debug("All mocks retrieved") }
+    }
+
+    fun findById(id: ObjectId): Mono<Mock> {
+        logger.debug("Searching mock with id {}", id)
+        return mockRepository.findOne(id)
+                .doOnNext { logger.debug("Mock {} matched with id {}", it, id) }
     }
 
     fun findByName(name: String): Mono<Mock> {
@@ -88,19 +95,19 @@ class MockService(private val mockRepository: MockRepository) {
                 .doOnNext { logger.info("Mock {} successfully created", it) }
     }
 
-    fun update(mock: Mock, oldName: String): Mono<Mock> {
-        logger.debug("Updating {} to {}", oldName, mock)
-        return findByNameOrThrow(oldName)
+    fun update(mock: Mock, id: ObjectId): Mono<Mock> {
+        logger.debug("Updating id {} with {}", id, mock)
+        return findByIdOrThrow(id)
                 .flatMap { verifyNameAndRequestAvailable(mock, it) }
                 .flatMap(mockRepository::save)
                 .doOnNext { logger.info("Mock {} successfully updated", it) }
     }
 
-    fun delete(name: String): Mono<Void> {
-        logger.debug("Deleting mock {}", name)
-        return findByNameOrThrow(name)
-                .flatMap { mockRepository.delete(it.name) }
-                .doOnNext { logger.info("Mock with name {} successfully deleted") }
+    fun delete(id: ObjectId): Mono<Void> {
+        logger.debug("Deleting mock {}", id)
+        return findByIdOrThrow(id)
+                .flatMap { mockRepository.delete(it.id) }
+                .doOnNext { logger.info("Mock with id {} successfully deleted") }
     }
 
     private fun verifyNameAndRequestAvailable(current: Mock, existing: Mock?) = Mono.`when`(
@@ -108,9 +115,11 @@ class MockService(private val mockRepository: MockRepository) {
             verifyRequestAvailable(current.request, existing?.request))
             .map { current.copy(name = it.t1, request = it.t2) }
 
-    private fun matchHeadersRelaxed(headers: StringsMap, reqHeaders: StringsMap) = headers.filter { (k, v) -> reqHeaders[k] != v }.none()
+    private fun matchHeadersRelaxed(headers: StringsMap, reqHeaders: StringsMap) = headers
+            .filter { (k, v) -> reqHeaders[k] != v }.none()
 
-    private fun findByNameOrThrow(name: String) = findByName(name).switchIfEmpty(IdNotFoundException("Mock $name not found").toMono<Mock>())
+    private fun findByIdOrThrow(id: ObjectId) = findById(id)
+            .switchIfEmpty(IdNotFoundException("Mock $id not found").toMono<Mock>())
 
     private fun addPrefixIfRequired(request: Request): Request {
         val apiPath = StringUtils.prependIfMissing(Urls.FAKE_PREFIX, "/")

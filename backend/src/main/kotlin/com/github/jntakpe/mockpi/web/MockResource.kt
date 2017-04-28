@@ -3,6 +3,7 @@ package com.github.jntakpe.mockpi.web
 import com.github.jntakpe.mockpi.config.Urls
 import com.github.jntakpe.mockpi.domain.Mock
 import com.github.jntakpe.mockpi.service.MockService
+import org.bson.types.ObjectId
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -17,9 +18,9 @@ class MockResource(private val mockService: MockService) {
     @GetMapping
     fun findAll() = mockService.findAll()
 
-    @GetMapping(Urls.BY_NAME)
-    fun findByName(@PathVariable name: String): Mono<ResponseEntity<Mock>> {
-        return mockService.findByName(name)
+    @GetMapping(Urls.BY_ID)
+    fun findById(@PathVariable id: String): Mono<ResponseEntity<Mock>> {
+        return mockService.findById(ObjectId(id))
                 .map { ResponseEntity(it, HttpStatus.OK) }
                 .switchIfEmpty(ResponseEntity.notFound().build<Mock>().toMono())
     }
@@ -31,10 +32,10 @@ class MockResource(private val mockService: MockService) {
     @ResponseStatus(HttpStatus.CREATED)
     fun create(@RequestBody @Valid mock: Mock) = mockService.create(mock)
 
-    @PutMapping(Urls.BY_NAME)
-    fun update(@PathVariable name: String, @RequestBody @Valid mock: Mock) = mockService.update(mock, name)
+    @PutMapping(Urls.BY_ID)
+    fun update(@PathVariable id: String, @RequestBody @Valid mock: Mock) = mockService.update(mock, ObjectId(id))
 
-    @DeleteMapping(Urls.BY_NAME)
+    @DeleteMapping(Urls.BY_ID)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    fun remove(@PathVariable name: String) = mockService.delete(name)
+    fun remove(@PathVariable id: String) = mockService.delete(ObjectId(id))
 }

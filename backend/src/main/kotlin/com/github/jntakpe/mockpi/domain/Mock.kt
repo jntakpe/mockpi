@@ -1,5 +1,6 @@
 package com.github.jntakpe.mockpi.domain
 
+import org.bson.types.ObjectId
 import org.hibernate.validator.constraints.NotBlank
 import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.PersistenceConstructor
@@ -13,7 +14,7 @@ data class Mock @PersistenceConstructor constructor(@NotBlank val name: String,
                                                     val collection: String,
                                                     val delay: Long,
                                                     val description: String,
-                                                    @Id var id: String?) {
+                                                    @Id var id: ObjectId?) {
 
     constructor(name: String, request: Request, response: Response) : this(
             name,
