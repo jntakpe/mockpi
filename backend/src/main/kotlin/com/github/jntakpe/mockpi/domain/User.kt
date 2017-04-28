@@ -11,19 +11,10 @@ import org.springframework.data.mongodb.core.mapping.Document
 import javax.validation.constraints.Size
 
 @Document
-data class User @PersistenceConstructor constructor(@NotBlank @Size(min = 3) val username: String,
+data class User @PersistenceConstructor constructor(@Id @NotBlank @Size(min = 3) val username: String,
                                                     @NotBlank val name: String,
                                                     @NotBlank @Email val email: String,
-                                                    @JsonProperty(access = WRITE_ONLY) val password: String?,
-                                                    @Id var id: String?) {
-
-    constructor(username: String, name: String, email: String, password: String) : this(
-            username,
-            name,
-            email,
-            password,
-            id = null
-    )
+                                                    @JsonProperty(access = WRITE_ONLY) val password: String?) {
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

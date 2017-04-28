@@ -20,19 +20,19 @@ class UserService(private val userRepository: UserRepository) {
                 .doOnNext { logger.debug("User {} matched with username {}", it, username) }
     }
 
-    fun verifyUsernameAvailable(username: String, oldId: String? = ""): Mono<String> {
+    fun verifyUsernameAvailable(username: String, oldUsername: String = ""): Mono<String> {
         logger.debug("Checking that username {} is available", username)
         return findByUsername(username)
-                .filter { it.id != oldId }
+                .filter { it.username != oldUsername }
                 .flatMap { ConflictKeyException("Username $username is not available").toMono<String>() }
                 .defaultIfEmpty(username)
                 .doOnNext { logger.debug("Username {} is available", username) }
     }
 
-    fun verifyEmailAvailable(email: String, oldId: String? = ""): Mono<String> {
+    fun verifyEmailAvailable(email: String, oldMail: String = ""): Mono<String> {
         logger.debug("Checking that email {} is available", email)
         return userRepository.findByEmailIgnoreCase(email)
-                .filter { it.id != oldId }
+                .filter { it.email != oldMail }
                 .flatMap { ConflictKeyException("Email $email is not available").toMono<String>() }
                 .defaultIfEmpty(email)
                 .doOnNext { logger.debug("Email {} is available", email) }
@@ -49,10 +49,7 @@ class UserService(private val userRepository: UserRepository) {
     fun update(user: User, oldUsername: String): Mono<User> {
         logger.debug("Updating {} to {}", oldUsername, user)
         return findByUsernameOrThrow(oldUsername)
-                .flatMap { Mono.`when`(
-                        verifyUsernameAvailable(user.username, it.id),
-                        verifyEmailAvailable(user.email, it.id))
-                }
+                .flatMap { Mono.`when`(verifyUsernameAvailable(user.username, it.username), verifyEmailAvailable(user.email, it.email)) }
                 .map { lowerCaseUsernameAndMail(user) }
                 .flatMap(userRepository::save)
                 .doOnNext { logger.info("User {} successfully updated", user) }
