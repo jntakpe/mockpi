@@ -1,5 +1,7 @@
 package com.github.jntakpe.mockpi.domain
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer
 import org.bson.types.ObjectId
 import org.hibernate.validator.constraints.NotBlank
 import org.springframework.data.annotation.Id
@@ -14,7 +16,7 @@ data class Mock @PersistenceConstructor constructor(@NotBlank val name: String,
                                                     val collection: String,
                                                     val delay: Long,
                                                     val description: String,
-                                                    @Id var id: ObjectId?) {
+                                                    @Id @JsonSerialize(using = ToStringSerializer::class) var id: ObjectId?) {
 
     constructor(name: String, request: Request, response: Response) : this(
             name,
