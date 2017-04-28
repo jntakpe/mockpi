@@ -61,11 +61,13 @@ class MongoDBConfiguration(val mongoProperties: MongoProperties) : AbstractReact
                 Mock("toupdatepath", Request("/mockpi/toupdate/path", GET), Response("{\"name\": \"jntakpe\"}")),
                 Mock("todelete", Request("/mockpi/todelete/api", GET), Response("{\"name\": \"jntakpe\"}")),
                 Mock("todeleteapi", Request("/mockpi/todelete/api", GET), Response("{\"name\": \"jntakpe\"}")),
-                Mock("delayed", Request("/mockpi/delayed", GET), Response("{\"name\": \"jntakpe\"}"), "", 1000L, "delayed desc"),
+                Mock("delayed", Request("/mockpi/delayed", GET), Response("{\"name\": \"jntakpe\"}"), "", 1000L, "delayed desc", null),
                 Mock("pristine", Request("/mockpi/pristine", GET), Response("pristinebody")),
                 Mock("pristine_2", Request("/mockpi/pristine/custom", GET), Response("custombody", 201, MediaType.TEXT_PLAIN_VALUE))
         )
         mockRepository.deleteAll().thenMany(mockRepository.save(mocks)).blockLast()
+        val blockLast = mockRepository.findAll().collectList().block()
+        println(blockLast)
     }
 
 }

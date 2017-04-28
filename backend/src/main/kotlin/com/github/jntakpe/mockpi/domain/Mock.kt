@@ -4,14 +4,16 @@ import org.hibernate.validator.constraints.NotBlank
 import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.PersistenceConstructor
 import org.springframework.data.mongodb.core.mapping.Document
+import javax.validation.Valid
 
 @Document
-data class Mock @PersistenceConstructor constructor(@Id @NotBlank val name: String,
-                                                    val request: Request,
-                                                    val response: Response,
+data class Mock @PersistenceConstructor constructor(@NotBlank val name: String,
+                                                    @Valid val request: Request,
+                                                    @Valid val response: Response,
                                                     val collection: String,
                                                     val delay: Long,
-                                                    val description: String) {
+                                                    val description: String,
+                                                    @Id var id: String?) {
 
     constructor(name: String, request: Request, response: Response) : this(
             name,
@@ -19,7 +21,8 @@ data class Mock @PersistenceConstructor constructor(@Id @NotBlank val name: Stri
             response,
             collection = "demo",
             delay = 0,
-            description = ""
+            description = "",
+            id = null
     )
 
     override fun equals(other: Any?): Boolean {

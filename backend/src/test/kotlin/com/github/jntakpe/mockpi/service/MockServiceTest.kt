@@ -307,13 +307,18 @@ class MockServiceTest {
         val mockName = "basicmock"
         val path = "/basicmock"
         val mock = Mock(mockName, Request(path, GET), Response(ObjectMapper().writeValueAsString(Pair("basic", "mock"))))
+        val list = mutableListOf<Mock>()
         mockService.create(mock).test()
                 .expectSubscription()
+                .recordWith { list }
                 .consumeNextWith { assertThat(it.name).isEqualTo(mockName) }
-                .verifyComplete()
-        mockRepository.exists(mockName).test()
-                .expectSubscription()
-                .expectNext(true)
+                .then {
+                    assertThat(list).isNotEmpty.hasSize(1)
+                    mockRepository.exists(list[0].id).test()
+                            .expectSubscription()
+                            .expectNext(true)
+                            .verifyComplete()
+                }
                 .verifyComplete()
     }
 
@@ -322,13 +327,18 @@ class MockServiceTest {
         val mockName = "changingpathmock"
         val path = "/changingpathmock"
         val mock = Mock(mockName, Request(path, GET), Response(ObjectMapper().writeValueAsString(Pair("basic", "mock"))))
+        val list = mutableListOf<Mock>()
         mockService.create(mock).test()
                 .expectSubscription()
+                .recordWith { list }
                 .consumeNextWith { assertThat(it.request.path).isEqualTo(Urls.FAKE_PREFIX + path) }
-                .verifyComplete()
-        mockRepository.exists(mockName).test()
-                .expectSubscription()
-                .expectNext(true)
+                .then {
+                    assertThat(list).isNotEmpty.hasSize(1)
+                    mockRepository.exists(list[0].id).test()
+                            .expectSubscription()
+                            .expectNext(true)
+                            .verifyComplete()
+                }
                 .verifyComplete()
     }
 
