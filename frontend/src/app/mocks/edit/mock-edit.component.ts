@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { appConst } from '../../shared/constants';
-import '../../shared/rxjs.extension';
-import { Observable } from 'rxjs/Observable';
-import { Mock } from '../../shared/api.model';
-import { MocksService } from '../mocks.service';
-import { ActivatedRoute } from '@angular/router';
+import {Component, OnInit} from "@angular/core";
+import {FormArray, FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {appConst} from "../../shared/constants";
+import "../../shared/rxjs.extension";
+import {Observable} from "rxjs/Observable";
+import {Mock} from "../../shared/api.model";
+import {MocksService} from "../mocks.service";
+import {ActivatedRoute} from "@angular/router";
 
 @Component({
   selector: 'mpi-mock-edit',
@@ -26,13 +26,13 @@ export class MockEditComponent implements OnInit {
 
   filteredContentTypes: Observable<string[]>;
 
-  initialName: string;
+  id: string;
 
   constructor(private formBuilder: FormBuilder, private mocksService: MocksService, private route: ActivatedRoute) {
   }
 
   ngOnInit() {
-    Observable.merge(this.mockFromData(), this.mockFromDuplicate()).subscribe(mock => {
+    Observable.race(this.mockFromData(), this.mockFromDuplicate()).subscribe(mock => {
       this.mockForm = this.initializeForm(mock);
       this.filteredStatus = this.filterStatuses();
       this.filteredContentTypes = this.filterContentType();
@@ -43,7 +43,7 @@ export class MockEditComponent implements OnInit {
     const mockForm = this.mockForm.value;
     mockForm.request.params = this.mocksService.mapKeyValueToLiteral(mockForm.request.params);
     mockForm.request.headers = this.mocksService.mapKeyValueToLiteral(mockForm.request.headers);
-    this.mocksService.save(mockForm, this.initialName).subscribe(
+    this.mocksService.save(mockForm, this.id).subscribe(
       () => this.mocksService.redirectMocks(),
       err => this.mocksService.displaySaveError(err)
     );
@@ -111,7 +111,7 @@ export class MockEditComponent implements OnInit {
     return this.route.data
       .filter(d => d.mock)
       .map(d => d.mock)
-      .do(m => this.initialName = m.name);
+      .do(m => this.id = m.id);
   }
 
   private mockFromDuplicate(): Observable<Mock> {

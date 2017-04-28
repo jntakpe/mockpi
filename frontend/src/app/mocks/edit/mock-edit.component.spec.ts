@@ -1,17 +1,17 @@
-import { async, ComponentFixture, inject, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, inject, TestBed} from "@angular/core/testing";
 
-import { MockEditComponent } from './mock-edit.component';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MockpiMaterialModule } from '../../shared/mockpi-material.module';
-import { ReactiveFormsModule } from '@angular/forms';
-import { MocksService } from '../mocks.service';
-import { FakeMocksService, firstMock } from '../mocks.service.spec';
-import { By } from '@angular/platform-browser';
-import { changeInputValueAndDispatch } from '../../shared/testing/testing-utils.spec';
-import { Observable } from 'rxjs/Observable';
-import { RouterTestingModule } from '@angular/router/testing';
-import { ActivatedRoute } from '@angular/router';
-import { Response, ResponseOptions } from '@angular/http';
+import {MockEditComponent} from "./mock-edit.component";
+import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
+import {MockpiMaterialModule} from "../../shared/mockpi-material.module";
+import {ReactiveFormsModule} from "@angular/forms";
+import {MocksService} from "../mocks.service";
+import {FakeMocksService, firstMock} from "../mocks.service.spec";
+import {By} from "@angular/platform-browser";
+import {changeInputValueAndDispatch} from "../../shared/testing/testing-utils.spec";
+import {Observable} from "rxjs/Observable";
+import {RouterTestingModule} from "@angular/router/testing";
+import {ActivatedRoute} from "@angular/router";
+import {Response, ResponseOptions} from "@angular/http";
 
 describe('MockEditComponent', () => {
   let component: MockEditComponent;
@@ -218,7 +218,7 @@ describe('MockEditComponent', () => {
           useClass: FakeMocksService
         }, {
           provide: ActivatedRoute,
-          useValue: {data: Observable.of({mock: firstMock}), queryParams: Observable.empty()}
+          useValue: {data: Observable.of({mock: firstMock}), queryParams: Observable.of({})}
         }]
       })
         .compileComponents();
@@ -282,7 +282,7 @@ describe('MockEditComponent', () => {
           useClass: FakeMocksService
         }, {
           provide: ActivatedRoute,
-          useValue: {data: Observable.empty(), queryParams: Observable.of({duplicate: firstMock.name})}
+          useValue: {data: Observable.never(), queryParams: Observable.of({duplicate: firstMock.id})}
         }]
       })
         .compileComponents();

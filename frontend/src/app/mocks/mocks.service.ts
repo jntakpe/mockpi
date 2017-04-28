@@ -1,13 +1,13 @@
-import { Injectable } from '@angular/core';
-import { Http, Response, URLSearchParams } from '@angular/http';
-import { Observable } from 'rxjs/Observable';
-import { appConst } from '../shared/constants';
-import '../shared/rxjs.extension';
-import { Mock } from '../shared/api.model';
-import { Router } from '@angular/router';
-import { MdSnackBar } from '@angular/material';
-import { FilterTableService } from '../shared/table/filter-table.service';
-import { RegexType } from '../shared/table/regex-type';
+import {Injectable} from "@angular/core";
+import {Http, Response, URLSearchParams} from "@angular/http";
+import {Observable} from "rxjs/Observable";
+import {appConst} from "../shared/constants";
+import "../shared/rxjs.extension";
+import {Mock} from "../shared/api.model";
+import {Router} from "@angular/router";
+import {MdSnackBar} from "@angular/material";
+import {FilterTableService} from "../shared/table/filter-table.service";
+import {RegexType} from "../shared/table/regex-type";
 
 @Injectable()
 export class MocksService {
@@ -48,8 +48,8 @@ export class MocksService {
     }
   }
 
-  remove({name}: Mock): Observable<void> {
-    return this.http.delete(`${appConst.api.baseUrl}/mocks/${name}`)
+  remove({id}: Mock): Observable<void> {
+    return this.http.delete(`${appConst.api.baseUrl}/mocks/${id}`)
       .map(res => res.json());
   }
 
@@ -63,8 +63,8 @@ export class MocksService {
       .reduce((a, c) => Object.assign(a, c), {});
   }
 
-  findByName(name: string): Observable<Mock> {
-    return this.http.get(`${appConst.api.baseUrl}/mocks/${name}`)
+  findById(id: string): Observable<Mock> {
+    return this.http.get(`${appConst.api.baseUrl}/mocks/${id}`)
       .map(res => res.json());
   }
 
