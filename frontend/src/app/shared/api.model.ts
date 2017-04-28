@@ -1,4 +1,4 @@
-// Generated using typescript-generator version 1.21.304 on 2017-04-28 10:22:37.
+// Generated using typescript-generator version 1.21.304 on 2017-04-28 17:36:45.
 
 export interface Mock {
     name: string;
@@ -7,6 +7,7 @@ export interface Mock {
     collection: string;
     delay: number;
     description: string;
+    id: any;
 }
 
 export interface Request {

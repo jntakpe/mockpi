@@ -38,13 +38,11 @@ compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
 }
 
-
 repositories {
     mavenCentral()
     maven { url "https://repo.spring.io/snapshot" }
     maven { url "https://repo.spring.io/milestone" }
 }
-
 
 dependencies {
     compile('org.springframework.boot:spring-boot-starter-data-mongodb-reactive')
@@ -65,4 +63,5 @@ generateTypeScript {
     outputKind = 'module'
     outputFileType = 'implementationFile'
     stringQuotes = 'singleQuotes'
+    excludeClasses = ['org.bson.types.ObjectId']
 }

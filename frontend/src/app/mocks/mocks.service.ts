@@ -28,8 +28,8 @@ export class MocksService {
       .map((m: Mock[]) => m.map(this.formatRequestParams));
   }
 
-  save(mock: Mock, name?: string): Observable<Mock> {
-    const req = name ? this.http.put(`${appConst.api.baseUrl}/mocks/${name}`, mock) : this.http.post(`${appConst.api.baseUrl}/mocks`, mock);
+  save(mock: Mock, id?: string): Observable<Mock> {
+    const req = id ? this.http.put(`${appConst.api.baseUrl}/mocks/${id}`, mock) : this.http.post(`${appConst.api.baseUrl}/mocks`, mock);
     return req.map(res => res.json());
   }
 
@@ -37,7 +37,7 @@ export class MocksService {
     return this.findDuplicateName(mock.name)
       .map(name => Object.assign(mock, {name}))
       .do(m => this.currentDuplicate = m)
-      .flatMap(m => Observable.fromPromise(this.router.navigate(['/mock'], {queryParams: {duplicate: m.name}})));
+      .flatMap(m => Observable.fromPromise(this.router.navigate(['/mock'], {queryParams: {duplicate: m.id}})));
   }
 
   retrieveCurrentDuplicate(): Mock {
