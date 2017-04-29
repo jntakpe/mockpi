@@ -2,35 +2,35 @@
 <md-card class="m-3">
   <md-card-content>
     <form [formGroup]="mockForm" (ngSubmit)="save()">
-      <section fxLayout.gt-sm="row" fxLayout="column">
-        <md-input-container fxFlex.gt-sm="25">
+      <section fxLayout.gt-md="row" fxLayoutAlign.gt-md="space-between" fxLayout="column" class="mb-2">
+        <md-input-container fxFlex.gt-md="25">
           <input mdInput type="text" placeholder="Name" formControlName="name">
           <md-error *ngIf="mockForm.get('name').hasError('required')">
             Name is required
           </md-error>
         </md-input-container>
-        <md-input-container fxFlex.gt-sm="25">
+        <md-input-container fxFlex.gt-md="20">
           <input mdInput type="text" placeholder="Collection" formControlName="collection">
         </md-input-container>
-        <md-input-container fxFlex.gt-sm="5">
+        <md-input-container fxFlex.gt-md="5">
           <input mdInput type="number" placeholder="Delay" formControlName="delay">
         </md-input-container>
-        <md-input-container fxFlex.gt-sm="45">
+        <md-input-container fxFlex.gt-md="45">
           <textarea mdInput placeholder="Description" formControlName="description" rows="1"></textarea>
         </md-input-container>
       </section>
       <md-card formGroupName="request">
         <md-card-subtitle>Request</md-card-subtitle>
-        <md-card-content fxLayout.gt-sm="row" fxLayout="column">
-          <md-input-container fxFlex.gt-sm="50" fxFlex.gt-md="30">
+        <md-card-content fxLayout.gt-md="row" fxLayout="column">
+          <md-input-container fxFlex.gt-md="50" fxFlex.gt-md="30">
             <input mdInput type="text" placeholder="Path" formControlName="path">
             <md-error *ngIf="mockForm.get('request').get('path').hasError('required')">
               Request path is required
             </md-error>
           </md-input-container>
-          <div fxFlex.gt-sm="50" fxFlex.gt-md="30">
+          <div fxFlex.gt-md="50" fxFlex.gt-md="30">
             <div>Method</div>
-            <md-radio-group formControlName="method" fxLayoutAlign.gt-sm="space-around" fxLayout.gt-sm="row" fxLayout="column">
+            <md-radio-group formControlName="method" fxLayoutAlign.gt-md="space-around" fxLayout.gt-md="row" fxLayout="column">
               <md-radio-button *ngFor="let method of methods" [value]="method">
                 {{method}}
               </md-radio-button>
@@ -102,13 +102,13 @@
       </md-card>
       <md-card formGroupName="response">
         <md-card-subtitle>Response</md-card-subtitle>
-        <md-card-content fxLayout.gt-sm="row" fxLayout="column">
-          <md-input-container fxFlex.gt-sm="60">
+        <md-card-content fxLayout.gt-md="row" fxLayout="column">
+          <md-input-container fxFlex.gt-md="60">
             <textarea mdInput placeholder="Body" formControlName="body" rows="6"></textarea>
           </md-input-container>
-          <div fxFlex.gt-sm>
+          <div fxFlex.gt-md>
             <div>
-              <md-input-container fxFlex.gt-sm="30">
+              <md-input-container fxFlex.gt-md="30">
                 <input mdInput placeholder="Status" [mdAutocomplete]="autoStatus" formControlName="status">
               </md-input-container>
               <md-autocomplete #autoStatus="mdAutocomplete" id="status-autocomplete">
@@ -118,7 +118,7 @@
               </md-autocomplete>
             </div>
             <div>
-              <md-input-container fxFlex.gt-sm="50">
+              <md-input-container fxFlex.gt-md="50">
                 <input mdInput placeholder="Content type" [mdAutocomplete]="autoContentType" formControlName="contentType">
               </md-input-container>
               <md-autocomplete #autoContentType="mdAutocomplete">
