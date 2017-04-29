@@ -5,6 +5,7 @@ import com.github.jntakpe.mockpi.domain.Mock
 import com.github.jntakpe.mockpi.domain.Request
 import com.github.jntakpe.mockpi.domain.Response
 import com.github.jntakpe.mockpi.repository.MockRepository
+import com.github.jntakpe.mockpi.web.dto.IdNameFields
 import org.assertj.core.api.Assertions.assertThat
 import org.bson.types.ObjectId
 import org.junit.Before
@@ -83,7 +84,7 @@ class MockResourceTest {
     @Test
     fun `should find duplicate at end`() {
         val name = "demo"
-        val result = client.get().uri(Urls.MOCK_API + Urls.BY_NAME_AVAILABLE_DUPLICATE, name)
+        val result = client.get().uri(Urls.MOCK_API + Urls.BY_NEXT_NAME_AVAILABLE, name)
                 .exchange()
                 .expectStatus().isOk
                 .returnResult(String::class.java)
@@ -92,7 +93,7 @@ class MockResourceTest {
 
     @Test
     fun `should not find duplicate if unknown name`() {
-        client.get().uri(Urls.MOCK_API + Urls.BY_NAME_AVAILABLE_DUPLICATE, "unknown")
+        client.get().uri(Urls.MOCK_API + Urls.BY_NEXT_NAME_AVAILABLE, "unknown")
                 .exchange()
                 .expectStatus().isNotFound
     }
@@ -121,6 +122,28 @@ class MockResourceTest {
     fun `should not create new mock cuz login taken`() {
         client.post().uri(Urls.MOCK_API).accept(APPLICATION_JSON_UTF8)
                 .body(Mock("dEMo_1", Request("/some", GET), Response("test")).toMono(), Mock::class.java)
+                .exchange()
+                .expectStatus().isEqualTo(HttpStatus.CONFLICT)
+    }
+
+    @Test
+    fun `should verify that name is available`() {
+        val name = "unknown_name"
+        val result = client.post().uri(Urls.MOCK_API + Urls.CHECK_NAME_AVAILABLE).accept(APPLICATION_JSON_UTF8)
+                .body(IdNameFields(name).toMono(), IdNameFields::class.java)
+                .exchange()
+                .expectStatus().isOk
+                .returnResult(String::class.java)
+        result.responseBody.test()
+                .expectNext(name)
+                .verifyComplete()
+    }
+
+    @Test
+    fun `should verify that name is not available`() {
+        val mock = mockRepository.findAll().blockFirst()
+        client.post().uri(Urls.MOCK_API + Urls.CHECK_NAME_AVAILABLE).accept(APPLICATION_JSON_UTF8)
+                .body(IdNameFields(mock.name).toMono(), IdNameFields::class.java)
                 .exchange()
                 .expectStatus().isEqualTo(HttpStatus.CONFLICT)
     }

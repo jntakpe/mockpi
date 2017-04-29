@@ -56,10 +56,10 @@ class MockService(private val mockRepository: MockRepository) {
                 .doOnNext { logger.debug("Name {} is available", it) }
     }
 
-    fun verifyNameAvailable(name: String, oldName: String? = null): Mono<String> {
+    fun verifyNameAvailable(name: String, id: ObjectId? = null): Mono<String> {
         logger.debug("Checking that name {} is available", name)
         return findByName(name)
-                .filter { it.name != oldName }
+                .filter { it.id != id }
                 .flatMap { ConflictKeyException("Name $name is not available").toMono<String>() }
                 .defaultIfEmpty(name)
                 .map(String::toLowerCase)
@@ -111,7 +111,7 @@ class MockService(private val mockRepository: MockRepository) {
     }
 
     private fun verifyNameAndRequestAvailable(current: Mock, existing: Mock?) = Mono.`when`(
-            verifyNameAvailable(current.name, existing?.name),
+            verifyNameAvailable(current.name, existing?.id),
             verifyRequestAvailable(current.request, existing?.request))
             .map { current.copy(name = it.t1, request = it.t2) }
 

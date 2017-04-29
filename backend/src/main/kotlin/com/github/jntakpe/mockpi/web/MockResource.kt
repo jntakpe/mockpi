@@ -3,6 +3,7 @@ package com.github.jntakpe.mockpi.web
 import com.github.jntakpe.mockpi.config.Urls
 import com.github.jntakpe.mockpi.domain.Mock
 import com.github.jntakpe.mockpi.service.MockService
+import com.github.jntakpe.mockpi.web.dto.IdNameFields
 import org.bson.types.ObjectId
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -25,12 +26,15 @@ class MockResource(private val mockService: MockService) {
                 .switchIfEmpty(ResponseEntity.notFound().build<Mock>().toMono())
     }
 
-    @GetMapping(Urls.BY_NAME_AVAILABLE_DUPLICATE)
+    @GetMapping(Urls.BY_NEXT_NAME_AVAILABLE)
     fun findByNameAvailableDuplicate(@PathVariable name: String) = mockService.findAvailableDuplicateName(name)
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     fun create(@RequestBody @Valid mock: Mock) = mockService.create(mock)
+
+    @PostMapping(Urls.CHECK_NAME_AVAILABLE)
+    fun checkNameAvailable(@RequestBody @Valid body: IdNameFields) = mockService.verifyNameAvailable(body.name, body.id?.let(::ObjectId))
 
     @PutMapping(Urls.BY_ID)
     fun update(@PathVariable id: String, @RequestBody @Valid mock: Mock) = mockService.update(mock, ObjectId(id))

@@ -106,17 +106,18 @@ class MockServiceTest {
     }
 
     @Test
-    fun `should accept name because old name is the the same`() {
+    fun `should accept name because is the the same mock`() {
         val name = "DEmo_1"
-        mockService.verifyNameAvailable(name, "demo_1").test()
+        val id = mockRepository.findByNameIgnoreCase("demo_1").block().id
+        mockService.verifyNameAvailable(name, id).test()
                 .expectSubscription()
                 .expectNext(name.toLowerCase())
                 .verifyComplete()
     }
 
     @Test
-    fun `should refuse name because old name is not the same`() {
-        mockService.verifyNameAvailable("Demo_1", "oldName").test()
+    fun `should refuse name because is not the same mock`() {
+        mockService.verifyNameAvailable("Demo_1", ObjectId()).test()
                 .expectSubscription()
                 .verifyError(ConflictKeyException::class.java)
     }
