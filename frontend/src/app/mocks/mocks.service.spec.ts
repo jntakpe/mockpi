@@ -1,18 +1,18 @@
-import {async, fakeAsync, inject, TestBed, tick} from "@angular/core/testing";
-import {MocksService} from "./mocks.service";
-import {MockBackend} from "@angular/http/testing";
-import {BaseRequestOptions, Http, HttpModule, Response, ResponseOptions} from "@angular/http";
-import {Mock} from "../shared/api.model";
-import {Observable} from "rxjs/Observable";
-import {RouterTestingModule} from "@angular/router/testing";
-import {MdSnackBar, MdSnackBarModule} from "@angular/material";
-import {Router, Routes} from "@angular/router";
-import {advance, createRoot, FakeFeatureComponent, FakeHomeComponent, RootComponent} from "../shared/testing/testing-utils.spec";
-import {Location} from "@angular/common";
-import {Component} from "@angular/core";
-import {appConst} from "../shared/constants";
-import {BehaviorSubject} from "rxjs/BehaviorSubject";
-import {TableModule} from "../shared/table/table.module";
+import {async, fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
+import {MocksService} from './mocks.service';
+import {MockBackend} from '@angular/http/testing';
+import {BaseRequestOptions, Http, HttpModule, Response, ResponseOptions} from '@angular/http';
+import {Mock} from '../shared/api.model';
+import {Observable} from 'rxjs/Observable';
+import {RouterTestingModule} from '@angular/router/testing';
+import {MdSnackBar, MdSnackBarModule} from '@angular/material';
+import {Router, Routes} from '@angular/router';
+import {advance, createRoot, FakeFeatureComponent, FakeHomeComponent, RootComponent} from '../shared/testing/testing-utils.spec';
+import {Location} from '@angular/common';
+import {Component} from '@angular/core';
+import {appConst} from '../shared/constants';
+import {BehaviorSubject} from 'rxjs/BehaviorSubject';
+import {TableModule} from '../shared/table/table.module';
 
 
 export const firstMock: Mock = {
@@ -82,7 +82,6 @@ export class FakeMocksService extends MocksService {
   displaySaveError({status}: Response): void {
   }
 
-
   findById(name): Observable<Mock> {
     return Observable.of(firstMock);
   }
@@ -91,6 +90,9 @@ export class FakeMocksService extends MocksService {
     return firstMock;
   }
 
+  checkNameAvailable(name: string, id?: string): Observable<string> {
+    return Observable.of(null);
+  }
 }
 
 describe('MocksService', () => {
@@ -225,7 +227,7 @@ describe('MocksService', () => {
       });
       tick(50);
       updated = true;
-      search$.next({name: 'first', request: {path: '', method: '', fmtParams: ''}, response: {body: ''}})
+      search$.next({name: 'first', request: {path: '', method: '', fmtParams: ''}, response: {body: ''}});
     })));
 
   it('should find mock array', async(inject([MocksService, MockBackend], (mocksService: MocksService, mockBackend: MockBackend) => {
@@ -284,7 +286,7 @@ describe('MocksService', () => {
       const fixture = TestBed.createComponent(TestComponent);
       fixture.detectChanges();
       mocksService.displayFindByErrorThenRedirect(new Response(new ResponseOptions({status: 404})), 'somemock');
-      expect(mdSnackBar.open).toHaveBeenCalledWith('Mock with name somemock doesn\'t exist', appConst.snackBar.closeBtnLabel);
+      expect(mdSnackBar.open).toHaveBeenCalledWith('Mock named somemock doesn\'t exist', appConst.snackBar.closeBtnLabel);
     })));
 
   it('should call display 500 error message on save', fakeAsync(inject([MocksService, MdSnackBar],

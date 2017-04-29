@@ -1,10 +1,10 @@
-import {Routes} from "@angular/router";
-import {LayoutComponent} from "./layout.component";
-import {HomeComponent} from "../../home/home.component";
-import {RegisterComponent} from "../../register/register.component";
-import {MocksComponent} from "../../mocks/mocks.component";
-import {MockEditComponent} from "../../mocks/edit/mock-edit.component";
-import {MockEditResolver} from "../../mocks/edit/mock-edit.resolver";
+import {Routes} from '@angular/router';
+import {LayoutComponent} from './layout.component';
+import {HomeComponent} from '../../home/home.component';
+import {RegisterComponent} from '../../register/register.component';
+import {MocksComponent} from '../../mocks/mocks.component';
+import {MockEditComponent} from '../../mocks/edit/mock-edit.component';
+import {MockEditResolver} from '../../mocks/edit/mock-edit.resolver';
 
 export const layoutRoutes: Routes = [
   {

@@ -1,11 +1,11 @@
-import {Component, OnInit} from "@angular/core";
-import {FormArray, FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {appConst} from "../../shared/constants";
-import "../../shared/rxjs.extension";
-import {Observable} from "rxjs/Observable";
-import {Mock} from "../../shared/api.model";
-import {MocksService} from "../mocks.service";
-import {ActivatedRoute} from "@angular/router";
+import {Component, OnInit} from '@angular/core';
+import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {appConst} from '../../shared/constants';
+import '../../shared/rxjs.extension';
+import {Observable} from 'rxjs/Observable';
+import {Mock} from '../../shared/api.model';
+import {MocksService} from '../mocks.service';
+import {ActivatedRoute} from '@angular/router';
 
 @Component({
   selector: 'mpi-mock-edit',
@@ -36,6 +36,7 @@ export class MockEditComponent implements OnInit {
       this.mockForm = this.initializeForm(mock);
       this.filteredStatus = this.filterStatuses();
       this.filteredContentTypes = this.filterContentType();
+      this.registerAsyncValidators();
     });
   }
 
@@ -79,6 +80,10 @@ export class MockEditComponent implements OnInit {
     });
   }
 
+  private registerAsyncValidators(): void {
+    this.validateNameAvailable(this.mockForm.get('name')).subscribe();
+  }
+
   private initKeyValueFormArray(map: { [key: string]: string }): FormArray {
     if (!map) {
       return this.formBuilder.array([]);
@@ -117,6 +122,16 @@ export class MockEditComponent implements OnInit {
   private mockFromDuplicate(): Observable<Mock> {
     return this.route.queryParams
       .map(p => p.duplicate ? this.mocksService.retrieveCurrentDuplicate() : null);
+  }
+
+  private validateNameAvailable(control: AbstractControl): Observable<any> {
+    return control.valueChanges
+      .do(() => control.markAsTouched())
+      .filter(v => v)
+      .debounceTime(400)
+      .mergeMap(v => this.mocksService.checkNameAvailable(v, this.id)
+        .do(() => control.setErrors(null))
+        .catch(() => Observable.of(false).do(() => control.setErrors({taken: true}))));
   }
 
 }

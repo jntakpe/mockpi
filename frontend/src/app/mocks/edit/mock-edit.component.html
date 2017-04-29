@@ -8,6 +8,9 @@
           <md-error *ngIf="mockForm.get('name').hasError('required')">
             Name is required
           </md-error>
+          <md-error *ngIf="mockForm.get('name').hasError('taken')">
+            Name is not available
+          </md-error>
         </md-input-container>
         <md-input-container fxFlex.gt-md="20">
           <input mdInput type="text" placeholder="Collection" formControlName="collection">

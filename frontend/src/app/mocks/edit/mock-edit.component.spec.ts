@@ -1,17 +1,17 @@
-import {async, ComponentFixture, inject, TestBed} from "@angular/core/testing";
+import {async, ComponentFixture, fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
 
-import {MockEditComponent} from "./mock-edit.component";
-import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
-import {MockpiMaterialModule} from "../../shared/mockpi-material.module";
-import {ReactiveFormsModule} from "@angular/forms";
-import {MocksService} from "../mocks.service";
-import {FakeMocksService, firstMock} from "../mocks.service.spec";
-import {By} from "@angular/platform-browser";
-import {changeInputValueAndDispatch} from "../../shared/testing/testing-utils.spec";
-import {Observable} from "rxjs/Observable";
-import {RouterTestingModule} from "@angular/router/testing";
-import {ActivatedRoute} from "@angular/router";
-import {Response, ResponseOptions} from "@angular/http";
+import {MockEditComponent} from './mock-edit.component';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {MockpiMaterialModule} from '../../shared/mockpi-material.module';
+import {ReactiveFormsModule} from '@angular/forms';
+import {MocksService} from '../mocks.service';
+import {FakeMocksService, firstMock} from '../mocks.service.spec';
+import {By} from '@angular/platform-browser';
+import {changeInputValueAndDispatch} from '../../shared/testing/testing-utils.spec';
+import {Observable} from 'rxjs/Observable';
+import {RouterTestingModule} from '@angular/router/testing';
+import {ActivatedRoute} from '@angular/router';
+import {Response, ResponseOptions} from '@angular/http';
 
 describe('MockEditComponent', () => {
   let component: MockEditComponent;
@@ -205,6 +205,51 @@ describe('MockEditComponent', () => {
     it('should display create title', () => {
       expect(compiled.querySelector('md-toolbar').textContent).toContain('Create mock');
     });
+
+    it('should not display error cuz name is available', fakeAsync(inject([MocksService], (mocksService: MocksService) => {
+      spyOn(mocksService, 'checkNameAvailable').and.returnValue(Observable.of(null));
+      const inputName = fixture.debugElement.query(By.css('input[formcontrolname="name"]'));
+      const updatedName = 'updatedname';
+      changeInputValueAndDispatch(inputName, updatedName);
+      fixture.detectChanges();
+      tick(400);
+      fixture.detectChanges();
+      expect(mocksService.checkNameAvailable).toHaveBeenCalledWith(updatedName, undefined);
+      expect(compiled.querySelector('md-error')).toBeFalsy();
+    })));
+
+    it('should display error cuz name is not available', fakeAsync(inject([MocksService], (mocksService: MocksService) => {
+      spyOn(mocksService, 'checkNameAvailable').and.returnValue(Observable.throw(new Error()));
+      const inputName = fixture.debugElement.query(By.css('input[formcontrolname="name"]'));
+      const updatedName = 'updatedname';
+      changeInputValueAndDispatch(inputName, updatedName);
+      fixture.detectChanges();
+      tick(400);
+      fixture.detectChanges();
+      expect(mocksService.checkNameAvailable).toHaveBeenCalledWith(updatedName, undefined);
+      expect(compiled.querySelector('md-error')).toBeTruthy();
+    })));
+
+    it('should display error cuz then remove it', fakeAsync(inject([MocksService], (mocksService: MocksService) => {
+      let spy = spyOn(mocksService, 'checkNameAvailable').and.returnValue(Observable.throw(new Error()));
+      const inputName = fixture.debugElement.query(By.css('input[formcontrolname="name"]'));
+      const updatedName = 'updatedname';
+      changeInputValueAndDispatch(inputName, updatedName);
+      fixture.detectChanges();
+      tick(400);
+      fixture.detectChanges();
+      expect(mocksService.checkNameAvailable).toHaveBeenCalledWith(updatedName, undefined);
+      expect(compiled.querySelector('md-error')).toBeTruthy();
+      const availableName = 'availablename';
+      spy.and.returnValue(Observable.of(availableName));
+      changeInputValueAndDispatch(inputName, availableName);
+      fixture.detectChanges();
+      tick(400);
+      fixture.detectChanges();
+      expect(mocksService.checkNameAvailable).toHaveBeenCalledWith(availableName, undefined);
+      expect(compiled.querySelector('md-error')).toBeFalsy();
+    })));
+
   });
 
   describe('When editing', () => {
@@ -309,7 +354,7 @@ describe('MockEditComponent', () => {
       expect(compiled.querySelector('input[formcontrolname="delay"]').value).toBe(firstMock.delay.toString());
       expect(compiled.querySelector('textarea[formcontrolname="description"]').value).toBe(firstMock.description);
       expect(compiled.querySelector('input[formcontrolname="path"]').value).toBe(firstMock.request.path);
-      expect(compiled.querySelector(`md-radio-group[formcontrolname="method"] 
+      expect(compiled.querySelector(`md-radio-group[formcontrolname="method"]
         md-radio-button[ng-reflect-value="${firstMock.request.method}"].mat-radio-checked`)).toBeTruthy();
       expect(compiled.querySelector('textarea[formcontrolname="body"]').value).toBe(firstMock.response.body);
     });

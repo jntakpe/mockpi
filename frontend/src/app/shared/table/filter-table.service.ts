@@ -11,14 +11,16 @@ export class FilterTableService {
 
   regexFilter<T>(data: T[], filterParams: { [key: string]: any }, regexType: RegexType = RegexType.StartsWith, operator = '$and') {
     const params = this.filterTruthyParams(filterParams);
-    if (!params || !Object.keys(params).length) return data;
+    if (!params || !Object.keys(params).length) {
+      return data;
+    }
     return sift({[operator]: this.buildPredicatesArray(params, regexType)}, data);
   }
 
   private buildPredicatesArray(filterParams: { [key: string]: any }, regexType: RegexType): any[] {
     return Object.keys(filterParams)
       .map(k => ({k, v: filterParams[k]}))
-      .map(({k, v}) => typeof v === 'string' ? this.regexPredicate(k, v, regexType) : this.numberPredicate(k, v))
+      .map(({k, v}) => typeof v === 'string' ? this.regexPredicate(k, v, regexType) : this.numberPredicate(k, v));
   }
 
   private regexPredicate(key, value, regexType: RegexType): any {

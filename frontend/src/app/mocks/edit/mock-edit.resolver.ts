@@ -1,8 +1,8 @@
-import {ActivatedRouteSnapshot, Resolve, RouterStateSnapshot} from "@angular/router";
-import {Mock} from "../../shared/api.model";
-import {Observable} from "rxjs/Observable";
-import {Injectable} from "@angular/core";
-import {MocksService} from "../mocks.service";
+import {ActivatedRouteSnapshot, Resolve, RouterStateSnapshot} from '@angular/router';
+import {Mock} from '../../shared/api.model';
+import {Observable} from 'rxjs/Observable';
+import {Injectable} from '@angular/core';
+import {MocksService} from '../mocks.service';
 
 @Injectable()
 export class MockEditResolver implements Resolve<Mock> {

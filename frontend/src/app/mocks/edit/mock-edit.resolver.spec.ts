@@ -1,13 +1,13 @@
-import {fakeAsync, inject, TestBed} from "@angular/core/testing";
-import {FakeMocksService} from "../mocks.service.spec";
-import {MocksService} from "../mocks.service";
-import {Router, Routes} from "@angular/router";
-import {advance, createRoot, FakeFeatureComponent, FakeHomeComponent, RootComponent} from "../../shared/testing/testing-utils.spec";
-import {MockEditResolver} from "./mock-edit.resolver";
-import {RouterTestingModule} from "@angular/router/testing";
-import {Observable} from "rxjs/Observable";
-import {Location} from "@angular/common";
-import {Response, ResponseOptions} from "@angular/http";
+import {fakeAsync, inject, TestBed} from '@angular/core/testing';
+import {FakeMocksService} from '../mocks.service.spec';
+import {MocksService} from '../mocks.service';
+import {Router, Routes} from '@angular/router';
+import {advance, createRoot, FakeFeatureComponent, FakeHomeComponent, RootComponent} from '../../shared/testing/testing-utils.spec';
+import {MockEditResolver} from './mock-edit.resolver';
+import {RouterTestingModule} from '@angular/router/testing';
+import {Observable} from 'rxjs/Observable';
+import {Location} from '@angular/common';
+import {Response, ResponseOptions} from '@angular/http';
 
 describe('MockEditResolver', () => {
 
