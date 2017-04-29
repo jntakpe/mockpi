@@ -186,23 +186,25 @@ class MockServiceTest {
     }
 
     @Test
-    fun `shoud refuse request because same request exist`() {
+    fun `should refuse request because same request exist`() {
         mockService.verifyRequestAvailable(Request("${Urls.FAKE_PREFIX}/users/1", GET)).test()
                 .expectSubscription()
                 .verifyError(ConflictKeyException::class.java)
     }
 
     @Test
-    fun `should accept request because old request is the the same`() {
-        mockService.verifyRequestAvailable(Request("${Urls.FAKE_PREFIX}/users/1", GET), Request("${Urls.FAKE_PREFIX}/users/1", GET)).test()
+    fun `should accept request because same mock`() {
+        val mock = mockRepository.findAll().blockFirst()
+        mockService.verifyRequestAvailable(mock.request, mock.id).test()
                 .expectSubscription()
                 .expectNextCount(1)
                 .verifyComplete()
     }
 
     @Test
-    fun `should refuse request because old request is not the same`() {
-        mockService.verifyRequestAvailable(Request("${Urls.FAKE_PREFIX}/users/1", GET), Request("${Urls.FAKE_PREFIX}/users/1", POST)).test()
+    fun `should refuse request because not the same mock`() {
+        val mock = mockRepository.findAll().blockFirst()
+        mockService.verifyRequestAvailable(mock.request, ObjectId()).test()
                 .expectSubscription()
                 .verifyError(ConflictKeyException::class.java)
     }

@@ -3,7 +3,8 @@ package com.github.jntakpe.mockpi.web
 import com.github.jntakpe.mockpi.config.Urls
 import com.github.jntakpe.mockpi.domain.Mock
 import com.github.jntakpe.mockpi.service.MockService
-import com.github.jntakpe.mockpi.web.dto.IdNameFields
+import com.github.jntakpe.mockpi.web.dto.IdName
+import com.github.jntakpe.mockpi.web.dto.IdRequest
 import org.bson.types.ObjectId
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -34,7 +35,10 @@ class MockResource(private val mockService: MockService) {
     fun create(@RequestBody @Valid mock: Mock) = mockService.create(mock)
 
     @PostMapping(Urls.CHECK_NAME_AVAILABLE)
-    fun checkNameAvailable(@RequestBody @Valid body: IdNameFields) = mockService.verifyNameAvailable(body.name, body.id?.let(::ObjectId))
+    fun checkNameAvailable(@RequestBody @Valid body: IdName) = mockService.verifyNameAvailable(body.name, body.id?.let(::ObjectId))
+
+    @PostMapping(Urls.CHECK_REQUEST_AVAILABLE)
+    fun checkReqAvailable(@RequestBody @Valid body: IdRequest) = mockService.verifyRequestAvailable(body.request, body.id?.let(::ObjectId))
 
     @PutMapping(Urls.BY_ID)
     fun update(@PathVariable id: String, @RequestBody @Valid mock: Mock) = mockService.update(mock, ObjectId(id))

@@ -5,7 +5,8 @@ import com.github.jntakpe.mockpi.domain.Mock
 import com.github.jntakpe.mockpi.domain.Request
 import com.github.jntakpe.mockpi.domain.Response
 import com.github.jntakpe.mockpi.repository.MockRepository
-import com.github.jntakpe.mockpi.web.dto.IdNameFields
+import com.github.jntakpe.mockpi.web.dto.IdName
+import com.github.jntakpe.mockpi.web.dto.IdRequest
 import org.assertj.core.api.Assertions.assertThat
 import org.bson.types.ObjectId
 import org.junit.Before
@@ -130,7 +131,7 @@ class MockResourceTest {
     fun `should verify that name is available`() {
         val name = "unknown_name"
         val result = client.post().uri(Urls.MOCK_API + Urls.CHECK_NAME_AVAILABLE).accept(APPLICATION_JSON_UTF8)
-                .body(IdNameFields(name).toMono(), IdNameFields::class.java)
+                .body(IdName(name).toMono(), IdName::class.java)
                 .exchange()
                 .expectStatus().isOk
                 .returnResult(String::class.java)
@@ -143,7 +144,29 @@ class MockResourceTest {
     fun `should verify that name is not available`() {
         val mock = mockRepository.findAll().blockFirst()
         client.post().uri(Urls.MOCK_API + Urls.CHECK_NAME_AVAILABLE).accept(APPLICATION_JSON_UTF8)
-                .body(IdNameFields(mock.name).toMono(), IdNameFields::class.java)
+                .body(IdName(mock.name).toMono(), IdName::class.java)
+                .exchange()
+                .expectStatus().isEqualTo(HttpStatus.CONFLICT)
+    }
+
+    @Test
+    fun `should verify that request is available`() {
+        val request = Request("available/request", POST)
+        val result = client.post().uri(Urls.MOCK_API + Urls.CHECK_REQUEST_AVAILABLE).accept(APPLICATION_JSON_UTF8)
+                .body(IdRequest(request).toMono(), IdRequest::class.java)
+                .exchange()
+                .expectStatus().isOk
+                .returnResult(Request::class.java)
+        result.responseBody.test()
+                .consumeNextWith { assertThat(it.path).containsIgnoringCase("available/request") }
+                .verifyComplete()
+    }
+
+    @Test
+    fun `should verify that request is not available`() {
+        val mock = mockRepository.findAll().blockFirst()
+        client.post().uri(Urls.MOCK_API + Urls.CHECK_REQUEST_AVAILABLE).accept(APPLICATION_JSON_UTF8)
+                .body(IdRequest(mock.request).toMono(), IdRequest::class.java)
                 .exchange()
                 .expectStatus().isEqualTo(HttpStatus.CONFLICT)
     }

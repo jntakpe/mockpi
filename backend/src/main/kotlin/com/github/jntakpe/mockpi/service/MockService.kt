@@ -66,11 +66,11 @@ class MockService(private val mockRepository: MockRepository) {
                 .doOnNext { logger.debug("Name {} is available", name) }
     }
 
-    fun verifyRequestAvailable(request: Request, oldRequest: Request? = null): Mono<Request> {
+    fun verifyRequestAvailable(request: Request, id: ObjectId? = null): Mono<Request> {
         logger.debug("Checking that request {} is available", request)
         val prefixedRequest = addPrefixIfRequired(request)
         return findMatchingMock(prefixedRequest)
-                .filter { it.request != oldRequest }
+                .filter { it.id != id }
                 .flatMap { ConflictKeyException("Request $prefixedRequest is not available").toMono<Request>() }
                 .defaultIfEmpty(prefixedRequest)
                 .doOnNext { logger.debug("Request {} is available", request) }
@@ -112,7 +112,7 @@ class MockService(private val mockRepository: MockRepository) {
 
     private fun verifyNameAndRequestAvailable(current: Mock, existing: Mock?) = Mono.`when`(
             verifyNameAvailable(current.name, existing?.id),
-            verifyRequestAvailable(current.request, existing?.request))
+            verifyRequestAvailable(current.request, existing?.id))
             .map { current.copy(name = it.t1, request = it.t2) }
 
     private fun matchHeadersRelaxed(headers: StringsMap, reqHeaders: StringsMap) = headers
