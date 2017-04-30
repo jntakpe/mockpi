@@ -66,8 +66,6 @@ class MongoDBConfiguration(val mongoProperties: MongoProperties) : AbstractReact
                 Mock("pristine_2", Request("/mockpi/pristine/custom", GET), Response("custombody", 201, MediaType.TEXT_PLAIN_VALUE))
         )
         mockRepository.deleteAll().thenMany(mockRepository.save(mocks)).blockLast()
-        val blockLast = mockRepository.findAll().collectList().block()
-        println(blockLast)
     }
 
 }
