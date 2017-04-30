@@ -2,7 +2,7 @@ import {async, fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
 import {MocksService} from './mocks.service';
 import {MockBackend} from '@angular/http/testing';
 import {BaseRequestOptions, Http, HttpModule, Response, ResponseOptions} from '@angular/http';
-import {Mock} from '../shared/api.model';
+import {Mock, Request} from '../shared/api.model';
 import {Observable} from 'rxjs/Observable';
 import {RouterTestingModule} from '@angular/router/testing';
 import {MdSnackBar, MdSnackBarModule} from '@angular/material';
@@ -91,6 +91,10 @@ export class FakeMocksService extends MocksService {
   }
 
   checkNameAvailable(name: string, id?: string): Observable<string> {
+    return Observable.of(null);
+  }
+
+  checkRequestAvailable(request: Request, id?: string): Observable<Request> {
     return Observable.of(null);
   }
 }

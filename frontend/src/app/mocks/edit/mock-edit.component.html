@@ -22,7 +22,10 @@
           <textarea mdInput placeholder="Description" formControlName="description" rows="1"></textarea>
         </md-input-container>
       </section>
-      <md-card formGroupName="request">
+      <md-card formGroupName="request" [class.group-error]="mockForm.get('request').hasError('taken')">
+        <div class="alert alert-danger" *ngIf="mockForm.get('request').hasError('taken')">
+          <strong>Error !&nbsp;</strong> Another request with same attributes already exist
+        </div>
         <md-card-subtitle>Request</md-card-subtitle>
         <md-card-content fxLayout.gt-md="row" fxLayout="column">
           <md-input-container fxFlex.gt-md="50" fxFlex.gt-md="30">
@@ -133,7 +136,7 @@
           </div>
         </md-card-content>
         <md-card-actions fxLayoutAlign="end">
-          <button md-fab type="submit" [disabled]="mockForm.invalid">
+          <button md-fab type="submit" [disabled]="mockForm.invalid || mockForm.pending">
             <md-icon>{{ id ? 'edit' : 'add'}}</md-icon>
           </button>
         </md-card-actions>

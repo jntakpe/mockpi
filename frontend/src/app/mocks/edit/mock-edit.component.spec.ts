@@ -65,42 +65,52 @@ describe('MockEditComponent', () => {
       expect(compiled.querySelector('button[type="submit"]:disabled')).toBeTruthy();
     }));
 
-    it('should call save form', async(() => {
+    it('should call save form', fakeAsync(() => {
       initializeForm();
+      tick(1000);
+      fixture.detectChanges();
       spyOn(component, 'save').and.returnValue(Observable.of({}));
       compiled.querySelector('button[type="submit"]').click();
       fixture.detectChanges();
       expect(component.save).toHaveBeenCalled();
     }));
 
-    it('should call save basic form', async(inject([MocksService], (mocksService: MocksService) => {
+    it('should call save basic form', fakeAsync(inject([MocksService], (mocksService: MocksService) => {
       const expected = initializeForm();
       expected.request.params = {};
       expected.request.headers = {};
+      tick(1000);
+      fixture.detectChanges();
       spyOn(mocksService, 'save').and.returnValue(Observable.of({}));
       compiled.querySelector('button[type="submit"]').click();
       fixture.detectChanges();
       expect(mocksService.save).toHaveBeenCalledWith(expected, undefined);
     })));
 
-    it('should call save form on server', async(inject([MocksService], (mocksService: MocksService) => {
+    it('should call save form on server', fakeAsync(inject([MocksService], (mocksService: MocksService) => {
       initializeForm();
+      tick(1000);
+      fixture.detectChanges();
       spyOn(mocksService, 'save').and.returnValue(Observable.of({}));
       compiled.querySelector('button[type="submit"]').click();
       fixture.detectChanges();
       expect(mocksService.save).toHaveBeenCalled();
     })));
 
-    it('should redirect to mocks after successfull save', async(inject([MocksService], (mocksService: MocksService) => {
+    it('should redirect to mocks after successfull save', fakeAsync(inject([MocksService], (mocksService: MocksService) => {
       initializeForm();
+      tick(1000);
+      fixture.detectChanges();
       spyOn(mocksService, 'redirectMocks');
       compiled.querySelector('button[type="submit"]').click();
       fixture.detectChanges();
       expect(mocksService.redirectMocks).toHaveBeenCalled();
     })));
 
-    it('should display error after saving failure', async(inject([MocksService], (mocksService: MocksService) => {
+    it('should display error after saving failure', fakeAsync(inject([MocksService], (mocksService: MocksService) => {
       initializeForm();
+      tick(1000);
+      fixture.detectChanges();
       spyOn(mocksService, 'save').and.returnValue(Observable.throw(new Response(new ResponseOptions({status: 400}))));
       spyOn(mocksService, 'displaySaveError');
       compiled.querySelector('button[type="submit"]').click();
@@ -155,7 +165,7 @@ describe('MockEditComponent', () => {
       expect(compiled.querySelector('div[formarrayname="headers"]').children.length).toBe(1);
     }));
 
-    it('should call save form with params', async(inject([MocksService], (mocksService: MocksService) => {
+    it('should call save form with params', fakeAsync(inject([MocksService], (mocksService: MocksService) => {
       const expected = initializeForm();
       expected.request.params = {k0: 'v0', k1: 'v1'};
       expected.request.headers = {};
@@ -172,6 +182,8 @@ describe('MockEditComponent', () => {
       changeInputValueAndDispatch(inputVals[0], 'v0');
       changeInputValueAndDispatch(inputVals[1], 'v1');
       fixture.detectChanges();
+      tick(1000);
+      fixture.detectChanges();
       spyOn(mocksService, 'save').and.returnValue(Observable.of({}));
       compiled.querySelector('button[type="submit"]').click();
       fixture.detectChanges();
@@ -179,7 +191,7 @@ describe('MockEditComponent', () => {
     })));
 
 
-    it('should call save form with headers', async(inject([MocksService], (mocksService: MocksService) => {
+    it('should call save form with headers', fakeAsync(inject([MocksService], (mocksService: MocksService) => {
       const expected = initializeForm();
       expected.request.headers = {k0: 'v0', k1: 'v1'};
       expected.request.params = {};
@@ -195,6 +207,8 @@ describe('MockEditComponent', () => {
       changeInputValueAndDispatch(inputKeys[1], 'k1');
       changeInputValueAndDispatch(inputVals[0], 'v0');
       changeInputValueAndDispatch(inputVals[1], 'v1');
+      fixture.detectChanges();
+      tick(1000);
       fixture.detectChanges();
       spyOn(mocksService, 'save').and.returnValue(Observable.of({}));
       compiled.querySelector('button[type="submit"]').click();
@@ -230,8 +244,8 @@ describe('MockEditComponent', () => {
       expect(compiled.querySelector('md-error')).toBeTruthy();
     })));
 
-    it('should display error cuz then remove it', fakeAsync(inject([MocksService], (mocksService: MocksService) => {
-      let spy = spyOn(mocksService, 'checkNameAvailable').and.returnValue(Observable.throw(new Error()));
+    it('should display error then remove it', fakeAsync(inject([MocksService], (mocksService: MocksService) => {
+      const spy = spyOn(mocksService, 'checkNameAvailable').and.returnValue(Observable.throw(new Error()));
       const inputName = fixture.debugElement.query(By.css('input[formcontrolname="name"]'));
       const updatedName = 'updatedname';
       changeInputValueAndDispatch(inputName, updatedName);
@@ -239,16 +253,42 @@ describe('MockEditComponent', () => {
       tick(400);
       fixture.detectChanges();
       expect(mocksService.checkNameAvailable).toHaveBeenCalledWith(updatedName, undefined);
+      expect(mocksService.checkNameAvailable).toHaveBeenCalledTimes(1);
       expect(compiled.querySelector('md-error')).toBeTruthy();
-      const availableName = 'availablename';
-      spy.and.returnValue(Observable.of(availableName));
-      changeInputValueAndDispatch(inputName, availableName);
+      spy.and.returnValue(Observable.of({}));
+      const othername = 'someothername';
+      changeInputValueAndDispatch(inputName, othername);
       fixture.detectChanges();
-      tick(400);
+      tick(1000);
       fixture.detectChanges();
-      expect(mocksService.checkNameAvailable).toHaveBeenCalledWith(availableName, undefined);
+      expect(mocksService.checkNameAvailable).toHaveBeenCalledWith(othername, undefined);
+      expect(mocksService.checkNameAvailable).toHaveBeenCalledTimes(2);
       expect(compiled.querySelector('md-error')).toBeFalsy();
     })));
+
+    it('should display error cuz request is not available', fakeAsync(inject([MocksService], (mocksService: MocksService) => {
+      spyOn(mocksService, 'checkRequestAvailable').and.returnValue(Observable.throw(new Error()));
+      const inputPath = fixture.debugElement.query(By.css('input[formcontrolname="path"]'));
+      const updatedPath = 'updatedpath';
+      changeInputValueAndDispatch(inputPath, updatedPath);
+      fixture.detectChanges();
+      tick(1000);
+      fixture.detectChanges();
+      expect(mocksService.checkRequestAvailable)
+        .toHaveBeenCalledWith({path: updatedPath, method: 'GET', params: {}, headers: {}}, undefined);
+      expect(compiled.querySelector('.alert.alert-danger')).toBeTruthy();
+    })));
+
+    it('should disable form submit when checking availability', fakeAsync(() => {
+      const inputPath = fixture.debugElement.query(By.css('input[formcontrolname="path"]'));
+      initializeForm();
+      changeInputValueAndDispatch(inputPath, 'newvalue');
+      fixture.detectChanges();
+      expect(compiled.querySelector('button[type="submit"]:disabled')).toBeTruthy();
+      tick(1000);
+      fixture.detectChanges();
+      expect(compiled.querySelector('button[type="submit"]:disabled')).toBeFalsy();
+    }));
 
   });
 
@@ -269,12 +309,12 @@ describe('MockEditComponent', () => {
         .compileComponents();
     }));
 
-    beforeEach(() => {
+    beforeEach(async(() => {
       fixture = TestBed.createComponent(MockEditComponent);
       component = fixture.componentInstance;
       fixture.detectChanges();
       compiled = fixture.debugElement.nativeElement;
-    });
+    }));
 
     it('should display edit title', () => {
       expect(compiled.querySelector('md-toolbar').textContent).toContain('Edit mock');
@@ -295,11 +335,14 @@ describe('MockEditComponent', () => {
       expect(compiled.querySelector('textarea[formcontrolname="body"]').value).toBe(firstMock.response.body);
     });
 
-    it('should call save basic form initialized by ngOnInit', async(inject([MocksService], (mocksService: MocksService) => {
+    it('should call save basic form initialized by ngOnInit', fakeAsync(inject([MocksService], (mocksService: MocksService) => {
       component.mockForm.value.params = {};
       component.mockForm.value.headers = {};
       component.mockForm.value.request.fmtParams = {};
+      fixture.detectChanges();
       const spy = spyOn(mocksService, 'save').and.returnValue(Observable.of({}));
+      tick(1000);
+      fixture.detectChanges();
       compiled.querySelector('button[type="submit"]').click();
       fixture.detectChanges();
       expect(mocksService.save).toHaveBeenCalled();
@@ -333,12 +376,12 @@ describe('MockEditComponent', () => {
         .compileComponents();
     }));
 
-    beforeEach(() => {
+    beforeEach(async(() => {
       fixture = TestBed.createComponent(MockEditComponent);
       component = fixture.componentInstance;
       fixture.detectChanges();
       compiled = fixture.debugElement.nativeElement;
-    });
+    }));
 
     it('should display create title', () => {
       expect(compiled.querySelector('md-toolbar').textContent).toContain('Create mock');
@@ -359,11 +402,14 @@ describe('MockEditComponent', () => {
       expect(compiled.querySelector('textarea[formcontrolname="body"]').value).toBe(firstMock.response.body);
     });
 
-    it('should call save basic form initialized by ngOnInit', async(inject([MocksService], (mocksService: MocksService) => {
+    it('should call save basic form initialized by ngOnInit', fakeAsync(inject([MocksService], (mocksService: MocksService) => {
       component.mockForm.value.params = {};
       component.mockForm.value.headers = {};
       component.mockForm.value.request.fmtParams = {};
+      fixture.detectChanges();
       const spy = spyOn(mocksService, 'save').and.returnValue(Observable.of({}));
+      tick(1000);
+      fixture.detectChanges();
       compiled.querySelector('button[type="submit"]').click();
       fixture.detectChanges();
       expect(mocksService.save).toHaveBeenCalled();
@@ -379,7 +425,6 @@ describe('MockEditComponent', () => {
       expect(firstArg.response.contentType).toEqual(firstArg.response.contentType);
     })));
   });
-
 
   function initializeForm(): any {
     const expected = {

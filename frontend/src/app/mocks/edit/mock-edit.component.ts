@@ -3,7 +3,7 @@ import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@a
 import {appConst} from '../../shared/constants';
 import '../../shared/rxjs.extension';
 import {Observable} from 'rxjs/Observable';
-import {Mock} from '../../shared/api.model';
+import {Mock, Request} from '../../shared/api.model';
 import {MocksService} from '../mocks.service';
 import {ActivatedRoute} from '@angular/router';
 
@@ -28,6 +28,10 @@ export class MockEditComponent implements OnInit {
 
   id: string;
 
+  nameTimeout;
+
+  requestTimeout;
+
   constructor(private formBuilder: FormBuilder, private mocksService: MocksService, private route: ActivatedRoute) {
   }
 
@@ -36,14 +40,12 @@ export class MockEditComponent implements OnInit {
       this.mockForm = this.initializeForm(mock);
       this.filteredStatus = this.filterStatuses();
       this.filteredContentTypes = this.filterContentType();
-      this.registerAsyncValidators();
     });
   }
 
   save(): void {
     const mockForm = this.mockForm.value;
-    mockForm.request.params = this.mocksService.mapKeyValueToLiteral(mockForm.request.params);
-    mockForm.request.headers = this.mocksService.mapKeyValueToLiteral(mockForm.request.headers);
+    this.mockForm.value.request = this.mapParamsAndHeaders(mockForm.request);
     this.mocksService.save(mockForm, this.id).subscribe(
       () => this.mocksService.redirectMocks(),
       err => this.mocksService.displaySaveError(err)
@@ -62,7 +64,7 @@ export class MockEditComponent implements OnInit {
     this.paramsFormArray = this.initKeyValueFormArray(mock ? mock.request.params : null);
     this.headersFormArray = this.initKeyValueFormArray(mock ? mock.request.headers : null);
     return this.formBuilder.group({
-      name: [mock ? mock.name : '', [Validators.required]],
+      name: [mock ? mock.name : '', [Validators.required], [c => this.validateNameAvailable(c)]],
       collection: [mock ? mock.collection : ''],
       delay: [mock ? mock.delay.toString() : null],
       description: [mock ? mock.description : ''],
@@ -71,6 +73,8 @@ export class MockEditComponent implements OnInit {
         method: [mock ? mock.request.method : 'GET', [Validators.required]],
         params: this.paramsFormArray,
         headers: this.headersFormArray
+      }, {
+        asyncValidator: g => this.validateRequestAvailable(g)
       }),
       response: this.formBuilder.group({
         body: [mock ? mock.response.body : '', [Validators.required]],
@@ -78,10 +82,6 @@ export class MockEditComponent implements OnInit {
         contentType: [mock ? mock.response.contentType : '']
       })
     });
-  }
-
-  private registerAsyncValidators(): void {
-    this.validateNameAvailable(this.mockForm.get('name')).subscribe();
   }
 
   private initKeyValueFormArray(map: { [key: string]: string }): FormArray {
@@ -124,14 +124,32 @@ export class MockEditComponent implements OnInit {
       .map(p => p.duplicate ? this.mocksService.retrieveCurrentDuplicate() : null);
   }
 
-  private validateNameAvailable(control: AbstractControl): Observable<any> {
-    return control.valueChanges
-      .do(() => control.markAsTouched())
-      .filter(v => v)
-      .debounceTime(400)
-      .mergeMap(v => this.mocksService.checkNameAvailable(v, this.id)
-        .do(() => control.setErrors(null))
-        .catch(() => Observable.of(false).do(() => control.setErrors({taken: true}))));
+  private validateNameAvailable(control: AbstractControl): Promise<any> {
+    const initTimeout = this.nameTimeout ? 400 : 0;
+    control.markAsTouched();
+    clearTimeout(this.nameTimeout);
+    return new Promise(resolve => {
+      this.nameTimeout = setTimeout(() => {
+        this.mocksService.checkNameAvailable(control.value, this.id).subscribe(() => resolve(null), () => resolve({taken: true}));
+      }, initTimeout);
+    });
+  }
+
+  private validateRequestAvailable(group: FormGroup): Promise<any> {
+    const initTimeout = this.requestTimeout ? 1000 : 0;
+    clearTimeout(this.requestTimeout);
+    return new Promise(resolve => {
+      this.requestTimeout = setTimeout(() => {
+        const request = this.mapParamsAndHeaders(group.value);
+        this.mocksService.checkRequestAvailable(request, this.id).subscribe(() => resolve(null), () => resolve({taken: true}));
+      }, initTimeout);
+    });
+  }
+
+  private mapParamsAndHeaders(request: any): Request {
+    const params = this.mocksService.mapKeyValueToLiteral(request.params);
+    const headers = this.mocksService.mapKeyValueToLiteral(request.headers);
+    return Object.assign({}, request, {params, headers});
   }
 
 }

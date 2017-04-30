@@ -3,7 +3,7 @@ import {Http, Response, URLSearchParams} from '@angular/http';
 import {Observable} from 'rxjs/Observable';
 import {appConst} from '../shared/constants';
 import '../shared/rxjs.extension';
-import {Mock} from '../shared/api.model';
+import {Mock, Request} from '../shared/api.model';
 import {Router} from '@angular/router';
 import {MdSnackBar} from '@angular/material';
 import {FilterTableService} from '../shared/table/filter-table.service';
@@ -71,6 +71,11 @@ export class MocksService {
   checkNameAvailable(name: string, id?: string): Observable<string> {
     return this.http.post(`${appConst.api.baseUrl}/mocks/name/available`, {name, id})
       .map(res => res.text());
+  }
+
+  checkRequestAvailable(request: Request, id?: string): Observable<Request> {
+    return this.http.post(`${appConst.api.baseUrl}/mocks/request/available`, {request, id})
+      .map(res => res.json());
   }
 
   displaySaveError({status}: Response): void {
