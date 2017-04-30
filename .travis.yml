@@ -20,7 +20,7 @@ jdk:
   - oraclejdk8
 services: mongodb
 install:
-  - cd frontend && yarn && cd ..
+  - cd frontend && yarn && npm rebuild node-sass && cd ..
 before_script:
   - npm install -g @angular/cli
 script: cd backend && ./gradlew test && cd ../frontend && ng test --single-run
