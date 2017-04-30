@@ -4,7 +4,10 @@ export const appConst = {
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']
   },
   snackBar: {
-    closeBtnLabel: 'Close'
+    closeBtnLabel: 'Close',
+    defaultConfig: {
+      duration: 4000
+    }
   },
   assets: {
     icons: 'assets/images/icons/'
@@ -19,5 +22,5 @@ export const appConst = {
     clientId: 'mpifrontend',
     secret: 'mpiunsecuresecret',
     scope: 'read write',
-  }
+  },
 };

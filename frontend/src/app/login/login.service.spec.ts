@@ -1,19 +1,20 @@
-import { async, fakeAsync, inject, TestBed } from '@angular/core/testing';
+import {async, fakeAsync, inject, TestBed} from '@angular/core/testing';
 
-import { LoginService } from './login.service';
-import { SecurityService } from '../shared/security/security.service';
-import { RouterTestingModule } from '@angular/router/testing';
-import { MdSnackBar } from '@angular/material';
-import { Observable } from 'rxjs/Observable';
+import {LoginService} from './login.service';
+import {SecurityService} from '../shared/security/security.service';
+import {RouterTestingModule} from '@angular/router/testing';
+import {Observable} from 'rxjs/Observable';
 import '../shared/rxjs.extension';
-import { User } from '../shared/security/user';
-import { Router, Routes } from '@angular/router';
-import { advance, createRoot, FakeHomeComponent, FakeLoginComponent, RootComponent } from '../shared/testing/testing-utils.spec';
-import { Location } from '@angular/common';
-import { Component } from '@angular/core';
-import { Response, ResponseOptions } from '@angular/http';
-import { appConst } from '../shared/constants';
-import { MockpiMaterialModule } from '../shared/mockpi-material.module';
+import {User} from '../shared/security/user';
+import {Router, Routes} from '@angular/router';
+import {advance, createRoot, FakeHomeComponent, FakeLoginComponent, RootComponent} from '../shared/testing/testing-utils.spec';
+import {Location} from '@angular/common';
+import {Component} from '@angular/core';
+import {Response, ResponseOptions} from '@angular/http';
+import {appConst} from '../shared/constants';
+import {MockpiMaterialModule} from '../shared/mockpi-material.module';
+import {AlertService} from '../shared/alert/alert.service';
+import {AlertModule} from '../shared/alert/alert.module';
 
 describe('LoginService', () => {
 
@@ -33,7 +34,7 @@ describe('LoginService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [TestComponent, FakeHomeComponent, RootComponent, FakeLoginComponent],
-      imports: [RouterTestingModule.withRoutes(routes), MockpiMaterialModule],
+      imports: [RouterTestingModule.withRoutes(routes), MockpiMaterialModule, AlertModule],
       providers: [LoginService, {
         provide: SecurityService,
         useValue: {login: (username, password) => Observable.of(new User('jntakpe', 'Joss', ['ADMIN']))}
@@ -45,7 +46,7 @@ describe('LoginService', () => {
     expect(loginService).toBeTruthy();
   }));
 
-  it('should login user', async(inject([LoginService, SecurityService], (loginService: LoginService, securityService: SecurityService) => {
+  it('should login user', async(inject([LoginService, SecurityService], (loginService: LoginService) => {
     loginService.login('jntakpe', 'test').subscribe(user => {
       expect(user).toBeTruthy();
       expect(user.login).toBe('jntakpe');
@@ -60,22 +61,22 @@ describe('LoginService', () => {
       expect(location.path()).toBe('/');
     })));
 
-  it('should call display error message', fakeAsync(inject([LoginService, MdSnackBar],
-    (loginService: LoginService, mdSnackBar: MdSnackBar) => {
-      spyOn(mdSnackBar, 'open');
+  it('should call display error message', fakeAsync(inject([LoginService, AlertService],
+    (loginService: LoginService, alertService: AlertService) => {
+      spyOn(alertService, 'open');
       const fixture = TestBed.createComponent(TestComponent);
       fixture.detectChanges();
       loginService.displayLoginErrorMsg(new Response(new ResponseOptions({status: 400})));
-      expect(mdSnackBar.open).toHaveBeenCalledWith('Bad credentials', appConst.snackBar.closeBtnLabel);
+      expect(alertService.open).toHaveBeenCalledWith('Bad credentials', appConst.snackBar.closeBtnLabel);
     })));
 
-  it('should call display default error message', fakeAsync(inject([LoginService, MdSnackBar],
-    (loginService: LoginService, mdSnackBar: MdSnackBar) => {
-      spyOn(mdSnackBar, 'open');
+  it('should call display default error message', fakeAsync(inject([LoginService, AlertService],
+    (loginService: LoginService, alertService: AlertService) => {
+      spyOn(alertService, 'open');
       const fixture = TestBed.createComponent(TestComponent);
       fixture.detectChanges();
       loginService.displayLoginErrorMsg(new Response(new ResponseOptions({status: 500})));
-      expect(mdSnackBar.open).toHaveBeenCalledWith('General error', appConst.snackBar.closeBtnLabel);
+      expect(alertService.open).toHaveBeenCalledWith('General error', appConst.snackBar.closeBtnLabel);
     })));
 
 });

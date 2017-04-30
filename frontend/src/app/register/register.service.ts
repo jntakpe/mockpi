@@ -1,16 +1,16 @@
-import { Injectable } from '@angular/core';
-import { Http } from '@angular/http';
-import { User } from '../shared/api.model';
-import { Observable } from 'rxjs/Observable';
-import { appConst } from '../shared/constants';
-import { Router } from '@angular/router';
-import { MdSnackBar } from '@angular/material';
+import {Injectable} from '@angular/core';
+import {Http} from '@angular/http';
+import {User} from '../shared/api.model';
+import {Observable} from 'rxjs/Observable';
+import {appConst} from '../shared/constants';
+import {Router} from '@angular/router';
 import '../shared/rxjs.extension';
+import {AlertService} from '../shared/alert/alert.service';
 
 @Injectable()
 export class RegisterService {
 
-  constructor(private http: Http, private router: Router, private mdSnackBar: MdSnackBar) {
+  constructor(private http: Http, private router: Router, private alertService: AlertService) {
   }
 
   register(user: User, password: String): Observable<User> {
@@ -22,12 +22,12 @@ export class RegisterService {
 
   private redirectToLoginPage(user: User): Observable<User> {
     return Observable.fromPromise(this.router.navigate(['/login']))
-      .do(() => this.mdSnackBar.open(`User ${user.username} registered`))
+      .do(() => this.alertService.open(`User ${user.username} registered`))
       .map(() => user);
   }
 
   private handleError(): Observable<any> {
-    this.mdSnackBar.open('Error during registration', appConst.snackBar.closeBtnLabel);
+    this.alertService.open('Error during registration');
     return Observable.empty();
   }
 

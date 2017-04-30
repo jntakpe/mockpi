@@ -5,14 +5,14 @@ import {BaseRequestOptions, Http, HttpModule, Response, ResponseOptions} from '@
 import {Mock, Request} from '../shared/api.model';
 import {Observable} from 'rxjs/Observable';
 import {RouterTestingModule} from '@angular/router/testing';
-import {MdSnackBar, MdSnackBarModule} from '@angular/material';
 import {Router, Routes} from '@angular/router';
 import {advance, createRoot, FakeFeatureComponent, FakeHomeComponent, RootComponent} from '../shared/testing/testing-utils.spec';
 import {Location} from '@angular/common';
 import {Component} from '@angular/core';
-import {appConst} from '../shared/constants';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {TableModule} from '../shared/table/table.module';
+import {AlertService} from '../shared/alert/alert.service';
+import {AlertModule} from '../shared/alert/alert.module';
 
 
 export const firstMock: Mock = {
@@ -120,7 +120,7 @@ describe('MocksService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpModule, RouterTestingModule.withRoutes(routes), MdSnackBarModule, TableModule],
+      imports: [HttpModule, RouterTestingModule.withRoutes(routes), AlertModule, TableModule],
       declarations: [RootComponent, FakeHomeComponent, FakeFeatureComponent, TestComponent],
       providers: [
         MocksService,
@@ -269,70 +269,70 @@ describe('MocksService', () => {
       expect(location.path()).toBe('/mocks');
     })));
 
-  it('should call display 400 error message on save', fakeAsync(inject([MocksService, MdSnackBar],
-    (mocksService: MocksService, mdSnackBar: MdSnackBar) => {
-      spyOn(mdSnackBar, 'open');
+  it('should call display 400 error message on save', fakeAsync(inject([MocksService, AlertService],
+    (mocksService: MocksService, alertService: AlertService) => {
+      spyOn(alertService, 'open');
       const fixture = TestBed.createComponent(TestComponent);
       fixture.detectChanges();
       mocksService.displaySaveError(new Response(new ResponseOptions({status: 400})));
-      expect(mdSnackBar.open).toHaveBeenCalledWith('Invalid fields error', appConst.snackBar.closeBtnLabel);
+      expect(alertService.open).toHaveBeenCalledWith('Invalid fields error');
     })));
 
-  it('should call display 500 error message on save', fakeAsync(inject([MocksService, MdSnackBar],
-    (mocksService: MocksService, mdSnackBar: MdSnackBar) => {
-      spyOn(mdSnackBar, 'open');
+  it('should call display 500 error message on save', fakeAsync(inject([MocksService, AlertService],
+    (mocksService: MocksService, alertService: AlertService) => {
+      spyOn(alertService, 'open');
       const fixture = TestBed.createComponent(TestComponent);
       fixture.detectChanges();
       mocksService.displaySaveError(new Response(new ResponseOptions({status: 500})));
-      expect(mdSnackBar.open).toHaveBeenCalledWith('Server error', appConst.snackBar.closeBtnLabel);
+      expect(alertService.open).toHaveBeenCalledWith('Server error');
     })));
 
-  it('should call display 404 error message on find', fakeAsync(inject([MocksService, MdSnackBar],
-    (mocksService: MocksService, mdSnackBar: MdSnackBar) => {
-      spyOn(mdSnackBar, 'open');
+  it('should call display 404 error message on find', fakeAsync(inject([MocksService, AlertService],
+    (mocksService: MocksService, alertService: AlertService) => {
+      spyOn(alertService, 'open');
       spyOn(mocksService, 'redirectMocks').and.returnValue(Observable.of(true));
       const fixture = TestBed.createComponent(TestComponent);
       fixture.detectChanges();
       mocksService.displayFindByErrorThenRedirect(new Response(new ResponseOptions({status: 404})), 'somemock');
-      expect(mdSnackBar.open).toHaveBeenCalledWith('Mock named somemock doesn\'t exist', appConst.snackBar.closeBtnLabel);
+      expect(alertService.open).toHaveBeenCalledWith('Mock named somemock doesn\'t exist');
     })));
 
-  it('should call display 500 error message on save', fakeAsync(inject([MocksService, MdSnackBar],
-    (mocksService: MocksService, mdSnackBar: MdSnackBar) => {
-      spyOn(mdSnackBar, 'open');
+  it('should call display 500 error message on save', fakeAsync(inject([MocksService, AlertService],
+    (mocksService: MocksService, alertService: AlertService) => {
+      spyOn(alertService, 'open');
       spyOn(mocksService, 'redirectMocks').and.returnValue(Observable.of(true));
       const fixture = TestBed.createComponent(TestComponent);
       fixture.detectChanges();
       mocksService.displayFindByErrorThenRedirect(new Response(new ResponseOptions({status: 500})), 'somemock');
-      expect(mdSnackBar.open).toHaveBeenCalledWith('Server error', appConst.snackBar.closeBtnLabel);
+      expect(alertService.open).toHaveBeenCalledWith('Server error');
     })));
 
-  it('should call display delete error', fakeAsync(inject([MocksService, MdSnackBar],
-    (mocksService: MocksService, mdSnackBar: MdSnackBar) => {
-      spyOn(mdSnackBar, 'open');
+  it('should call display delete error', fakeAsync(inject([MocksService, AlertService],
+    (mocksService: MocksService, alertService: AlertService) => {
+      spyOn(alertService, 'open');
       spyOn(mocksService, 'redirectMocks').and.returnValue(Observable.of(true));
       const fixture = TestBed.createComponent(TestComponent);
       fixture.detectChanges();
       mocksService.displayRemoveError('somemock');
-      expect(mdSnackBar.open).toHaveBeenCalledWith('Unable to remove mock with name somemock', appConst.snackBar.closeBtnLabel);
+      expect(alertService.open).toHaveBeenCalledWith('Unable to remove mock with name somemock');
     })));
 
-  it('should call display success edit message on save', fakeAsync(inject([MocksService, MdSnackBar],
-    (mocksService: MocksService, mdSnackBar: MdSnackBar) => {
-      spyOn(mdSnackBar, 'open');
+  it('should call display success edit message on save', fakeAsync(inject([MocksService, AlertService],
+    (mocksService: MocksService, alertService: AlertService) => {
+      spyOn(alertService, 'open');
       const fixture = TestBed.createComponent(TestComponent);
       fixture.detectChanges();
       mocksService.displaySaveSuccess('mock', 'someid');
-      expect(mdSnackBar.open).toHaveBeenCalledWith(`Mock mock successfully edited`, appConst.snackBar.closeBtnLabel);
+      expect(alertService.open).toHaveBeenCalledWith(`Mock mock successfully edited`);
     })));
 
-  it('should call display success create message on save', fakeAsync(inject([MocksService, MdSnackBar],
-    (mocksService: MocksService, mdSnackBar: MdSnackBar) => {
-      spyOn(mdSnackBar, 'open');
+  it('should call display success create message on save', fakeAsync(inject([MocksService, AlertService],
+    (mocksService: MocksService, alertService: AlertService) => {
+      spyOn(alertService, 'open');
       const fixture = TestBed.createComponent(TestComponent);
       fixture.detectChanges();
       mocksService.displaySaveSuccess('mock', null);
-      expect(mdSnackBar.open).toHaveBeenCalledWith(`Mock mock successfully created`, appConst.snackBar.closeBtnLabel);
+      expect(alertService.open).toHaveBeenCalledWith(`Mock mock successfully created`);
     })));
 
   it('should map key value array to literal', inject([MocksService], (mocksService: MocksService) => {

@@ -1,12 +1,13 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { HttpModule } from '@angular/http';
-import { RouterModule } from '@angular/router';
-import { ReactiveFormsModule } from '@angular/forms';
-import { FlexLayoutModule } from '@angular/flex-layout';
-import { SecurityModule } from './security/security.module';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MockpiMaterialModule } from './mockpi-material.module';
+import {NgModule} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {HttpModule} from '@angular/http';
+import {RouterModule} from '@angular/router';
+import {ReactiveFormsModule} from '@angular/forms';
+import {FlexLayoutModule} from '@angular/flex-layout';
+import {SecurityModule} from './security/security.module';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {MockpiMaterialModule} from './mockpi-material.module';
+import {AlertModule} from './alert/alert.module';
 
 @NgModule({
   imports: [
@@ -17,7 +18,8 @@ import { MockpiMaterialModule } from './mockpi-material.module';
     ReactiveFormsModule,
     MockpiMaterialModule,
     FlexLayoutModule,
-    SecurityModule
+    SecurityModule,
+    AlertModule
   ],
   exports: [
     CommonModule,
@@ -27,7 +29,8 @@ import { MockpiMaterialModule } from './mockpi-material.module';
     ReactiveFormsModule,
     MockpiMaterialModule,
     FlexLayoutModule,
-    SecurityModule
+    SecurityModule,
+    AlertModule
   ]
 })
 export class SharedModule {

@@ -5,16 +5,16 @@ import {appConst} from '../shared/constants';
 import '../shared/rxjs.extension';
 import {Mock, Request} from '../shared/api.model';
 import {Router} from '@angular/router';
-import {MdSnackBar} from '@angular/material';
 import {FilterTableService} from '../shared/table/filter-table.service';
 import {RegexType} from '../shared/table/regex-type';
+import {AlertService} from '../shared/alert/alert.service';
 
 @Injectable()
 export class MocksService {
 
   private currentDuplicate: Mock;
 
-  constructor(private http: Http, private router: Router, private mdSnackBar: MdSnackBar, private filterTableService: FilterTableService) {
+  constructor(private http: Http, private router: Router, private alertService: AlertService, private filterTableService: FilterTableService) {
   }
 
   findFilteredMocks(search$: Observable<any>, refresh$: Observable<string>): Observable<Mock[]> {
@@ -79,15 +79,15 @@ export class MocksService {
   }
 
   displaySaveSuccess(name: string, id: string): void {
-    this.mdSnackBar.open(id ? `Mock ${name} successfully edited` : `Mock ${name} successfully created`, appConst.snackBar.closeBtnLabel);
+    this.alertService.open(id ? `Mock ${name} successfully edited` : `Mock ${name} successfully created`);
   }
 
   displaySaveError({status}: Response): void {
-    status === 400 ? this.mdSnackBar.open('Invalid fields error', appConst.snackBar.closeBtnLabel) : this.defaultServerError();
+    status === 400 ? this.alertService.open('Invalid fields error') : this.defaultServerError();
   }
 
   displayRemoveError(name: string): void {
-    this.mdSnackBar.open(`Unable to remove mock with name ${name}`, appConst.snackBar.closeBtnLabel);
+    this.alertService.open(`Unable to remove mock with name ${name}`);
   }
 
   displayFindByErrorThenRedirect({status}: Response, name: string): Observable<any> {
@@ -96,7 +96,7 @@ export class MocksService {
   }
 
   private displayFindByNameError(status: number, name: string): void {
-    status === 404 ? this.mdSnackBar.open(`Mock named ${name} doesn't exist`, appConst.snackBar.closeBtnLabel) : this.defaultServerError();
+    status === 404 ? this.alertService.open(`Mock named ${name} doesn't exist`) : this.defaultServerError();
   }
 
   private filterMocks(search: any, mocks: Mock[]): Mock[] {
@@ -112,7 +112,7 @@ export class MocksService {
   }
 
   private defaultServerError(): void {
-    this.mdSnackBar.open('Server error', appConst.snackBar.closeBtnLabel);
+    this.alertService.open('Server error');
   }
 
   private findDuplicateName(name: string): Observable<string> {
