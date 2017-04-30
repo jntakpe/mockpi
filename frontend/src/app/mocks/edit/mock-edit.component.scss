@@ -6,8 +6,7 @@ form {
     padding: 12px;
     margin-bottom: 2vh;
     &.group-error {
-      @include mat-elevation(4);
-      border: solid $mpi-warn 2px;
+      border: solid $mpi-warn 1px;
     }
     md-card-subtitle {
       margin-bottom: 0;

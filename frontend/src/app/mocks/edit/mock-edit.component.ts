@@ -32,6 +32,8 @@ export class MockEditComponent implements OnInit {
 
   requestTimeout;
 
+  duplicateAndPending: boolean;
+
   constructor(private formBuilder: FormBuilder, private mocksService: MocksService, private route: ActivatedRoute) {
   }
 
@@ -121,28 +123,33 @@ export class MockEditComponent implements OnInit {
 
   private mockFromDuplicate(): Observable<Mock> {
     return this.route.queryParams
-      .map(p => p.duplicate ? this.mocksService.retrieveCurrentDuplicate() : null);
+      .map(p => p.duplicate ? this.retrieveDuplicateMock() : null)
+  }
+
+  private retrieveDuplicateMock(): Mock {
+    this.duplicateAndPending = true;
+    return this.mocksService.retrieveCurrentDuplicate();
   }
 
   private validateNameAvailable(control: AbstractControl): Promise<any> {
-    const initTimeout = this.nameTimeout ? 400 : 0;
     control.markAsTouched();
     clearTimeout(this.nameTimeout);
     return new Promise(resolve => {
       this.nameTimeout = setTimeout(() => {
         this.mocksService.checkNameAvailable(control.value, this.id).subscribe(() => resolve(null), () => resolve({taken: true}));
-      }, initTimeout);
+      }, 400);
     });
   }
 
   private validateRequestAvailable(group: FormGroup): Promise<any> {
-    const initTimeout = this.requestTimeout ? 1000 : 0;
     clearTimeout(this.requestTimeout);
     return new Promise(resolve => {
       this.requestTimeout = setTimeout(() => {
         const request = this.mapParamsAndHeaders(group.value);
-        this.mocksService.checkRequestAvailable(request, this.id).subscribe(() => resolve(null), () => resolve({taken: true}));
-      }, initTimeout);
+        this.mocksService.checkRequestAvailable(request, this.id)
+          .do(() => this.duplicateAndPending = false)
+          .subscribe(() => resolve(null), () => resolve({taken: true}));
+      }, 1000);
     });
   }
 

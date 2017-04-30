@@ -22,9 +22,10 @@
           <textarea mdInput placeholder="Description" formControlName="description" rows="1"></textarea>
         </md-input-container>
       </section>
-      <md-card formGroupName="request" [class.group-error]="mockForm.get('request').hasError('taken')">
-        <div class="alert alert-danger" *ngIf="mockForm.get('request').hasError('taken')">
-          <strong>Error !&nbsp;</strong> Another request with same attributes already exist
+      <md-card formGroupName="request" [class.group-error]="mockForm.get('request').hasError('taken') || duplicateAndPending">
+        <div class="alert alert-danger" *ngIf="mockForm.get('request').hasError('taken') || duplicateAndPending">
+          <strong>Another request with same attributes already exist.&nbsp;</strong>
+          Please change at least one the request attributes before saving the mock
         </div>
         <md-card-subtitle>Request</md-card-subtitle>
         <md-card-content fxLayout.gt-md="row" fxLayout="column">

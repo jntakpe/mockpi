@@ -357,6 +357,11 @@ describe('MockEditComponent', () => {
       expect(firstMock.response.status).toEqual(firstMock.response.status);
       expect(firstArg.response.contentType).toEqual(firstArg.response.contentType);
     })));
+
+    it('should not display request error at start', () => {
+      expect(compiled.querySelector('.alert.alert-danger')).toBeFalsy();
+    });
+
   });
 
   describe('When duplicating', () => {
@@ -424,6 +429,10 @@ describe('MockEditComponent', () => {
       expect(firstMock.response.status).toEqual(firstMock.response.status);
       expect(firstArg.response.contentType).toEqual(firstArg.response.contentType);
     })));
+
+    it('should display request error at start', () => {
+      expect(compiled.querySelector('.alert.alert-danger')).toBeTruthy();
+    });
   });
 
   function initializeForm(): any {
