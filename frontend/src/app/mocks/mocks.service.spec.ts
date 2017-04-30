@@ -82,6 +82,9 @@ export class FakeMocksService extends MocksService {
   displaySaveError({status}: Response): void {
   }
 
+  displaySaveSuccess(name: string, id: string): void {
+  }
+
   findById(name): Observable<Mock> {
     return Observable.of(firstMock);
   }
@@ -109,7 +112,8 @@ describe('MocksService', () => {
 
   @Component({
     template: `
-      <div>Simple component</div>`,
+      <div>Simple component</div>
+    `,
   })
   class TestComponent {
   }
@@ -311,6 +315,24 @@ describe('MocksService', () => {
       fixture.detectChanges();
       mocksService.displayRemoveError('somemock');
       expect(mdSnackBar.open).toHaveBeenCalledWith('Unable to remove mock with name somemock', appConst.snackBar.closeBtnLabel);
+    })));
+
+  it('should call display success edit message on save', fakeAsync(inject([MocksService, MdSnackBar],
+    (mocksService: MocksService, mdSnackBar: MdSnackBar) => {
+      spyOn(mdSnackBar, 'open');
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+      mocksService.displaySaveSuccess('mock', 'someid');
+      expect(mdSnackBar.open).toHaveBeenCalledWith(`Mock mock successfully edited`, appConst.snackBar.closeBtnLabel);
+    })));
+
+  it('should call display success create message on save', fakeAsync(inject([MocksService, MdSnackBar],
+    (mocksService: MocksService, mdSnackBar: MdSnackBar) => {
+      spyOn(mdSnackBar, 'open');
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+      mocksService.displaySaveSuccess('mock', null);
+      expect(mdSnackBar.open).toHaveBeenCalledWith(`Mock mock successfully created`, appConst.snackBar.closeBtnLabel);
     })));
 
   it('should map key value array to literal', inject([MocksService], (mocksService: MocksService) => {

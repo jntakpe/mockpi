@@ -49,7 +49,10 @@ export class MockEditComponent implements OnInit {
     const mockForm = this.mockForm.value;
     this.mockForm.value.request = this.mapParamsAndHeaders(mockForm.request);
     this.mocksService.save(mockForm, this.id).subscribe(
-      () => this.mocksService.redirectMocks(),
+      () => {
+        this.mocksService.displaySaveSuccess(mockForm.name, this.id);
+        this.mocksService.redirectMocks();
+      },
       err => this.mocksService.displaySaveError(err)
     );
   }
@@ -123,7 +126,7 @@ export class MockEditComponent implements OnInit {
 
   private mockFromDuplicate(): Observable<Mock> {
     return this.route.queryParams
-      .map(p => p.duplicate ? this.retrieveDuplicateMock() : null)
+      .map(p => p.duplicate ? this.retrieveDuplicateMock() : null);
   }
 
   private retrieveDuplicateMock(): Mock {

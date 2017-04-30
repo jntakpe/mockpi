@@ -53,7 +53,7 @@ export class MocksService {
       .map(res => res.json());
   }
 
-  redirectMocks(): Observable<any> {
+  redirectMocks(success?: string): Observable<any> {
     return Observable.fromPromise(this.router.navigate(['/mocks'])).flatMap(() => Observable.empty());
   }
 
@@ -76,6 +76,10 @@ export class MocksService {
   checkRequestAvailable(request: Request, id?: string): Observable<Request> {
     return this.http.post(`${appConst.api.baseUrl}/mocks/request/available`, {request, id})
       .map(res => res.json());
+  }
+
+  displaySaveSuccess(name: string, id: string): void {
+    this.mdSnackBar.open(id ? `Mock ${name} successfully edited` : `Mock ${name} successfully created`, appConst.snackBar.closeBtnLabel);
   }
 
   displaySaveError({status}: Response): void {

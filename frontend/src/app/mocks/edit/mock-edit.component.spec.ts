@@ -107,6 +107,18 @@ describe('MockEditComponent', () => {
       expect(mocksService.redirectMocks).toHaveBeenCalled();
     })));
 
+    it('should display snackbar before redirecting', fakeAsync(inject([MocksService], (mocksService: MocksService) => {
+      initializeForm();
+      tick(1000);
+      fixture.detectChanges();
+      spyOn(mocksService, 'redirectMocks');
+      spyOn(mocksService, 'displaySaveSuccess');
+      compiled.querySelector('button[type="submit"]').click();
+      fixture.detectChanges();
+      expect(mocksService.redirectMocks).toHaveBeenCalled();
+      expect(mocksService.displaySaveSuccess).toHaveBeenCalled();
+    })));
+
     it('should display error after saving failure', fakeAsync(inject([MocksService], (mocksService: MocksService) => {
       initializeForm();
       tick(1000);
