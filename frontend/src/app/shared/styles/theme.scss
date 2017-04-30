@@ -9,5 +9,6 @@ $theme: mat-light-theme($primary, $accent, $warn);
 
 $mpi-primary: map-get($primary, 'default');
 $mpi-accent: map-get($accent, 'default');
+$mpi-warn: map-get($warn, 'default');
 $foreground: map-get($theme, 'foreground');
 $background: map-get($theme, 'background');
