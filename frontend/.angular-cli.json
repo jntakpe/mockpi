@@ -22,7 +22,8 @@
         "styles.scss",
         "../node_modules/@swimlane/ngx-datatable/release/index.css",
         "../node_modules/@swimlane/ngx-datatable/release/themes/material.css",
-        "../node_modules/@swimlane/ngx-datatable/release/assets/icons.css"
+        "../node_modules/@swimlane/ngx-datatable/release/assets/icons.css",
+        "../node_modules/jsoneditor/dist/jsoneditor.css"
       ],
       "scripts": [
         "../node_modules/hammerjs/hammer.min.js"
