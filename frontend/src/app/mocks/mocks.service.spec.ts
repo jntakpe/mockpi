@@ -46,7 +46,7 @@ const secondMock: Mock = {
   response: {
     body: 'secondBody',
     status: 200,
-    contentType: 'application/json'
+    contentType: 'text/plain'
   },
   collection: 'default',
   delay: 10,
@@ -103,6 +103,11 @@ export class FakeMocksService extends MocksService {
 
   duplicate(mock: Mock): Observable<boolean> {
     return Observable.of(true);
+  }
+
+
+  isApplicationJsonCompatible(mock: Mock): any {
+    return mock.response.body;
   }
 }
 
@@ -346,6 +351,24 @@ describe('MocksService', () => {
 
   it('should map empty array to empty literal', inject([MocksService], (mocksService: MocksService) => {
     expect(mocksService.mapKeyValueToLiteral([])).toEqual({});
+  }));
+
+  it('should fail validating application json type', inject([MocksService], (mocksService: MocksService) => {
+    expect(mocksService.isApplicationJsonCompatible(firstMock)).toBeFalsy();
+  }));
+
+  it('should validating not application json type', inject([MocksService], (mocksService: MocksService) => {
+    expect(mocksService.isApplicationJsonCompatible(secondMock)).toBeFalsy();
+  }));
+
+  it('should validate application json type', inject([MocksService], (mocksService: MocksService) => {
+    const mock: any = {
+      response: {
+        contentType: 'application/json',
+        body: `{"name": "jntakpe"}`
+      }
+    };
+    expect(mocksService.isApplicationJsonCompatible(mock)).toBeTruthy();
   }));
 
 });

@@ -95,6 +95,17 @@ export class MocksService {
     return this.redirectMocks();
   }
 
+  isApplicationJsonCompatible(mock: Mock): any {
+    if (mock.response.contentType !== 'application/json') {
+      return false;
+    }
+    try {
+      return JSON.parse(mock.response.body);
+    } catch (e) {
+      return false;
+    }
+  }
+
   private displayFindByNameError(status: number, name: string): void {
     status === 404 ? this.alertService.open(`Mock named ${name} doesn't exist`) : this.defaultServerError();
   }

@@ -6,6 +6,8 @@ import {MdDialog} from '@angular/material';
 import {NgModule} from '@angular/core';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {CommonModule} from '@angular/common';
+import {MocksService} from '../mocks.service';
+import {FakeMocksService} from '../mocks.service.spec';
 
 @NgModule({
   imports: [MockpiMaterialModule, BrowserAnimationsModule, CommonModule],
@@ -23,6 +25,10 @@ describe('MockVisualizeComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [MockVisualizeComponentModuleSpec],
+      providers: [{
+        provide: MocksService,
+        useClass: FakeMocksService
+      }]
     })
       .compileComponents();
   }));
