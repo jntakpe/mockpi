@@ -12,6 +12,7 @@ import {TableModule} from '../shared/table/table.module';
 import {MockSearchComponent} from './search/mock-search.component';
 import {By} from '@angular/platform-browser';
 import {changeInputValueAndDispatch} from '../shared/testing/testing-utils.spec';
+import {MdDialog} from '@angular/material';
 
 describe('MocksComponent', () => {
   let component: MocksComponent;
@@ -22,7 +23,7 @@ describe('MocksComponent', () => {
     TestBed.configureTestingModule({
       declarations: [MocksComponent, MockSearchComponent],
       imports: [MockpiMaterialModule, RouterTestingModule, BrowserAnimationsModule, TableModule, ReactiveFormsModule],
-      providers: [{provide: MocksService, useClass: FakeMocksService}]
+      providers: [{provide: MocksService, useClass: FakeMocksService}, {provide: MdDialog, useValue: {open: () => null}}]
     })
       .compileComponents();
   }));
@@ -58,6 +59,18 @@ describe('MocksComponent', () => {
     expect(mocksService.remove).toHaveBeenCalled();
     expect(mocksService.displayRemoveError).toHaveBeenCalledWith(firstMock.name);
     refresh$.subscribe(v => expect(v).toEqual('remove'));
+  })));
+
+  it('should call visualize mock', inject([MdDialog], (mdDialog: MdDialog) => {
+    spyOn(mdDialog, 'open');
+    component.visualize(firstMock);
+    expect(mdDialog.open).toHaveBeenCalled();
+  }));
+
+  it('should call duplicate mock', async(inject([MocksService], (mocksService: MocksService) => {
+    spyOn(mocksService, 'duplicate').and.returnValue(Observable.of(true));
+    component.duplicate(firstMock);
+    expect(mocksService.duplicate).toHaveBeenCalledWith(firstMock);
   })));
 
   it('should call update filter', async(() => {

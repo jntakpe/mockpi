@@ -18,6 +18,10 @@
         <md-icon>more_vert</md-icon>
       </button>
       <md-menu #menu="mdMenu">
+        <button class="visualize-btn" md-menu-item (click)="visualize(mock)">
+          <md-icon>visibility</md-icon>
+          <span>Visualize</span>
+        </button>
         <button class="duplicate-btn" md-menu-item (click)="duplicate(mock)">
           <md-icon>content_copy</md-icon>
           <span>Duplicate</span>

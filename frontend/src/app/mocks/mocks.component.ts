@@ -6,6 +6,8 @@ import {Observable} from 'rxjs/Observable';
 import {TableColumn} from '@swimlane/ngx-datatable/release';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {noop} from 'rxjs/util/noop';
+import {MdDialog} from '@angular/material';
+import {MockVisualizeComponent} from './visualize/mock-visualize.component';
 
 @Component({
   selector: 'mpi-mocks',
@@ -24,12 +26,16 @@ export class MocksComponent implements OnInit {
 
   private search$ = new BehaviorSubject({});
 
-  constructor(private mocksService: MocksService) {
+  constructor(private mocksService: MocksService, private mdDialog: MdDialog) {
   }
 
   ngOnInit() {
     this.columns = this.initColumns();
     this.mocks$ = this.mocksService.findFilteredMocks(this.search$.asObservable(), this.refresh$.asObservable());
+  }
+
+  visualize(mock: Mock): void {
+    this.mdDialog.open(MockVisualizeComponent, {data: {mock}});
   }
 
   duplicate(mock: Mock): void {

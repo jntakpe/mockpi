@@ -100,6 +100,10 @@ export class FakeMocksService extends MocksService {
   checkRequestAvailable(request: Request, id?: string): Observable<Request> {
     return Observable.of(null);
   }
+
+  duplicate(mock: Mock): Observable<boolean> {
+    return Observable.of(true);
+  }
 }
 
 describe('MocksService', () => {
