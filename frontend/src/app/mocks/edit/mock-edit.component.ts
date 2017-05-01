@@ -103,6 +103,7 @@ export class MockEditComponent implements OnInit {
     });
   }
 
+  //TODO move to service
   private filterStatuses(): Observable<number[]> {
     const statuses = [200, 201, 400, 401, 403, 404];
     return this.mockForm.get('response').get('status').valueChanges
@@ -110,11 +111,11 @@ export class MockEditComponent implements OnInit {
       .map(v => v ? statuses.map(s => s.toString()).filter(s => new RegExp(`^${v.toString()}`, 'gi').test(s)) : statuses);
   }
 
+  //TODO move to service
   private filterContentType(): Observable<string[]> {
-    const contentTypes = ['application/json', 'application/text', 'text/plain'];
     return this.mockForm.get('response').get('contentType').valueChanges
       .startWith('')
-      .map(v => v ? contentTypes.map(s => s).filter(s => new RegExp(`^${v}`, 'gi').test(s)) : contentTypes);
+      .map(v => v ? appConst.lists.mimeTypes.map(s => s).filter(s => new RegExp(`${v}`, 'gi').test(s)) : appConst.lists.mimeTypes);
   }
 
   private mockFromData(): Observable<Mock> {

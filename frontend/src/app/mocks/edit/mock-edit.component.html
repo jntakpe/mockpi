@@ -113,9 +113,9 @@
           <md-input-container fxFlex.gt-md="60">
             <textarea mdInput placeholder="Body" formControlName="body" rows="6"></textarea>
           </md-input-container>
-          <div fxFlex.gt-md>
-            <div>
-              <md-input-container fxFlex.gt-md="30">
+          <div fxFlex>
+            <div fxLayout.gt-md="row">
+              <md-input-container fxFlex>
                 <input mdInput placeholder="Status" [mdAutocomplete]="autoStatus" formControlName="status">
               </md-input-container>
               <md-autocomplete #autoStatus="mdAutocomplete" id="status-autocomplete">
@@ -124,8 +124,8 @@
                 </md-option>
               </md-autocomplete>
             </div>
-            <div>
-              <md-input-container fxFlex.gt-md="50">
+            <div fxLayout.gt-md="row">
+              <md-input-container fxFlex>
                 <input mdInput placeholder="Content type" [mdAutocomplete]="autoContentType" formControlName="contentType">
               </md-input-container>
               <md-autocomplete #autoContentType="mdAutocomplete">

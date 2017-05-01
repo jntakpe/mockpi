@@ -23,4 +23,11 @@ export const appConst = {
     secret: 'mpiunsecuresecret',
     scope: 'read write',
   },
+  lists: {
+    mimeTypes: [
+      'application/json', 'application/javascript', 'application/xhtml+xml', 'application/xml', 'application/octet-stream',
+      'image/gif', 'image/jpeg', 'image/png', 'image/svg+xml',
+      'text/plain', 'text/css', 'text/csv', 'text/html', 'text/xml'
+    ]
+  }
 };
