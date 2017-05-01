@@ -5,9 +5,10 @@ import {MockpiMaterialModule} from '../../shared/mockpi-material.module';
 import {MdDialog} from '@angular/material';
 import {NgModule} from '@angular/core';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {CommonModule} from '@angular/common';
 
 @NgModule({
-  imports: [MockpiMaterialModule, BrowserAnimationsModule],
+  imports: [MockpiMaterialModule, BrowserAnimationsModule, CommonModule],
   declarations: [MockVisualizeComponent],
   exports: [MockVisualizeComponent],
   entryComponents: [MockVisualizeComponent]
@@ -28,11 +29,16 @@ describe('MockVisualizeComponent', () => {
 
   beforeEach(() => {
     dialog = TestBed.get(MdDialog);
-    let dialogRef = dialog.open(MockVisualizeComponent);
+    let dialogRef = dialog.open(MockVisualizeComponent, {data: {mock: 'test'}});
     component = dialogRef.componentInstance;
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should inject data', () => {
+    expect(component['data']).toBeTruthy();
+  });
+
 });
