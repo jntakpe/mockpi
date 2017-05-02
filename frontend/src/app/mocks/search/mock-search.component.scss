@@ -1,12 +1,15 @@
-form {
-  md-input-container, md-select {
-    margin-right: 20px;
-  }
-  button {
-    max-height: 40px;
+md-card {
+  form {
+    md-input-container, md-select {
+      margin-right: 20px;
+    }
+    button {
+      max-height: 40px;
+    }
+
+    md-select {
+      padding-top: 6px; //FIXME should be removed when https://github.com/angular/material2/issues/2124 is fixed
+    }
   }
 
-  md-select {
-    padding-top: 6px; //FIXME should be removed when https://github.com/angular/material2/issues/2124 is fixed
-  }
 }
