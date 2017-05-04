@@ -4,3 +4,13 @@ spring:
       database: mockpi
 api:
   fakeContextRoot: /mockpi
+
+---
+
+spring:
+  profiles: azure
+  data:
+    mongodb:
+      database: mockpi
+      host: dep01-int.documents.azure.com
+      port: 10250
