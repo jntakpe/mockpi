@@ -1,7 +1,7 @@
 version: "2"
 services:
-  mockpi:
+  mockpi-frontend:
     build: .
-    image: mockpi
+    image: mockpi-frontend
     ports:
       - "80:80"
