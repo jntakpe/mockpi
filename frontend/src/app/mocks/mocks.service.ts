@@ -1,20 +1,23 @@
-import {Injectable} from '@angular/core';
-import {Http, Response, URLSearchParams} from '@angular/http';
-import {Observable} from 'rxjs/Observable';
-import {appConst} from '../shared/constants';
+import { Injectable } from '@angular/core';
+import { Http, Response, URLSearchParams } from '@angular/http';
+import { Observable } from 'rxjs/Observable';
 import '../shared/rxjs.extension';
-import {Mock, Request} from '../shared/api.model';
-import {Router} from '@angular/router';
-import {FilterTableService} from '../shared/table/filter-table.service';
-import {RegexType} from '../shared/table/regex-type';
-import {AlertService} from '../shared/alert/alert.service';
+import { Mock, Request } from '../shared/api.model';
+import { Router } from '@angular/router';
+import { FilterTableService } from '../shared/table/filter-table.service';
+import { RegexType } from '../shared/table/regex-type';
+import { AlertService } from '../shared/alert/alert.service';
+import { environment } from '../../environments/environment';
 
 @Injectable()
 export class MocksService {
 
   private currentDuplicate: Mock;
 
-  constructor(private http: Http, private router: Router, private alertService: AlertService, private filterTableService: FilterTableService) {
+  constructor(private http: Http,
+              private router: Router,
+              private alertService: AlertService,
+              private filterTableService: FilterTableService) {
   }
 
   findFilteredMocks(search$: Observable<any>, refresh$: Observable<string>): Observable<Mock[]> {
@@ -23,13 +26,13 @@ export class MocksService {
   }
 
   findMocks(): Observable<Mock[]> {
-    return this.http.get(`${appConst.api.baseUrl}/mocks`)
+    return this.http.get(`${environment.baseUrl}/mocks`)
       .map(res => res.json())
       .map((m: Mock[]) => m.map(this.formatRequestParams));
   }
 
   save(mock: Mock, id?: string): Observable<Mock> {
-    const req = id ? this.http.put(`${appConst.api.baseUrl}/mocks/${id}`, mock) : this.http.post(`${appConst.api.baseUrl}/mocks`, mock);
+    const req = id ? this.http.put(`${environment.baseUrl}/mocks/${id}`, mock) : this.http.post(`${environment.baseUrl}/mocks`, mock);
     return req.map(res => res.json());
   }
 
@@ -49,7 +52,7 @@ export class MocksService {
   }
 
   remove({id}: Mock): Observable<void> {
-    return this.http.delete(`${appConst.api.baseUrl}/mocks/${id}`)
+    return this.http.delete(`${environment.baseUrl}/mocks/${id}`)
       .map(res => res.json());
   }
 
@@ -64,17 +67,17 @@ export class MocksService {
   }
 
   findById(id: string): Observable<Mock> {
-    return this.http.get(`${appConst.api.baseUrl}/mocks/${id}`)
+    return this.http.get(`${environment.baseUrl}/mocks/${id}`)
       .map(res => res.json());
   }
 
   checkNameAvailable(name: string, id?: string): Observable<string> {
-    return this.http.post(`${appConst.api.baseUrl}/mocks/name/available`, {name, id})
+    return this.http.post(`${environment.baseUrl}/mocks/name/available`, {name, id})
       .map(res => res.text());
   }
 
   checkRequestAvailable(request: Request, id?: string): Observable<Request> {
-    return this.http.post(`${appConst.api.baseUrl}/mocks/request/available`, {request, id})
+    return this.http.post(`${environment.baseUrl}/mocks/request/available`, {request, id})
       .map(res => res.json());
   }
 
@@ -127,7 +130,7 @@ export class MocksService {
   }
 
   private findDuplicateName(name: string): Observable<string> {
-    return this.http.get(`${appConst.api.baseUrl}/mocks/${name}/available`)
+    return this.http.get(`${environment.baseUrl}/mocks/${name}/available`)
       .map(res => res.text())
       .catch(err => {
         this.displayFindByNameError(err.status, name);

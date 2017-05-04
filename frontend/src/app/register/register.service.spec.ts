@@ -1,19 +1,19 @@
-import {async, fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
+import { async, fakeAsync, inject, TestBed, tick } from '@angular/core/testing';
 
-import {RegisterService} from './register.service';
-import {Component} from '@angular/core';
-import {Router, Routes} from '@angular/router';
-import {advance, createRoot, FakeHomeComponent, FakeLoginComponent, RootComponent} from '../shared/testing/testing-utils.spec';
-import {RouterTestingModule} from '@angular/router/testing';
-import {MockBackend, MockConnection} from '@angular/http/testing';
-import {BaseRequestOptions, Http, Response, ResponseOptions} from '@angular/http';
-import {appConst} from '../shared/constants';
-import {User} from '../shared/api.model';
-import {Location} from '@angular/common';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {MockpiMaterialModule} from '../shared/mockpi-material.module';
-import {AlertService} from '../shared/alert/alert.service';
-import {AlertModule} from '../shared/alert/alert.module';
+import { RegisterService } from './register.service';
+import { Component } from '@angular/core';
+import { Router, Routes } from '@angular/router';
+import { advance, createRoot, FakeHomeComponent, FakeLoginComponent, RootComponent } from '../shared/testing/testing-utils.spec';
+import { RouterTestingModule } from '@angular/router/testing';
+import { MockBackend, MockConnection } from '@angular/http/testing';
+import { BaseRequestOptions, Http, Response, ResponseOptions } from '@angular/http';
+import { User } from '../shared/api.model';
+import { Location } from '@angular/common';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MockpiMaterialModule } from '../shared/mockpi-material.module';
+import { AlertService } from '../shared/alert/alert.service';
+import { AlertModule } from '../shared/alert/alert.module';
+import { environment } from '../../environments/environment';
 
 export const user: User = {
   username: 'jntakpe',
@@ -89,7 +89,7 @@ describe('RegisterService', () => {
     })));
 
   function mockRegisterResponse(connection: MockConnection) {
-    expect(connection.request.url).toEqual(`${appConst.api.baseUrl}/users`);
+    expect(connection.request.url).toEqual(`${environment.baseUrl}/users`);
     const userPwd = user;
     userPwd['password'] = 'pwd';
     expect(JSON.parse(connection.request.getBody())).toEqual(userPwd);

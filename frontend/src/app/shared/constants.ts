@@ -1,6 +1,5 @@
 export const appConst = {
   api: {
-    baseUrl: '/api',
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']
   },
   snackBar: {
