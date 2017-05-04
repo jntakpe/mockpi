@@ -12,7 +12,6 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
-import reactor.core.publisher.Flux
 
 @Configuration
 class TestDataConfig {
@@ -26,7 +25,7 @@ class TestDataConfig {
     }
 
     private fun initUsers(userRepository: UserRepository) {
-        val users = Flux.just(
+        val users = listOf(
                 User("jntakpe", "Joss", "jntakpe@mail.com", "pwd"),
                 User("cbarillet", "Vyril", "cbarillet@mail.com", "pwd"),
                 User("bpoindron", "Brubru", "bpoindron@mail.com", "pwd"),
@@ -34,11 +33,12 @@ class TestDataConfig {
                 User("crinfray", "Coco", "crinfray@mail.com", "pwd"),
                 User("todelete", "To Delete", "todelete@mail.com", "pwd")
         )
-        userRepository.deleteAll().thenMany(userRepository.save(users)).blockLast()
+        userRepository.deleteAll().block()
+        userRepository.saveAll(users).blockLast()
     }
 
     private fun initMocks(mockRepository: MockRepository) {
-        val mocks = Flux.just(
+        val mocks = listOf(
                 Mock("demo", Request("/mockpi/users/origin", HttpMethod.GET), Response("{\"name\": \"jntakpe\"}")),
                 Mock("demo_1", Request("/mockpi/users/1", HttpMethod.GET), Response("{\"name\": \"jntakpe\"}")),
                 Mock("demo_2", Request("/mockpi/users/1", HttpMethod.GET, mapOf(Pair("age", "20")), emptyMap()), Response("{\"name\": \"jntakpe\"}")),
@@ -58,7 +58,8 @@ class TestDataConfig {
                 Mock("pristine", Request("/mockpi/pristine", HttpMethod.GET), Response("pristinebody")),
                 Mock("pristine_2", Request("/mockpi/pristine/custom", HttpMethod.GET), Response("custombody", 201, MediaType.TEXT_PLAIN_VALUE))
         )
-        mockRepository.deleteAll().thenMany(mockRepository.save(mocks)).blockLast()
+        mockRepository.deleteAll().block()
+        mockRepository.saveAll(mocks).blockLast()
     }
 
 

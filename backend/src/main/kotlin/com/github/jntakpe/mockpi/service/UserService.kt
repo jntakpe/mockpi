@@ -51,7 +51,7 @@ class UserService(private val userRepository: UserRepository) {
         return findByUsernameOrThrow(oldUsername)
                 .flatMap { Mono.`when`(verifyUsernameAvailable(user.username, it.username), verifyEmailAvailable(user.email, it.email)) }
                 .map { lowerCaseUsernameAndMail(user) }
-                .flatMap(userRepository::save)
+                .flatMap { userRepository.save(it) }
                 .doOnNext { logger.info("User {} successfully updated", user) }
                 .flatMap { u -> deleteOldUsername(oldUsername, u) }
     }
@@ -60,7 +60,7 @@ class UserService(private val userRepository: UserRepository) {
         logger.debug("Deleting user {}", username)
         return findByUsernameOrThrow(username)
                 .map(User::username)
-                .flatMap(userRepository::delete)
+                .flatMap(userRepository::deleteById)
                 .doOnNext { logger.info("User with username {} successfully deleted", username) }
 
     }

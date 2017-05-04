@@ -30,7 +30,7 @@ class MockService(private val mockRepository: MockRepository) {
 
     fun findById(id: ObjectId): Mono<Mock> {
         logger.debug("Searching mock with id {}", id)
-        return mockRepository.findOne(id)
+        return mockRepository.findById(id)
                 .doOnNext { logger.debug("Mock {} matched with id {}", it, id) }
     }
 
@@ -99,14 +99,14 @@ class MockService(private val mockRepository: MockRepository) {
         logger.debug("Updating id {} with {}", id, mock)
         return findByIdOrThrow(id)
                 .flatMap { verifyNameAndRequestAvailable(mock, it) }
-                .flatMap(mockRepository::save)
+                .flatMap { mockRepository.save(it) }
                 .doOnNext { logger.info("Mock {} successfully updated", it) }
     }
 
     fun delete(id: ObjectId): Mono<Void> {
         logger.debug("Deleting mock {}", id)
         return findByIdOrThrow(id)
-                .flatMap { mockRepository.delete(it.id) }
+                .flatMap(mockRepository::delete)
                 .doOnNext { logger.info("Mock with id {} successfully deleted") }
     }
 

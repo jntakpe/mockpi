@@ -335,7 +335,7 @@ class MockServiceTest {
                 .consumeNextWith { assertThat(it.name).isEqualTo(mockName) }
                 .then {
                     assertThat(list).isNotEmpty.hasSize(1)
-                    mockRepository.exists(list[0].id).test()
+                    mockRepository.existsById(list[0].id).test()
                             .expectSubscription()
                             .expectNext(true)
                             .verifyComplete()
@@ -355,7 +355,7 @@ class MockServiceTest {
                 .consumeNextWith { assertThat(it.request.path).isEqualTo(Urls.FAKE_PREFIX + path) }
                 .then {
                     assertThat(list).isNotEmpty.hasSize(1)
-                    mockRepository.exists(list[0].id).test()
+                    mockRepository.existsById(list[0].id).test()
                             .expectSubscription()
                             .expectNext(true)
                             .verifyComplete()
