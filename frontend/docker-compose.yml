@@ -1,0 +1,7 @@
+version: "2"
+services:
+  mockpi:
+    build: .
+    image: mockpi
+    ports:
+      - "80:80"
