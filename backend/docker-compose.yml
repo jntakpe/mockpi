@@ -1,0 +1,11 @@
+version: '2'
+services:
+  mockpi-backend:
+    build:
+      dockerfile: ./src/main/docker/Dockerfile
+      context: .
+      args:
+        MONGODB_USERNAME: ${MONGODB_USERNAME}
+        MONGODB_PASSWORD: ${MONGODB_PASSWORD}
+    ports:
+      - 8080:8080
