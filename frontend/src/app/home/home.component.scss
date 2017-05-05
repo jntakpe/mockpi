@@ -1,0 +1,33 @@
+.home-header-background {
+  height: 50vh;
+  margin-bottom: 4vh;
+  background: url('../../assets/images/bg_portal.jpg') no-repeat;
+  background-size: 100% 100%;
+}
+
+.home-header-section {
+  text-align: center;
+  padding-top: 15vh;
+}
+
+.home-header-headline {
+  h1 {
+    color: white;
+    font-size: 30px;
+    font-weight: 400;
+    line-height: 40px;
+    margin: 15px 0 15px 0;
+  }
+
+  h2 {
+    color: white;
+    font-size: 18px;
+    font-weight: 300;
+    line-height: 28px;
+    margin: 15px 0 25px 0;
+  }
+
+  .github-icon {
+    height: 12px;
+  }
+}
