@@ -110,9 +110,12 @@
       <md-card formGroupName="response">
         <md-card-subtitle>Response</md-card-subtitle>
         <md-card-content fxLayout.gt-md="row" fxLayout="column">
-          <md-input-container fxFlex.gt-md="60">
+          <md-input-container *ngIf="!isJson" fxFlex.gt-md="60">
             <textarea mdInput placeholder="Body" formControlName="body" rows="6"></textarea>
           </md-input-container>
+          <div *ngIf="isJson" fxFlex.gt-md="60">
+            <div #jsoneditorContainer></div>
+          </div>
           <div fxFlex>
             <div fxLayout.gt-md="row">
               <md-input-container fxFlex>

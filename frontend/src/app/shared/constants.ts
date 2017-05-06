@@ -27,6 +27,7 @@ export const appConst = {
       'application/json', 'application/javascript', 'application/xhtml+xml', 'application/xml', 'application/octet-stream',
       'image/gif', 'image/jpeg', 'image/png', 'image/svg+xml',
       'text/plain', 'text/css', 'text/csv', 'text/html', 'text/xml'
-    ]
+    ],
+    status: [200, 201, 400, 401, 403, 404, 500]
   }
 };

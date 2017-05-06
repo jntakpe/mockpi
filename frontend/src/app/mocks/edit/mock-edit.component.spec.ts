@@ -344,7 +344,6 @@ describe('MockEditComponent', () => {
       expect(compiled.querySelector('input[formcontrolname="path"]').value).toBe(firstMock.request.path);
       expect(compiled.querySelector(`md-radio-group[formcontrolname="method"] 
         md-radio-button[ng-reflect-value="${firstMock.request.method}"].mat-radio-checked`)).toBeTruthy();
-      expect(compiled.querySelector('textarea[formcontrolname="body"]').value).toBe(firstMock.response.body);
     });
 
     it('should call save basic form initialized by ngOnInit', fakeAsync(inject([MocksService], (mocksService: MocksService) => {
@@ -416,7 +415,6 @@ describe('MockEditComponent', () => {
       expect(compiled.querySelector('input[formcontrolname="path"]').value).toBe(firstMock.request.path);
       expect(compiled.querySelector(`md-radio-group[formcontrolname="method"]
         md-radio-button[ng-reflect-value="${firstMock.request.method}"].mat-radio-checked`)).toBeTruthy();
-      expect(compiled.querySelector('textarea[formcontrolname="body"]').value).toBe(firstMock.response.body);
     });
 
     it('should call save basic form initialized by ngOnInit', fakeAsync(inject([MocksService], (mocksService: MocksService) => {
@@ -461,8 +459,8 @@ describe('MockEditComponent', () => {
       },
       response: {
         body: '{"testing": "mock"}',
-        status: '',
-        contentType: ''
+        status: '200',
+        contentType: 'application/json'
       }
     };
     const nameInput = fixture.debugElement.query(By.css('input[formcontrolname="name"]'));

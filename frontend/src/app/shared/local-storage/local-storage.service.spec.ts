@@ -1,11 +1,11 @@
-import { LocalStorageService } from './local-storage.service';
-import { async, inject, TestBed } from '@angular/core/testing';
-import { OAuth2Response } from '../security/oauth2-response.model';
-import { appConst } from '../constants';
+import {LocalStorageService} from './local-storage.service';
+import {async, inject, TestBed} from '@angular/core/testing';
+import {OAuth2Response} from '../security/oauth2-response.model';
+import {appConst} from '../constants';
 import * as moment from 'moment';
-import { Observable } from 'rxjs/Observable';
+import {Observable} from 'rxjs/Observable';
 import '../rxjs.extension';
-import { tokenJson } from '../testing/testing-utils.spec';
+import {tokenJson} from '../testing/testing-utils.spec';
 
 export class MockLocalStorageService extends LocalStorageService {
 
@@ -64,7 +64,7 @@ describe('local storage service', () => {
       expect(o.expires_at).toBeTruthy();
       expect(moment(o.expires_at).subtract(oauth2Response.expires_in).isSame(moment(), 's'));
       const tokenStore = localStorageService['tokenStore'];
-      tokenStore.getItem(appConst.localstorage.token.key).then(r => {
+      tokenStore.getItem(appConst.localstorage.token.key).then(() => {
         return tokenStore.removeItem(appConst.localstorage.token.key).then(() => done());
       });
     });
@@ -90,7 +90,7 @@ describe('local storage service', () => {
   });
 
   it('should not load access token cuz missing', done => {
-    spyOn(localStorageService, 'isAccessTokenValid');
+    spyOn(localStorageService as any, 'isAccessTokenValid');
     const tokenStore = localStorageService['tokenStore'];
     tokenStore.removeItem(appConst.localstorage.token.key).then(() => {
       localStorageService.loadAccessToken().subscribe(
@@ -105,7 +105,7 @@ describe('local storage service', () => {
 
   it('should load refresh token', done => {
     localStorageService.saveOAuth2Response(oauth2Response).subscribe(() => {
-      spyOn(localStorageService, 'decodeToken').and.returnValue({exp: moment().add(1, 'h').unix() * 1000});
+      spyOn(localStorageService as any, 'decodeToken').and.returnValue({exp: moment().add(1, 'h').unix() * 1000});
       localStorageService.loadRefreshToken().subscribe(r => {
         expect(r).toBeTruthy();
         localStorageService['tokenStore'].removeItem(appConst.localstorage.token.key).then(() => done());
@@ -115,7 +115,7 @@ describe('local storage service', () => {
 
   it('should not load refresh token cuz expired', done => {
     localStorageService.saveOAuth2Response(oauth2Response).subscribe(() => {
-      spyOn(localStorageService, 'decodeToken').and.returnValue({exp: moment().subtract(1, 'h').unix() * 1000});
+      spyOn(localStorageService as any, 'decodeToken').and.returnValue({exp: moment().subtract(1, 'h').unix() * 1000});
       localStorageService.loadRefreshToken().subscribe(
         () => fail('should be empty'),
         () => fail('should not fail on refresh token retrieval'),
@@ -125,7 +125,7 @@ describe('local storage service', () => {
   });
 
   it('should not load refresh token cuz missing', done => {
-    spyOn(localStorageService, 'isRefreshTokenValid');
+    spyOn(localStorageService as any, 'isRefreshTokenValid');
     const tokenStore = localStorageService['tokenStore'];
     tokenStore.removeItem(appConst.localstorage.token.key).then(() => {
       localStorageService.loadAccessToken().subscribe(

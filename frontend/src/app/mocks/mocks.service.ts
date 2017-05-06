@@ -1,14 +1,17 @@
-import { Injectable } from '@angular/core';
-import { Http, Response, URLSearchParams } from '@angular/http';
-import { Observable } from 'rxjs/Observable';
+import {Injectable} from '@angular/core';
+import {Http, Response as HttpResponse, URLSearchParams} from '@angular/http';
+import {Observable} from 'rxjs/Observable';
 import '../shared/rxjs.extension';
-import { Mock, Request } from '../shared/api.model';
-import { Router } from '@angular/router';
-import { FilterTableService } from '../shared/table/filter-table.service';
-import { RegexType } from '../shared/table/regex-type';
-import { AlertService } from '../shared/alert/alert.service';
-import { environment } from '../../environments/environment';
-import JSONEditor from 'jsoneditor';
+import {Mock, Request, Response} from '../shared/api.model';
+import {Router} from '@angular/router';
+import {FilterTableService} from '../shared/table/filter-table.service';
+import {RegexType} from '../shared/table/regex-type';
+import {AlertService} from '../shared/alert/alert.service';
+import {environment} from '../../environments/environment';
+import JSONEditor, {JSONEditorOptions} from 'jsoneditor';
+import {appConst} from '../shared/constants';
+import {AbstractControl} from '@angular/forms';
+import {Subject} from 'rxjs/Subject';
 
 @Injectable()
 export class MocksService {
@@ -86,7 +89,7 @@ export class MocksService {
     this.alertService.open(id ? `Mock ${name} successfully edited` : `Mock ${name} successfully created`);
   }
 
-  displaySaveError({status}: Response): void {
+  displaySaveError({status}: HttpResponse): void {
     status === 400 ? this.alertService.open('Invalid fields error') : this.defaultServerError();
   }
 
@@ -94,37 +97,58 @@ export class MocksService {
     this.alertService.open(`Unable to remove mock with name ${name}`);
   }
 
-  displayFindByErrorThenRedirect({status}: Response, name: string): Observable<any> {
+  displayFindByErrorThenRedirect({status}: HttpResponse, name: string): Observable<any> {
     this.displayFindByNameError(status, name);
     return this.redirectMocks();
   }
 
-  isApplicationJsonCompatible(mock: Mock): any {
-    if (!mock) {
+  isApplicationJsonCompatible(response: Response): any {
+    if (!response) {
       return {};
     }
-    if (mock.response.contentType !== 'application/json') {
+    if (response.contentType !== 'application/json') {
       return false;
     }
+    if (!response.body) {
+      return {};
+    }
     try {
-      return JSON.parse(mock.response.body);
+      return JSON.parse(response.body);
     } catch (e) {
       return false;
     }
   }
 
-  createJsonEditor(element: HTMLElement, mock: Mock): JSONEditor {
-    const json = this.isApplicationJsonCompatible(mock);
+  createJsonEditor(element: HTMLElement, response: Response, notify?: Subject<any>): JSONEditor {
+    const json = this.isApplicationJsonCompatible(response);
     if (json) {
-      return new JSONEditor(element, this.jsonEditorOptions(), json);
+      return new JSONEditor(element, this.jsonEditorOptions(notify), json);
     }
   }
 
-  private jsonEditorOptions(): any {
-    return {
+  filterStatuses(status: AbstractControl): Observable<number[]> {
+    const statuses = appConst.lists.status;
+    return status.valueChanges
+      .startWith('')
+      .map(v => v ? statuses.map(s => s.toString()).filter(s => new RegExp(`^${v.toString()}`, 'gi').test(s)) : statuses);
+  }
+
+  filterContentType(contentType: AbstractControl): Observable<string[]> {
+    const mimeTypes = appConst.lists.mimeTypes;
+    return contentType.valueChanges
+      .startWith('')
+      .map(v => v ? mimeTypes.map(s => s).filter(s => new RegExp(`${v}`, 'gi').test(s)) : mimeTypes);
+  }
+
+  private jsonEditorOptions(notify?: Subject<any>): JSONEditorOptions {
+    const options: JSONEditorOptions = {
       mode: 'code',
       modes: ['code', 'text']
     };
+    if (notify) {
+      options.onChange = () => notify.next('change');
+    }
+    return options;
   }
 
 

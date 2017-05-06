@@ -1,8 +1,8 @@
-import { AfterViewInit, Component, ElementRef, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { MD_DIALOG_DATA } from '@angular/material';
-import { Mock } from '../../shared/api.model';
-import JSONEditor, { JSONEditorOptions } from 'jsoneditor';
-import { MocksService } from '../mocks.service';
+import {AfterViewInit, Component, ElementRef, Inject, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {MD_DIALOG_DATA} from '@angular/material';
+import {Mock} from '../../shared/api.model';
+import JSONEditor, {JSONEditorOptions} from 'jsoneditor';
+import {MocksService} from '../mocks.service';
 
 @Component({
   selector: 'mpi-visualize',
@@ -24,7 +24,7 @@ export class MockVisualizeComponent implements OnInit, AfterViewInit, OnDestroy 
 
   ngOnInit() {
     this.mock = this.data.mock;
-    this.json = this.mocksService.isApplicationJsonCompatible(this.mock);
+    this.json = this.mocksService.isApplicationJsonCompatible(this.mock.response);
   }
 
   ngAfterViewInit() {

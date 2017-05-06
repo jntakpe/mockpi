@@ -1,19 +1,21 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { appConst } from '../../shared/constants';
+import {AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {appConst} from '../../shared/constants';
 import '../../shared/rxjs.extension';
-import { Observable } from 'rxjs/Observable';
-import { Mock, Request } from '../../shared/api.model';
-import { MocksService } from '../mocks.service';
-import { ActivatedRoute } from '@angular/router';
+import {Observable} from 'rxjs/Observable';
+import {Mock, Request} from '../../shared/api.model';
+import {MocksService} from '../mocks.service';
+import {ActivatedRoute} from '@angular/router';
 import JSONEditor from 'jsoneditor';
+import {Subject} from 'rxjs/Subject';
+import {Subscription} from 'rxjs/Subscription';
 
 @Component({
   selector: 'mpi-mock-edit',
   templateUrl: './mock-edit.component.html',
   styleUrls: ['./mock-edit.component.scss']
 })
-export class MockEditComponent implements OnInit, OnDestroy {
+export class MockEditComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild('jsoneditorContainer') editorContainer: ElementRef;
 
@@ -39,7 +41,9 @@ export class MockEditComponent implements OnInit, OnDestroy {
 
   jsonEditor: JSONEditor;
 
-  isJson = true;
+  isJson: boolean;
+
+  editorChangesSub: Subscription;
 
   constructor(private formBuilder: FormBuilder, private mocksService: MocksService, private route: ActivatedRoute) {
   }
@@ -47,12 +51,17 @@ export class MockEditComponent implements OnInit, OnDestroy {
   ngOnInit() {
     Observable.race(this.mockFromData(), this.mockFromDuplicate()).subscribe(mock => {
       this.mockForm = this.initializeForm(mock);
-      this.filteredStatus = this.filterStatuses();
-      this.filteredContentTypes = this.filterContentType();
+      this.filteredStatus = this.mocksService.filterStatuses(this.mockForm.get('response').get('status'));
+      this.filteredContentTypes = this.mocksService.filterContentType(this.mockForm.get('response').get('contentType'));
+      this.isContentTypeJson();
     });
   }
 
-  ngOnDestroy(): void {
+  ngAfterViewInit() {
+    this.initEditor();
+  }
+
+  ngOnDestroy() {
     if (this.jsonEditor) {
       this.jsonEditor.destroy();
     }
@@ -96,8 +105,8 @@ export class MockEditComponent implements OnInit, OnDestroy {
       }),
       response: this.formBuilder.group({
         body: [mock ? mock.response.body : '', [Validators.required]],
-        status: [mock ? mock.response.status : ''],
-        contentType: [mock ? mock.response.contentType : '']
+        status: [mock ? mock.response.status : '200'],
+        contentType: [mock ? mock.response.contentType : 'application/json']
       })
     });
   }
@@ -114,21 +123,6 @@ export class MockEditComponent implements OnInit, OnDestroy {
       key: this.formBuilder.control(key, Validators.required),
       value: this.formBuilder.control(value, Validators.required)
     });
-  }
-
-  //TODO move to service
-  private filterStatuses(): Observable<number[]> {
-    const statuses = [200, 201, 400, 401, 403, 404];
-    return this.mockForm.get('response').get('status').valueChanges
-      .startWith('')
-      .map(v => v ? statuses.map(s => s.toString()).filter(s => new RegExp(`^${v.toString()}`, 'gi').test(s)) : statuses);
-  }
-
-  //TODO move to service
-  private filterContentType(): Observable<string[]> {
-    return this.mockForm.get('response').get('contentType').valueChanges
-      .startWith('')
-      .map(v => v ? appConst.lists.mimeTypes.map(s => s).filter(s => new RegExp(`${v}`, 'gi').test(s)) : appConst.lists.mimeTypes);
   }
 
   private mockFromData(): Observable<Mock> {
@@ -174,6 +168,38 @@ export class MockEditComponent implements OnInit, OnDestroy {
     const params = this.mocksService.mapKeyValueToLiteral(request.params);
     const headers = this.mocksService.mapKeyValueToLiteral(request.headers);
     return Object.assign({}, request, {params, headers});
+  }
+
+  private isContentTypeJson(): void {
+    this.isJson = this.mocksService.isApplicationJsonCompatible(this.mockForm.get('response').value);
+    this.mockForm.get('response').get('contentType').valueChanges
+      .map(c => ({contentType: c, body: this.mockForm.get('response').get('body').value, status: null}))
+      .map(r => !!this.mocksService.isApplicationJsonCompatible(r))
+      .filter(v => v !== this.isJson)
+      .subscribe(v => {
+        console.log(v);
+        this.isJson = v;
+        setTimeout(() => this.initEditor());
+      });
+  }
+
+  private initEditor(): void {
+    if (this.isJson) {
+      const response = this.mockForm.get('response').value;
+      const subject = new Subject();
+      this.jsonEditor = this.mocksService.createJsonEditor(this.editorContainer.nativeElement, response, subject);
+      this.updateBody(subject.asObservable());
+    } else if (this.jsonEditor) {
+      this.jsonEditor.destroy();
+      this.editorChangesSub.unsubscribe();
+    }
+  }
+
+  private updateBody(editorChanges$: Observable<any>): void {
+    const body = this.mockForm.get('response').get('body');
+    this.editorChangesSub = editorChanges$
+      .map(() => this.jsonEditor.getText())
+      .subscribe(v => body.setValue(v));
   }
 
 }
