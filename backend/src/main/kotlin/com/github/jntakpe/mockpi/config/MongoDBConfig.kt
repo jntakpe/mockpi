@@ -15,7 +15,7 @@ import org.springframework.data.mongodb.config.AbstractReactiveMongoConfiguratio
 @Configuration
 class MongoDBConfig(val mongoProperties: MongoProperties, val profileConfig: ProfileConfig) : AbstractReactiveMongoConfiguration() {
 
-    override fun mongoClient() = if (profileConfig.isActive(Profiles.AZURE)) MongoClients.create(settings()) else MongoClients.create()
+    override fun mongoClient() = if (profileConfig.isActive(Profiles.CLOUD)) MongoClients.create(settings()) else MongoClients.create()
 
     override fun getDatabaseName() = mongoProperties.database
 

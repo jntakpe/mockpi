@@ -8,7 +8,7 @@ api:
 ---
 
 spring:
-  profiles: azure
+  profiles: cloud
   data:
     mongodb:
       database: mockpi

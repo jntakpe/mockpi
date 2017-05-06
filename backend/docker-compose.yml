@@ -5,6 +5,7 @@ services:
       dockerfile: ./src/main/docker/Dockerfile
       context: .
       args:
+        PROFILE: ${PROFILE}
         MONGODB_USERNAME: ${MONGODB_USERNAME}
         MONGODB_PASSWORD: ${MONGODB_PASSWORD}
     ports:

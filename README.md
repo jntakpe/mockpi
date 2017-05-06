@@ -31,7 +31,9 @@ Then in the [frontend](/frontend) directory execute : ``yarn``
 
 Start MongoDB with : ``mongod``
 
-In the [backend](/backend) directory, start the module with : ``gradle bootRun``
+In [backend](/backend) directory, start the module with : ``gradle bootRun``
+Backend configuration is customizable using standard [Spring Boot](https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-external-config.html) 
+[application.yml](/backend/src/main/resources/application.yml) file.
 
-In the [frontend](/frontend) directory, start the module with : ``npm run start``
-
+In [frontend](/frontend) directory, start the module with : ``npm run start``
+Frontend configuration is customizable using [Angular CLI](https://github.com/angular/angular-cli/wiki) commands.
