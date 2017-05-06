@@ -6,11 +6,11 @@
       class="material striped"
       [rows]="mocks$ | async"
       [columns]="columns"
-      columnMode="force"
-      headerHeight="50"
-      footerHeight="50"
-      rowHeight="40"
-      limit="8">
+      [columnMode]="'force'"
+      [headerHeight]="50"
+      [footerHeight]="50"
+      [rowHeight]="40"
+      [limit]="2">
     </ngx-datatable>
 
     <ng-template #actionsTpl let-mock="row">
