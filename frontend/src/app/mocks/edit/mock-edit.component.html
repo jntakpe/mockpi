@@ -46,13 +46,13 @@
         </md-card-content>
         <div fxLayout.gt-md="row" fxLayout="column" fxLayoutAlign.gt-md="space-around">
           <md-card fxFlex.gt-md="48">
-            <md-card-subtitle>Request params</md-card-subtitle>
+            <md-card-subtitle fxFlex fxLayout="row">
+              <span fxFlex>Request params</span>
+              <button type="button" md-mini-fab color="primary" (click)="addToFormArray(paramsFormArray)" id="add-param">
+                <md-icon>add</md-icon>
+              </button>
+            </md-card-subtitle>
             <md-card-content fxLayout.lt-md="column">
-              <div fxLayoutAlign="center end">
-                <button type="button" md-mini-fab color="primary" (click)="addToFormArray(paramsFormArray)" id="add-param">
-                  <md-icon>add</md-icon>
-                </button>
-              </div>
               <div class="ml-4" formArrayName="params" fxFlex>
                 <div *ngFor="let param of paramsFormArray.controls; let i = index" [formGroupName]="i" fxLayout="row"
                      fxLayoutAlign="space-between">
@@ -76,13 +76,13 @@
             </md-card-content>
           </md-card>
           <md-card fxFlex.gt-md="48">
-            <md-card-subtitle>Request headers</md-card-subtitle>
+            <md-card-subtitle fxFlex fxLayout="row">
+              <span fxFlex>Request headers</span>
+              <button type="button" md-mini-fab color="primary" (click)="addToFormArray(headersFormArray)" id="add-header">
+                <md-icon>add</md-icon>
+              </button>
+            </md-card-subtitle>
             <md-card-content fxLayout.lt-md="column">
-              <div fxLayoutAlign="center end">
-                <button type="button" md-mini-fab color="primary" (click)="addToFormArray(headersFormArray)" id="add-header">
-                  <md-icon>add</md-icon>
-                </button>
-              </div>
               <div class="ml-4" formArrayName="headers" fxFlex>
                 <div *ngFor="let header of headersFormArray.controls; let i = index" [formGroupName]="i" fxLayout="row"
                      fxLayoutAlign="space-between">
