@@ -134,13 +134,13 @@
                 </md-option>
               </md-autocomplete>
             </div>
+            <div fxLayoutAlign="end">
+              <button md-fab type="submit" [disabled]="mockForm.invalid || mockForm.pending">
+                <md-icon>{{ id ? 'edit' : 'add'}}</md-icon>
+              </button>
+            </div>
           </div>
         </md-card-content>
-        <md-card-actions fxLayoutAlign="end">
-          <button md-fab type="submit" [disabled]="mockForm.invalid || mockForm.pending">
-            <md-icon>{{ id ? 'edit' : 'add'}}</md-icon>
-          </button>
-        </md-card-actions>
       </md-card>
     </form>
   </md-card-content>

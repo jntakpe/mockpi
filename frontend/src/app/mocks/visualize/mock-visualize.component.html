@@ -1,7 +1,7 @@
 <div>
   <h1 md-dialog-title>Mock : {{mock.name}}'s response body</h1>
   <div md-dialog-content>
-    <div id="jsoneditor-container" #jsoneditorContainer *ngIf="json"></div>
+    <div #jsoneditorContainer *ngIf="json"></div>
     <pre *ngIf="!json">{{mock.response.body}}</pre>
   </div>
   <div md-dialog-actions>

@@ -1,18 +1,21 @@
-import {Component, OnInit} from '@angular/core';
-import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {appConst} from '../../shared/constants';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { appConst } from '../../shared/constants';
 import '../../shared/rxjs.extension';
-import {Observable} from 'rxjs/Observable';
-import {Mock, Request} from '../../shared/api.model';
-import {MocksService} from '../mocks.service';
-import {ActivatedRoute} from '@angular/router';
+import { Observable } from 'rxjs/Observable';
+import { Mock, Request } from '../../shared/api.model';
+import { MocksService } from '../mocks.service';
+import { ActivatedRoute } from '@angular/router';
+import JSONEditor from 'jsoneditor';
 
 @Component({
   selector: 'mpi-mock-edit',
   templateUrl: './mock-edit.component.html',
   styleUrls: ['./mock-edit.component.scss']
 })
-export class MockEditComponent implements OnInit {
+export class MockEditComponent implements OnInit, OnDestroy {
+
+  @ViewChild('jsoneditorContainer') editorContainer: ElementRef;
 
   mockForm: FormGroup;
 
@@ -34,6 +37,10 @@ export class MockEditComponent implements OnInit {
 
   duplicateAndPending: boolean;
 
+  jsonEditor: JSONEditor;
+
+  isJson = true;
+
   constructor(private formBuilder: FormBuilder, private mocksService: MocksService, private route: ActivatedRoute) {
   }
 
@@ -43,6 +50,12 @@ export class MockEditComponent implements OnInit {
       this.filteredStatus = this.filterStatuses();
       this.filteredContentTypes = this.filterContentType();
     });
+  }
+
+  ngOnDestroy(): void {
+    if (this.jsonEditor) {
+      this.jsonEditor.destroy();
+    }
   }
 
   save(): void {

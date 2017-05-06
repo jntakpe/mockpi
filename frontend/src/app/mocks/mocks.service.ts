@@ -8,6 +8,7 @@ import { FilterTableService } from '../shared/table/filter-table.service';
 import { RegexType } from '../shared/table/regex-type';
 import { AlertService } from '../shared/alert/alert.service';
 import { environment } from '../../environments/environment';
+import JSONEditor from 'jsoneditor';
 
 @Injectable()
 export class MocksService {
@@ -99,6 +100,9 @@ export class MocksService {
   }
 
   isApplicationJsonCompatible(mock: Mock): any {
+    if (!mock) {
+      return {};
+    }
     if (mock.response.contentType !== 'application/json') {
       return false;
     }
@@ -108,6 +112,21 @@ export class MocksService {
       return false;
     }
   }
+
+  createJsonEditor(element: HTMLElement, mock: Mock): JSONEditor {
+    const json = this.isApplicationJsonCompatible(mock);
+    if (json) {
+      return new JSONEditor(element, this.jsonEditorOptions(), json);
+    }
+  }
+
+  private jsonEditorOptions(): any {
+    return {
+      mode: 'code',
+      modes: ['code', 'text']
+    };
+  }
+
 
   private displayFindByNameError(status: number, name: string): void {
     status === 404 ? this.alertService.open(`Mock named ${name} doesn't exist`) : this.defaultServerError();

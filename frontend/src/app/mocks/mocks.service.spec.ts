@@ -361,6 +361,10 @@ describe('MocksService', () => {
     expect(mocksService.isApplicationJsonCompatible(secondMock)).toBeFalsy();
   }));
 
+  it('should validate falsy mock as json compatible', inject([MocksService], (mocksService: MocksService) => {
+    expect(mocksService.isApplicationJsonCompatible(null)).toBeTruthy();
+  }));
+
   it('should validate application json type', inject([MocksService], (mocksService: MocksService) => {
     const mock: any = {
       response: {
