@@ -110,13 +110,15 @@
       <md-card formGroupName="response">
         <md-card-subtitle>Response</md-card-subtitle>
         <md-card-content fxLayout.gt-md="row" fxLayout="column">
-          <md-input-container *ngIf="!isJson" fxFlex.gt-md="60">
-            <textarea mdInput placeholder="Body" formControlName="body" rows="6"></textarea>
-          </md-input-container>
-          <div *ngIf="isJson" fxFlex.gt-md="60">
-            <div #jsoneditorContainer></div>
+          <div fxFlex.gt-md="60">
+            <md-input-container *ngIf="!isJson" fxFill>
+              <textarea mdInput placeholder="Body" formControlName="body" rows="8"></textarea>
+            </md-input-container>
+            <div *ngIf="isJson">
+              <div id="jsoneditor-container" #jsoneditorContainer></div>
+            </div>
           </div>
-          <div fxFlex>
+          <div fxLayout="column" fxFlex>
             <div fxLayout.gt-md="row">
               <md-input-container fxFlex>
                 <input mdInput placeholder="Status" [mdAutocomplete]="autoStatus" formControlName="status">
@@ -127,7 +129,7 @@
                 </md-option>
               </md-autocomplete>
             </div>
-            <div fxLayout.gt-md="row">
+            <div fxLayout.gt-md="row" fxFlex>
               <md-input-container fxFlex>
                 <input mdInput placeholder="Content type" [mdAutocomplete]="autoContentType" formControlName="contentType">
               </md-input-container>
@@ -137,7 +139,7 @@
                 </md-option>
               </md-autocomplete>
             </div>
-            <div fxLayoutAlign="end">
+            <div class="actions-container" fxLayoutAlign="end">
               <button md-fab type="submit" [disabled]="mockForm.invalid || mockForm.pending">
                 <md-icon>{{ id ? 'edit' : 'add'}}</md-icon>
               </button>
