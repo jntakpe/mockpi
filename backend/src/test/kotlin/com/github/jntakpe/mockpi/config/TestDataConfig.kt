@@ -1,9 +1,7 @@
 package com.github.jntakpe.mockpi.config
 
-import com.github.jntakpe.mockpi.domain.Mock
-import com.github.jntakpe.mockpi.domain.Request
-import com.github.jntakpe.mockpi.domain.Response
-import com.github.jntakpe.mockpi.domain.User
+import com.github.jntakpe.mockpi.domain.*
+import com.github.jntakpe.mockpi.repository.ActivityRepository
 import com.github.jntakpe.mockpi.repository.MockRepository
 import com.github.jntakpe.mockpi.repository.UserRepository
 import org.springframework.boot.CommandLineRunner
@@ -12,15 +10,18 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
+import java.time.Duration
+import java.time.Instant
 
 @Configuration
 class TestDataConfig {
 
     @Bean
-    fun initData(userRepository: UserRepository, mockRepository: MockRepository): CommandLineRunner {
+    fun init(userRepository: UserRepository, mockRepository: MockRepository, activityRepository: ActivityRepository): CommandLineRunner {
         return CommandLineRunner {
             initUsers(userRepository)
             initMocks(mockRepository)
+            initActivity(activityRepository, mockRepository)
         }
     }
 
@@ -41,12 +42,14 @@ class TestDataConfig {
         val mocks = listOf(
                 Mock("demo", Request("/mockpi/users/origin", HttpMethod.GET), Response("{\"name\": \"jntakpe\"}")),
                 Mock("demo_1", Request("/mockpi/users/1", HttpMethod.GET), Response("{\"name\": \"jntakpe\"}")),
-                Mock("demo_2", Request("/mockpi/users/1", HttpMethod.GET, mapOf(Pair("age", "20")), emptyMap()), Response("{\"name\": \"jntakpe\"}")),
+                Mock("demo_2", Request("/mockpi/users/1", HttpMethod.GET, mapOf(Pair("age", "20")), emptyMap()),
+                        Response("{\"name\": \"jntakpe\"}")),
                 Mock("demo_3", Request("/mockpi/users/1", HttpMethod.GET, mapOf(Pair("age", "20"), Pair("gender", "M")), emptyMap()),
                         Response("{\"name\": \"jntakpe\"}")),
                 Mock("demo_4", Request("/mockpi/users/2", HttpMethod.GET, emptyMap(), mapOf(Pair(HttpHeaders.ACCEPT, "*"))),
                         Response("{\"name\": \"cbarillet\"}")),
-                Mock("demo_5", Request("/mockpi/users/2", HttpMethod.GET, emptyMap(), mapOf(Pair(HttpHeaders.CONTENT_TYPE, "application/json"),
+                Mock("demo_5", Request("/mockpi/users/2", HttpMethod.GET, emptyMap(), mapOf(Pair(HttpHeaders.CONTENT_TYPE,
+                        "application/json"),
                         Pair(HttpHeaders.CACHE_CONTROL, "no-cache"))), Response("{\"name\": \"cbarillet\"}")),
                 Mock("toupdate", Request("/mockpi/toupdate/1", HttpMethod.GET), Response("{\"name\": \"jntakpe\"}")),
                 Mock("toupdate2", Request("/mockpi/toupdate/2", HttpMethod.GET), Response("{\"name\": \"jntakpe\"}")),
@@ -54,13 +57,24 @@ class TestDataConfig {
                 Mock("toupdatepath", Request("/mockpi/toupdate/path", HttpMethod.GET), Response("{\"name\": \"jntakpe\"}")),
                 Mock("todelete", Request("/mockpi/todelete/api", HttpMethod.GET), Response("{\"name\": \"jntakpe\"}")),
                 Mock("todeleteapi", Request("/mockpi/todelete/api", HttpMethod.GET), Response("{\"name\": \"jntakpe\"}")),
-                Mock("delayed", Request("/mockpi/delayed", HttpMethod.GET), Response("{\"name\": \"jntakpe\"}"), "", 1000L, "delayed desc", null),
+                Mock("delayed", Request("/mockpi/delayed", HttpMethod.GET), Response("{\"name\": \"jntakpe\"}"), "", 1000L,
+                        "delayed desc", null),
                 Mock("pristine", Request("/mockpi/pristine", HttpMethod.GET), Response("pristinebody")),
-                Mock("pristine_2", Request("/mockpi/pristine/custom", HttpMethod.GET), Response("custombody", 201, MediaType.TEXT_PLAIN_VALUE))
+                Mock("pristine_2", Request("/mockpi/pristine/custom", HttpMethod.GET), Response("custombody", 201,
+                        MediaType.TEXT_PLAIN_VALUE))
         )
         mockRepository.deleteAll().block()
         mockRepository.saveAll(mocks).blockLast()
     }
 
+    private fun initActivity(activityRepository: ActivityRepository, mockRepository: MockRepository) {
+        val mock = mockRepository.save(Mock("activity", Request("/activity", HttpMethod.POST), Response("{\"some\": \"thing\"}"))).block()
+        activityRepository.deleteAll().block()
+        activityRepository.save(Activity(mock.id!!, mock, mutableListOf(
+                Call(Instant.now().minusSeconds(1), Duration.ofSeconds(1)),
+                Call(Instant.now().minusSeconds(2), Duration.ofSeconds(2)),
+                Call(Instant.now().minusSeconds(3), Duration.ofSeconds(3))
+        ))).block()
+    }
 
 }
