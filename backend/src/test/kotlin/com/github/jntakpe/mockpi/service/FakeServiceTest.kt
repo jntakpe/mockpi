@@ -1,6 +1,8 @@
 package com.github.jntakpe.mockpi.service
 
 import com.github.jntakpe.mockpi.domain.Request
+import com.github.jntakpe.mockpi.repository.ActivityRepository
+import com.github.jntakpe.mockpi.repository.MockRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.data.Offset
 import org.junit.Test
@@ -12,6 +14,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.util.StopWatch
 import reactor.core.publisher.test
+import java.time.Duration
 
 @SpringBootTest
 @RunWith(SpringRunner::class)
@@ -19,6 +22,12 @@ class FakeServiceTest {
 
     @Autowired
     lateinit var fakeService: FakeService
+
+    @Autowired
+    lateinit var activityRepository: ActivityRepository
+
+    @Autowired
+    lateinit var mockRepository: MockRepository
 
     @Test
     fun `should not find mock and return not found`() {
@@ -61,6 +70,23 @@ class FakeServiceTest {
                 }
                 .expectComplete()
                 .verify()
+    }
+
+    @Test
+    fun `should find mock and log activity`() {
+        val mock = mockRepository.findAll().blockFirst()
+        val count = activityRepository.findById(mock.id).map { it.calls.size }.defaultIfEmpty(0).block()
+        fakeService.findFakeResponse(mock.request).test()
+                .expectSubscription()
+                .consumeNextWith { assertThat(it.statusCode).isEqualTo(HttpStatus.OK) }
+                .thenAwait(Duration.ofMillis(500))
+                .then {
+                    activityRepository.findById(mock.id).map { it.calls.size }.test()
+                            .expectSubscription()
+                            .expectNext(count + 1)
+                            .verifyComplete()
+                }
+                .verifyComplete()
     }
 
 }
