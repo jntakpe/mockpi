@@ -79,7 +79,7 @@ class FakeServiceTest {
         fakeService.findFakeResponse(mock.request).test()
                 .expectSubscription()
                 .consumeNextWith { assertThat(it.statusCode).isEqualTo(HttpStatus.OK) }
-                .thenAwait(Duration.ofMillis(500))
+                .thenAwait(Duration.ofSeconds(1))
                 .then {
                     activityRepository.findById(mock.id).map { it.calls.size }.test()
                             .expectSubscription()
