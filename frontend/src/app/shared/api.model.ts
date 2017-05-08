@@ -1,4 +1,15 @@
-// Generated using typescript-generator version 1.21.304 on 2017-05-07 00:07:59.
+// Generated using typescript-generator version 1.21.304 on 2017-05-08 18:54:32.
+
+export interface Activity {
+  id: any;
+  mock: Mock;
+  calls: Call[];
+}
+
+export interface Call {
+  timestamp: any;
+  duration: any;
+}
 
 export interface Mock {
     name: string;
@@ -27,6 +38,24 @@ export interface User {
     username: string;
     name: string;
     email: string;
+}
+
+export interface ActivityDTO {
+  name: string;
+  path: string;
+  method: HttpMethod;
+  params: { [index: string]: string };
+  calls: Call[];
+}
+
+export interface IdName {
+  name: string;
+  id: string;
+}
+
+export interface IdRequest {
+  request: Request;
+  id: string;
 }
 
 export type HttpMethod = 'GET' | 'HEAD' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS' | 'TRACE';

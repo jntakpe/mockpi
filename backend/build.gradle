@@ -59,10 +59,10 @@ dependencies {
 
 generateTypeScript {
     jsonLibrary = 'jackson2'
-    classPatterns = ['com.github.jntakpe.mockpi.domain.**']
+    classPatterns = ['com.github.jntakpe.mockpi.domain.**', 'com.github.jntakpe.mockpi.web.dto.**']
     outputFile = '../frontend/src/app/shared/api.model.ts'
     outputKind = 'module'
     outputFileType = 'implementationFile'
     stringQuotes = 'singleQuotes'
-    excludeClasses = ['org.bson.types.ObjectId']
+    excludeClasses = ['org.bson.types.ObjectId', 'java.time.Instant', 'java.time.Duration']
 }

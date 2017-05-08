@@ -7,11 +7,9 @@ import {LoginModule} from './login/login.module';
 import {LayoutModule} from './shared/layout/layout.module';
 import {RouterModule} from '@angular/router';
 import {appRoutes} from './app.routes';
-import {ActivitiesComponent} from './activities/activities.component';
-import {ActivityComponent} from './activity/activity.component';
 
 @NgModule({
-  declarations: [AppComponent, ActivitiesComponent, ActivityComponent],
+  declarations: [AppComponent],
   imports: [BrowserModule, SharedModule, LoginModule, LayoutModule, RouterModule.forRoot(appRoutes)],
   bootstrap: [AppComponent]
 })

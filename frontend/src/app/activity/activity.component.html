@@ -1,3 +1,5 @@
-<p>
-  activity works!
-</p>
+<ul>
+  <li *ngFor="let res of responses$ |  async">
+    <p>{{res.name}}</p>
+  </li>
+</ul>

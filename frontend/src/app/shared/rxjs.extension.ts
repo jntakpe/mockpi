@@ -17,3 +17,4 @@ import 'rxjs/add/operator/single';
 import 'rxjs/add/operator/merge';
 import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/operator/delay';
+import 'rxjs/add/operator/toArray';

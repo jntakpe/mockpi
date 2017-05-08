@@ -7,6 +7,7 @@ import {HomeModule} from '../../home/home.module';
 import {HeaderModule} from './header/header.module';
 import {RegisterModule} from '../../register/register.module';
 import {MocksModule} from '../../mocks/mocks.module';
+import {ActivityModule} from '../../activity/activity.module';
 
 @NgModule({
   declarations: [LayoutComponent],
@@ -16,6 +17,7 @@ import {MocksModule} from '../../mocks/mocks.module';
     HomeModule,
     RegisterModule,
     MocksModule,
+    ActivityModule,
     RouterModule.forChild(layoutRoutes)
   ],
   exports: [LayoutComponent]
