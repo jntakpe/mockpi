@@ -1,5 +1,6 @@
 package com.github.jntakpe.mockpi.service
 
+import com.github.jntakpe.mockpi.domain.Activity
 import com.github.jntakpe.mockpi.repository.ActivityRepository
 import com.github.jntakpe.mockpi.repository.MockRepository
 import org.assertj.core.api.Assertions.assertThat
@@ -49,6 +50,22 @@ class ActivityServiceTest {
                     assertThat(it.calls).isNotEmpty.hasSize(4)
                 }
                 .then { assertThat(activityRepository.count().block()).isEqualTo(count) }
+                .verifyComplete()
+    }
+
+    @Test
+    fun findAll_shouldFindSome() {
+        val records = mutableListOf<Activity>()
+        activityService.findAll().test()
+                .expectSubscription()
+                .recordWith { records }
+                .consumeRecordedWith { assertThat(records.size).isGreaterThanOrEqualTo(1) }
+                .consumeNextWith {
+                    assertThat(it).isNotNull()
+                    assertThat(it.id).isNotNull()
+                    assertThat(it.mock).isNotNull()
+                    assertThat(it.calls).isNotEmpty()
+                }
                 .verifyComplete()
     }
 

@@ -6,6 +6,7 @@ import com.github.jntakpe.mockpi.domain.Mock
 import com.github.jntakpe.mockpi.repository.ActivityRepository
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import java.time.Duration
 import java.time.Instant
@@ -21,6 +22,11 @@ class ActivityService(private val activityRepository: ActivityRepository) {
                 .map { it.copy(calls = it.calls.apply { add(Call(Instant.now(), elapsed)) }) }
                 .flatMap { activityRepository.save(it) }
                 .doOnNext { logger.debug("Activity for mock {} updated", mock) }
+    }
+
+    fun findAll(): Flux<Activity> {
+        logger.debug("Searching all activities")
+        return activityRepository.findAll()
     }
 
     private fun findOrCreate(mock: Mock) = activityRepository.findById(mock.id).defaultIfEmpty(Activity(mock.id!!, mock, mutableListOf()))
