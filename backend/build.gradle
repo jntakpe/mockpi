@@ -2,7 +2,7 @@ buildscript {
     ext {
         kotlinVersion = '1.1.1'
         springBootVersion = '2.0.0.BUILD-SNAPSHOT'
-        jacksonVersion = '2.8.7'
+        jacksonVersion = '2.8.8'
         reactorVersion = '3.0.6.BUILD-SNAPSHOT'
         reactorKotlinVersion = '1.0.0.M1'
         commonsLang3Version = '3.5'
@@ -49,6 +49,7 @@ dependencies {
     compile('org.springframework.boot:spring-boot-starter-webflux')
     compile("io.projectreactor:reactor-kotlin-extensions:${reactorKotlinVersion}")
     compile("com.fasterxml.jackson.module:jackson-module-kotlin:${jacksonVersion}")
+    compile("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${jacksonVersion}")
     compile("org.jetbrains.kotlin:kotlin-stdlib-jre8:${kotlinVersion}")
     compile("org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}")
     compile ("org.apache.commons:commons-lang3:${commonsLang3Version}")

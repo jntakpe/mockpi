@@ -46,7 +46,7 @@ class MockResourceTest {
     @Test
     fun `should find all mocks`() {
         val count = mockRepository.count().block()
-        val result = client.get().uri(Urls.MOCK_API)
+        val result = client.get().uri(Urls.MOCKS_API)
                 .exchange()
                 .expectStatus().isOk
                 .expectHeader().contentType(APPLICATION_JSON_UTF8)
@@ -61,7 +61,7 @@ class MockResourceTest {
     fun `should get mock by id`() {
         val demo1Name = "demo_1"
         val mock = mockRepository.findByNameIgnoreCase(demo1Name).block()
-        val result = client.get().uri(Urls.MOCK_API + Urls.BY_ID, mock.id!!)
+        val result = client.get().uri(Urls.MOCKS_API + Urls.BY_ID, mock.id!!)
                 .exchange()
                 .expectStatus().isOk
                 .expectHeader().contentType(APPLICATION_JSON_UTF8)
@@ -77,7 +77,7 @@ class MockResourceTest {
 
     @Test
     fun `should not get mock by id if unknown id`() {
-        client.get().uri(Urls.MOCK_API + Urls.BY_ID, ObjectId())
+        client.get().uri(Urls.MOCKS_API + Urls.BY_ID, ObjectId())
                 .exchange()
                 .expectStatus().isNotFound
     }
@@ -85,7 +85,7 @@ class MockResourceTest {
     @Test
     fun `should find duplicate at end`() {
         val name = "demo"
-        val result = client.get().uri(Urls.MOCK_API + Urls.BY_NEXT_NAME_AVAILABLE, name)
+        val result = client.get().uri(Urls.MOCKS_API + Urls.BY_NEXT_NAME_AVAILABLE, name)
                 .exchange()
                 .expectStatus().isOk
                 .returnResult(String::class.java)
@@ -94,7 +94,7 @@ class MockResourceTest {
 
     @Test
     fun `should not find duplicate if unknown name`() {
-        client.get().uri(Urls.MOCK_API + Urls.BY_NEXT_NAME_AVAILABLE, "unknown")
+        client.get().uri(Urls.MOCKS_API + Urls.BY_NEXT_NAME_AVAILABLE, "unknown")
                 .exchange()
                 .expectStatus().isNotFound
     }
@@ -103,7 +103,7 @@ class MockResourceTest {
     fun `should create new mock`() {
         val mockName = "postMock"
         val mockBody = "mockBody"
-        val result = client.post().uri(Urls.MOCK_API).accept(APPLICATION_JSON_UTF8)
+        val result = client.post().uri(Urls.MOCKS_API).accept(APPLICATION_JSON_UTF8)
                 .body(Mock(mockName, Request("/post/mock", GET), Response(mockBody)).toMono(), Mock::class.java)
                 .exchange()
                 .expectStatus().isCreated
@@ -121,7 +121,7 @@ class MockResourceTest {
 
     @Test
     fun `should not create new mock cuz login taken`() {
-        client.post().uri(Urls.MOCK_API).accept(APPLICATION_JSON_UTF8)
+        client.post().uri(Urls.MOCKS_API).accept(APPLICATION_JSON_UTF8)
                 .body(Mock("dEMo_1", Request("/some", GET), Response("test")).toMono(), Mock::class.java)
                 .exchange()
                 .expectStatus().isEqualTo(HttpStatus.CONFLICT)
@@ -130,7 +130,7 @@ class MockResourceTest {
     @Test
     fun `should verify that name is available`() {
         val name = "unknown_name"
-        val result = client.post().uri(Urls.MOCK_API + Urls.CHECK_NAME_AVAILABLE).accept(APPLICATION_JSON_UTF8)
+        val result = client.post().uri(Urls.MOCKS_API + Urls.CHECK_NAME_AVAILABLE).accept(APPLICATION_JSON_UTF8)
                 .body(IdName(name).toMono(), IdName::class.java)
                 .exchange()
                 .expectStatus().isOk
@@ -143,7 +143,7 @@ class MockResourceTest {
     @Test
     fun `should verify that name is not available`() {
         val mock = mockRepository.findAll().blockFirst()
-        client.post().uri(Urls.MOCK_API + Urls.CHECK_NAME_AVAILABLE).accept(APPLICATION_JSON_UTF8)
+        client.post().uri(Urls.MOCKS_API + Urls.CHECK_NAME_AVAILABLE).accept(APPLICATION_JSON_UTF8)
                 .body(IdName(mock.name).toMono(), IdName::class.java)
                 .exchange()
                 .expectStatus().isEqualTo(HttpStatus.CONFLICT)
@@ -152,7 +152,7 @@ class MockResourceTest {
     @Test
     fun `should verify that request is available`() {
         val request = Request("available/request", POST)
-        val result = client.post().uri(Urls.MOCK_API + Urls.CHECK_REQUEST_AVAILABLE).accept(APPLICATION_JSON_UTF8)
+        val result = client.post().uri(Urls.MOCKS_API + Urls.CHECK_REQUEST_AVAILABLE).accept(APPLICATION_JSON_UTF8)
                 .body(IdRequest(request).toMono(), IdRequest::class.java)
                 .exchange()
                 .expectStatus().isOk
@@ -165,7 +165,7 @@ class MockResourceTest {
     @Test
     fun `should verify that request is not available`() {
         val mock = mockRepository.findAll().blockFirst()
-        client.post().uri(Urls.MOCK_API + Urls.CHECK_REQUEST_AVAILABLE).accept(APPLICATION_JSON_UTF8)
+        client.post().uri(Urls.MOCKS_API + Urls.CHECK_REQUEST_AVAILABLE).accept(APPLICATION_JSON_UTF8)
                 .body(IdRequest(mock.request).toMono(), IdRequest::class.java)
                 .exchange()
                 .expectStatus().isEqualTo(HttpStatus.CONFLICT)
@@ -177,7 +177,7 @@ class MockResourceTest {
         val updatedPath = "${Urls.FAKE_PREFIX}/updated/from/api"
         val updatedBody = "updatedBody"
         val id = mockRepository.findByNameIgnoreCase("toupdateapi").block().id
-        val result = client.put().uri(Urls.MOCK_API + Urls.BY_ID, id!!).accept(APPLICATION_JSON_UTF8)
+        val result = client.put().uri(Urls.MOCKS_API + Urls.BY_ID, id!!).accept(APPLICATION_JSON_UTF8)
                 .body(Mock(updatedName, Request(updatedPath, POST), Response(updatedBody)).toMono(), Mock::class.java)
                 .exchange()
                 .expectStatus().isOk
@@ -196,7 +196,7 @@ class MockResourceTest {
     @Test
     fun `should not update mock because name taken`() {
         val mock = mockRepository.findByNameIgnoreCase("toupdateapi").block()
-        client.put().uri(Urls.MOCK_API + Urls.BY_ID, mock.id).accept(APPLICATION_JSON_UTF8)
+        client.put().uri(Urls.MOCKS_API + Urls.BY_ID, mock.id).accept(APPLICATION_JSON_UTF8)
                 .body(Mock("demo_1", Request("/path", POST), Response("body")).toMono(), Mock::class.java)
                 .exchange()
                 .expectStatus().isEqualTo(HttpStatus.CONFLICT)
@@ -205,14 +205,14 @@ class MockResourceTest {
     @Test
     fun `should delete mock`() {
         val mock = mockRepository.findByNameIgnoreCase("todeleteapi").block()
-        client.delete().uri(Urls.MOCK_API + Urls.BY_ID, mock.id)
+        client.delete().uri(Urls.MOCKS_API + Urls.BY_ID, mock.id)
                 .exchange()
                 .expectStatus().isNoContent
     }
 
     @Test
     fun `should not delete mock because missing`() {
-        client.delete().uri(Urls.MOCK_API + Urls.BY_ID, ObjectId().toString())
+        client.delete().uri(Urls.MOCKS_API + Urls.BY_ID, ObjectId().toString())
                 .exchange()
                 .expectStatus().isNotFound
     }

@@ -14,7 +14,7 @@ import reactor.core.publisher.toMono
 import javax.validation.Valid
 
 @RestController
-@RequestMapping(Urls.MOCK_API)
+@RequestMapping(Urls.MOCKS_API)
 class MockResource(private val mockService: MockService) {
 
     @GetMapping
