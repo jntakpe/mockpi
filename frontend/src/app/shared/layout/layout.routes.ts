@@ -5,6 +5,7 @@ import {RegisterComponent} from '../../register/register.component';
 import {MocksComponent} from '../../mocks/mocks.component';
 import {MockEditComponent} from '../../mocks/edit/mock-edit.component';
 import {MockEditResolver} from '../../mocks/edit/mock-edit.resolver';
+import {ActivityComponent} from '../../activity/activity.component';
 
 export const layoutRoutes: Routes = [
   {
@@ -16,6 +17,7 @@ export const layoutRoutes: Routes = [
       {path: 'mocks', component: MocksComponent},
       {path: 'mock', component: MockEditComponent},
       {path: 'mock/:id', component: MockEditComponent, resolve: {mock: MockEditResolver}},
+      {path: 'activity', component: ActivityComponent}
     ]
   }
 ];
