@@ -9,4 +9,4 @@ services:
         MONGODB_USERNAME: ${MONGODB_USERNAME}
         MONGODB_PASSWORD: ${MONGODB_PASSWORD}
     ports:
-      - 8080:8080
+      - 8049:8049
