@@ -1,8 +1,8 @@
 package com.github.jntakpe.mockpi.web
 
 import com.github.jntakpe.mockpi.config.Urls
-import com.github.jntakpe.mockpi.domain.Activity
 import com.github.jntakpe.mockpi.repository.ActivityRepository
+import com.github.jntakpe.mockpi.web.dto.ActivityDTO
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -40,7 +40,7 @@ class ActivityResourceTest {
                 .exchange()
                 .expectStatus().isOk
                 .expectHeader().contentType(MediaType.APPLICATION_JSON_UTF8)
-                .returnResult(Activity::class.java)
+                .returnResult(ActivityDTO::class.java)
         result.responseBody.test()
                 .expectNextCount(activities.size.toLong())
                 .verifyComplete()

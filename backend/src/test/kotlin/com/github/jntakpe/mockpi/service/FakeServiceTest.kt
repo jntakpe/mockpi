@@ -14,7 +14,6 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.util.StopWatch
 import reactor.core.publisher.test
-import java.time.Duration
 
 @SpringBootTest
 @RunWith(SpringRunner::class)
@@ -70,23 +69,6 @@ class FakeServiceTest {
                 }
                 .expectComplete()
                 .verify()
-    }
-
-    @Test
-    fun `should find mock and log activity`() {
-        val mock = mockRepository.findAll().blockFirst()
-        val count = activityRepository.findById(mock.id).map { it.calls.size }.defaultIfEmpty(0).block()
-        fakeService.findFakeResponse(mock.request).test()
-                .expectSubscription()
-                .consumeNextWith { assertThat(it.statusCode).isEqualTo(HttpStatus.OK) }
-                .thenAwait(Duration.ofSeconds(1))
-                .then {
-                    activityRepository.findById(mock.id).map { it.calls.size }.test()
-                            .expectSubscription()
-                            .expectNext(count + 1)
-                            .verifyComplete()
-                }
-                .verifyComplete()
     }
 
 }
