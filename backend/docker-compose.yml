@@ -1,12 +1,12 @@
 version: '2'
 services:
   mockpi-backend:
+    environment:
+      - SPRING_PROFILES_ACTIVE=$PROFILE
+      - SPRING_DATA_MONGODB_USERNAME=$MONGODB_USERNAME
+      - SPRING_DATA_MONGODB_PASSWORD=$MONGODB_PASSWORD
     build:
       dockerfile: ./src/main/docker/Dockerfile
       context: .
-      args:
-        PROFILE: ${PROFILE}
-        MONGODB_USERNAME: ${MONGODB_USERNAME}
-        MONGODB_PASSWORD: ${MONGODB_PASSWORD}
     ports:
       - 8049:8049
