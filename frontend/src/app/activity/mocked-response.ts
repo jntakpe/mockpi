@@ -1,6 +1,7 @@
-import {HttpMethod} from '../shared/api.model';
+import { HttpMethod } from '../shared/api.model';
+
 export interface MockedResponse {
-  timestamp: number;
+  timestamp: string;
   duration: number;
   name: string;
   path: string;

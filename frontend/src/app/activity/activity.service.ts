@@ -1,17 +1,17 @@
-import {Injectable} from '@angular/core';
-import {Http} from '@angular/http';
-import {FilterTableService} from '../shared/table/filter-table.service';
-import {Observable} from 'rxjs/Observable';
-import {ActivityDTO, Call} from '../shared/api.model';
-import {MockedResponse} from './mocked-response';
-import {environment} from '../../environments/environment';
-import {List} from 'lodash';
+import { Injectable } from '@angular/core';
+import { Http } from '@angular/http';
+import { Observable } from 'rxjs/Observable';
+import { ActivityDTO, Call } from '../shared/api.model';
+import { MockedResponse } from './mocked-response';
+import { environment } from '../../environments/environment';
+import { List } from 'lodash';
 import '../shared/rxjs.extension';
+import * as moment from 'moment';
 
 @Injectable()
 export class ActivityService {
 
-  constructor(private http: Http, private filterTableService: FilterTableService) {
+  constructor(private http: Http) {
   }
 
   findActivities(): Observable<MockedResponse[]> {
@@ -29,13 +29,20 @@ export class ActivityService {
 
   private mapMockResponse(activity: ActivityDTO, call: Call): MockedResponse {
     return {
-      timestamp: call.timestamp,
+      timestamp: moment(call.timestamp * 1000).format('DD/MM/YYYY HH:mm:ss:SSS'),
       duration: call.duration,
       name: activity.name,
       path: activity.path,
       method: activity.method,
-      params: ''
+      params: this.formatParams(activity.params)
     };
+
+  }
+
+  private formatParams(params: { [key: string]: string }): string {
+    const urlSearchParams = new URLSearchParams();
+    Object.keys(params).forEach(k => urlSearchParams.set(k, params[k]));
+    return urlSearchParams.toString();
   }
 
 }

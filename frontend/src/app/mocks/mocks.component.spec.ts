@@ -39,6 +39,11 @@ describe('MocksComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should display 2 rows', async(() => {
+    const rowsParent = fixture.debugElement.query(By.css('ngx-datatable datatable-scroller'));
+    expect(rowsParent.children.length).toBe(2);
+  }));
+
   it('should call remove mock', async(inject([MocksService], (mocksService: MocksService) => {
     spyOn(mocksService, 'remove').and.returnValue(Observable.of(null));
     spyOn(mocksService, 'findFilteredMocks').and.returnValue(Observable.of([firstMock]));
