@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  baseUrl: '/api'
+  baseUrl: 'http://dep-mockpi.westeurope.cloudapp.azure.com:8080/api/mocks'
 };
