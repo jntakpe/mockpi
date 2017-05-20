@@ -4,29 +4,17 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer
 import org.bson.types.ObjectId
 import org.hibernate.validator.constraints.NotBlank
-import org.springframework.data.annotation.Id
-import org.springframework.data.annotation.PersistenceConstructor
 import org.springframework.data.mongodb.core.mapping.Document
 import javax.validation.Valid
 
 @Document
-data class Mock @PersistenceConstructor constructor(@NotBlank val name: String,
-                                                    @Valid val request: Request,
-                                                    @Valid val response: Response,
-                                                    val collection: String,
-                                                    val delay: Long,
-                                                    val description: String,
-                                                    @Id @JsonSerialize(using = ToStringSerializer::class) var id: ObjectId?) {
-
-    constructor(name: String, request: Request, response: Response) : this(
-            name,
-            request,
-            response,
-            collection = "demo",
-            delay = 0,
-            description = "",
-            id = null
-    )
+data class Mock(@field:NotBlank val name: String,
+                @field:Valid val request: Request,
+                @field:Valid val response: Response,
+                val collection: String = "demo",
+                val delay: Long = 0,
+                val description: String = "",
+                @field:JsonSerialize(using = ToStringSerializer::class) var id: ObjectId? = null) {
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
