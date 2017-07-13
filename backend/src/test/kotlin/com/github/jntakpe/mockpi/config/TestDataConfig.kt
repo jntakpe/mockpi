@@ -68,7 +68,8 @@ class TestDataConfig {
     }
 
     private fun initActivity(activityRepository: ActivityRepository, mockRepository: MockRepository) {
-        val mock = mockRepository.save(Mock("activity", Request("/activity", HttpMethod.POST), Response("{\"some\": \"thing\"}"))).block()
+        val toSave = Mock("activity", Request("/activity", HttpMethod.POST), Response("{\"some\": \"thing\"}"))
+        val mock = mockRepository.save(toSave).block() ?: throw IllegalStateException("Mock $toSave not saved")
         activityRepository.deleteAll().block()
         activityRepository.save(Activity(mock.id!!, mock, mutableListOf(
                 Call(Instant.now().minusSeconds(1), Duration.ofSeconds(1)),

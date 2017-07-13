@@ -35,7 +35,7 @@ class ActivityResourceTest {
 
     @Test
     fun `should find all activities`() {
-        val activities = activityRepository.findAll().collectList().block()
+        val activities = activityRepository.findAll().collectList().block() ?: throw IllegalStateException("Unable to retrieve count")
         val result = client.get().uri(Urls.ACTIVITIES_API)
                 .exchange()
                 .expectStatus().isOk

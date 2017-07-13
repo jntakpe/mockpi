@@ -45,7 +45,7 @@ class MockResourceTest {
 
     @Test
     fun `should find all mocks`() {
-        val count = mockRepository.count().block()
+        val count = mockRepository.count().block() ?: throw IllegalStateException("Unable to count mocks")
         val result = client.get().uri(Urls.MOCKS_API)
                 .exchange()
                 .expectStatus().isOk
@@ -60,7 +60,7 @@ class MockResourceTest {
     @Test
     fun `should get mock by id`() {
         val demo1Name = "demo_1"
-        val mock = mockRepository.findByNameIgnoreCase(demo1Name).block()
+        val mock = mockRepository.findByNameIgnoreCase(demo1Name).block() ?: throw IllegalStateException("No mock $demo1Name")
         val result = client.get().uri(Urls.MOCKS_API + Urls.BY_ID, mock.id!!)
                 .exchange()
                 .expectStatus().isOk
@@ -142,7 +142,7 @@ class MockResourceTest {
 
     @Test
     fun `should verify that name is not available`() {
-        val mock = mockRepository.findAll().blockFirst()
+        val mock = mockRepository.findAll().blockFirst() ?: throw IllegalStateException("No mock")
         client.post().uri(Urls.MOCKS_API + Urls.CHECK_NAME_AVAILABLE).accept(APPLICATION_JSON_UTF8)
                 .body(IdName(mock.name).toMono(), IdName::class.java)
                 .exchange()
@@ -164,7 +164,7 @@ class MockResourceTest {
 
     @Test
     fun `should verify that request is not available`() {
-        val mock = mockRepository.findAll().blockFirst()
+        val mock = mockRepository.findAll().blockFirst() ?: throw IllegalStateException("No mock")
         client.post().uri(Urls.MOCKS_API + Urls.CHECK_REQUEST_AVAILABLE).accept(APPLICATION_JSON_UTF8)
                 .body(IdRequest(mock.request).toMono(), IdRequest::class.java)
                 .exchange()
@@ -176,8 +176,9 @@ class MockResourceTest {
         val updatedName = "updatedfromapi"
         val updatedPath = "${Urls.FAKE_PREFIX}/updated/from/api"
         val updatedBody = "updatedBody"
-        val id = mockRepository.findByNameIgnoreCase("toupdateapi").block().id
-        val result = client.put().uri(Urls.MOCKS_API + Urls.BY_ID, id!!).accept(APPLICATION_JSON_UTF8)
+        val searchedName = "toupdateapi"
+        val id = mockRepository.findByNameIgnoreCase(searchedName).block()?.id ?: throw IllegalStateException("No mock $searchedName")
+        val result = client.put().uri(Urls.MOCKS_API + Urls.BY_ID, id).accept(APPLICATION_JSON_UTF8)
                 .body(Mock(updatedName, Request(updatedPath, POST), Response(updatedBody)).toMono(), Mock::class.java)
                 .exchange()
                 .expectStatus().isOk
@@ -195,7 +196,8 @@ class MockResourceTest {
 
     @Test
     fun `should not update mock because name taken`() {
-        val mock = mockRepository.findByNameIgnoreCase("toupdateapi").block()
+        val name = "toupdateapi"
+        val mock = mockRepository.findByNameIgnoreCase(name).block() ?: throw IllegalStateException("No mock $name")
         client.put().uri(Urls.MOCKS_API + Urls.BY_ID, mock.id).accept(APPLICATION_JSON_UTF8)
                 .body(Mock("demo_1", Request("/path", POST), Response("body")).toMono(), Mock::class.java)
                 .exchange()
@@ -204,7 +206,8 @@ class MockResourceTest {
 
     @Test
     fun `should delete mock`() {
-        val mock = mockRepository.findByNameIgnoreCase("todeleteapi").block()
+        val name = "todeleteapi"
+        val mock = mockRepository.findByNameIgnoreCase(name).block() ?: throw IllegalStateException("No mock $name")
         client.delete().uri(Urls.MOCKS_API + Urls.BY_ID, mock.id)
                 .exchange()
                 .expectStatus().isNoContent

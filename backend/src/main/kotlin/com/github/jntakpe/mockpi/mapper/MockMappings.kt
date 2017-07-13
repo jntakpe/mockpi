@@ -8,8 +8,8 @@ import org.springframework.http.MediaType.parseMediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.http.server.reactive.ServerHttpRequest
 
-fun ServerHttpRequest.toRequest() = Request(this.uri.path, this.method, this.queryParams.toSingleValueMap(), this.headers.toSingleValueMap())
+fun ServerHttpRequest.toRequest() = Request(uri.path, method, queryParams.toSingleValueMap(), headers.toSingleValueMap())
 
-fun Response.toResponseEntity() = ResponseEntity.status(this.status).contentType(parseMediaType(this.contentType)).body(this.body)
+fun Response.toResponseEntity() = ResponseEntity.status(status).contentType(parseMediaType(contentType)).body(body)
 
-fun Activity.toDTO() = ActivityDTO(this.mock.name, this.mock.request.path, this.mock.request.method, this.mock.request.params, this.calls)
+fun Activity.toDTO() = ActivityDTO(mock.name, mock.request.path, mock.request.method, mock.request.params, calls)

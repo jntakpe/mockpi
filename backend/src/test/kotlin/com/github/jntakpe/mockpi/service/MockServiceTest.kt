@@ -32,7 +32,7 @@ class MockServiceTest {
 
     @Test
     fun `should find all mocks`() {
-        val count = mockRepository.count().block()
+        val count = mockRepository.count().block() ?: 0
         mockService.findAll().test()
                 .expectSubscription()
                 .expectNextCount(count)
@@ -41,7 +41,7 @@ class MockServiceTest {
 
     @Test
     fun `should find by id`() {
-        val id = mockRepository.findAll().blockFirst().id
+        val id = mockRepository.findAll().blockFirst()?.id
         mockService.findById(id!!).test()
                 .expectSubscription()
                 .consumeNextWith { assertThat(it).isNotNull() }
@@ -108,7 +108,7 @@ class MockServiceTest {
     @Test
     fun `should accept name because is the the same mock`() {
         val name = "DEmo_1"
-        val id = mockRepository.findByNameIgnoreCase("demo_1").block().id
+        val id = mockRepository.findByNameIgnoreCase("demo_1").block()?.id
         mockService.verifyNameAvailable(name, id).test()
                 .expectSubscription()
                 .expectNext(name.toLowerCase())
@@ -194,7 +194,7 @@ class MockServiceTest {
 
     @Test
     fun `should accept request because same mock`() {
-        val mock = mockRepository.findAll().blockFirst()
+        val mock = mockRepository.findAll().blockFirst() ?: throw IllegalStateException("No mock")
         mockService.verifyRequestAvailable(mock.request, mock.id).test()
                 .expectSubscription()
                 .expectNextCount(1)
@@ -203,7 +203,7 @@ class MockServiceTest {
 
     @Test
     fun `should refuse request because not the same mock`() {
-        val mock = mockRepository.findAll().blockFirst()
+        val mock = mockRepository.findAll().blockFirst() ?: throw IllegalStateException("No mock")
         mockService.verifyRequestAvailable(mock.request, ObjectId()).test()
                 .expectSubscription()
                 .verifyError(ConflictKeyException::class.java)
@@ -383,7 +383,7 @@ class MockServiceTest {
     fun `should update mock without changing name`() {
         val responseBody = "updatedresponse"
         val name = "demo_1"
-        val oldMock = mockRepository.findByNameIgnoreCase(name).block()
+        val oldMock = mockRepository.findByNameIgnoreCase(name).block() ?: throw IllegalStateException("No mock '$name'")
         val mock = oldMock.copy(response = Response(responseBody))
         mockService.update(mock, oldMock.id!!).test()
                 .expectSubscription()
@@ -394,7 +394,7 @@ class MockServiceTest {
     @Test
     fun `should update mock changing request path`() {
         val path = "/notapipath"
-        val oldMock = mockRepository.findByNameIgnoreCase("toupdate").block()
+        val oldMock = mockRepository.findByNameIgnoreCase("toupdate").block() ?: throw IllegalStateException("No mock 'toupdate'")
         val mock = oldMock.copy(request = Request(path, GET))
         mockService.update(mock, oldMock.id!!).test()
                 .expectSubscription()
@@ -406,7 +406,7 @@ class MockServiceTest {
     fun `should update mock changing name`() {
         val name = "toupdate"
         val updatedName = "updatedName"
-        val oldMock = mockRepository.findByNameIgnoreCase("toupdate").block()
+        val oldMock = mockRepository.findByNameIgnoreCase("toupdate").block() ?: throw IllegalStateException("No mock 'toupdate'")
         val mock = oldMock.copy(name = updatedName)
         mockService.update(mock, oldMock.id!!).test()
                 .expectSubscription()
@@ -427,7 +427,8 @@ class MockServiceTest {
 
     @Test
     fun `should not update because name missing`() {
-        val mock = mockRepository.findByNameIgnoreCase("demo_1").block()
+        val name = "demo_1"
+        val mock = mockRepository.findByNameIgnoreCase(name).block() ?: throw IllegalStateException("No mock '$name'")
         mockService.update(mock, ObjectId()).test()
                 .expectSubscription()
                 .verifyError(IdNotFoundException::class.java)
@@ -435,17 +436,21 @@ class MockServiceTest {
 
     @Test
     fun `should not update because name taken`() {
-        val mock = mockRepository.findByNameIgnoreCase("demo_1").block()
-        val id = mockRepository.findAll().filter { it.id != mock.id }.blockFirst().id
-        mockService.update(mock, id!!).test()
+        val name = "demo_1"
+        val mock = mockRepository.findByNameIgnoreCase(name).block() ?: throw IllegalStateException("No mock '$name'")
+        val id = mockRepository.findAll().filter { it.id != mock.id }.blockFirst()?.id ?: throw IllegalStateException("No mock matching id")
+        mockService.update(mock, id).test()
                 .expectSubscription()
                 .verifyError(ConflictKeyException::class.java)
     }
 
     @Test
     fun `should not update because request taken`() {
-        val mock = mockRepository.findByNameIgnoreCase("toupdate2").block()
-        val request = mockRepository.findByNameIgnoreCase("demo_1").block().request
+        val name = "toupdate2"
+        val mock = mockRepository.findByNameIgnoreCase(name).block() ?: throw IllegalStateException("No mock '$name'")
+        val requestName = "demo_1"
+        val request = mockRepository.findByNameIgnoreCase(requestName).block()?.request ?:
+                throw IllegalStateException("No mock '$requestName'")
         mockService.update(mock.copy(request = request), mock.id!!).test()
                 .expectSubscription()
                 .verifyError(ConflictKeyException::class.java)
@@ -454,8 +459,8 @@ class MockServiceTest {
     @Test
     fun `should delete`() {
         val name = "todelete"
-        val id = mockRepository.findByNameIgnoreCase(name).block().id
-        mockService.delete(id!!).test()
+        val id = mockRepository.findByNameIgnoreCase(name).block()?.id ?: throw IllegalStateException("No mock '$name'")
+        mockService.delete(id).test()
                 .expectSubscription()
                 .expectNext()
                 .verifyComplete()

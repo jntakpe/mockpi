@@ -1,9 +1,8 @@
 buildscript {
     ext {
-        kotlinVersion = '1.1.2'
-        springBootVersion = '2.0.0.BUILD-SNAPSHOT'
+        kotlinVersion = '1.1.3-2'
+        springBootVersion = '2.0.0.M2'
         jacksonVersion = '2.8.8'
-        reactorVersion = '3.0.7.RELEASE'
         reactorKotlinVersion = '1.0.0.M2'
         commonsLang3Version = '3.5'
         typescriptGenVersion = '1.21.304'

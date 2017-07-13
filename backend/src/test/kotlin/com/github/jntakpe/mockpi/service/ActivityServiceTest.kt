@@ -26,22 +26,26 @@ class ActivityServiceTest {
 
     @Test
     fun log_shouldInitializeNewActivity() {
-        val count = activityRepository.count().block()
-        activityService.log(mockRepository.findByNameIgnoreCase("pristine").block(), Duration.ofSeconds(1)).test()
+        val count = activityRepository.count().block() ?: throw IllegalStateException("Unable to count items")
+        val name = "pristine"
+        val mock = mockRepository.findByNameIgnoreCase(name).block() ?: throw IllegalStateException("No mock $name")
+        activityService.log(mock, Duration.ofSeconds(1)).test()
                 .expectSubscription()
                 .consumeNextWith {
                     assertThat(it.id).isNotNull()
                     assertThat(it.mock).isNotNull()
                     assertThat(it.calls).isNotEmpty.hasSize(1)
                 }
-                .then { assertThat(activityRepository.count().block()).isEqualTo(count + 1) }
+                .then { assertThat(activityRepository.count().block()!!).isEqualTo(count + 1) }
                 .verifyComplete()
     }
 
     @Test
     fun log_shouldAddCallToExisting() {
         val count = activityRepository.count().block()
-        activityService.log(mockRepository.findByNameIgnoreCase("activity").block(), Duration.ofSeconds(1)).test()
+        val name = "activity"
+        val mock = mockRepository.findByNameIgnoreCase(name).block() ?: throw IllegalStateException("No mock $name")
+        activityService.log(mock, Duration.ofSeconds(1)).test()
                 .expectSubscription()
                 .consumeNextWith {
                     assertThat(it.id).isNotNull()
@@ -54,7 +58,7 @@ class ActivityServiceTest {
 
     @Test
     fun findAll_shouldFindSome() {
-        val size = activityRepository.findAll().collectList().block().size
+        val size = activityRepository.findAll().collectList().block()?.size ?: throw IllegalStateException("Unable to retrieve size")
         activityService.findAll().test()
                 .expectSubscription()
                 .expectNextCount(size.toLong())
