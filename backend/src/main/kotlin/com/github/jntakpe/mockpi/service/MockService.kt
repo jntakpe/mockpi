@@ -99,6 +99,7 @@ class MockService(private val mockRepository: MockRepository) {
         logger.debug("Updating id {} with {}", id, mock)
         return findByIdOrThrow(id)
                 .flatMap { verifyNameAndRequestAvailable(mock, it) }
+                .map { it.copy(id = id) }
                 .flatMap { mockRepository.save(it) }
                 .doOnNext { logger.info("Mock {} successfully updated", it) }
     }

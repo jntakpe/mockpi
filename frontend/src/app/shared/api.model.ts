@@ -1,4 +1,4 @@
-// Generated using typescript-generator version 1.21.304 on 2017-05-20 11:58:39.
+// Generated using typescript-generator version 1.21.304 on 2017-08-28 20:39:27.
 
 export interface Activity {
   id: any;

@@ -426,6 +426,18 @@ class MockServiceTest {
     }
 
     @Test
+    fun `should update mock without creating a new one`() {
+        val count = mockRepository.count().block()
+        val oldMock = mockRepository.findAll().blockFirst() ?: throw IllegalStateException("No mock to update")
+        val mock = oldMock.copy(name = "updatedName2")
+        mockService.update(mock, oldMock.id!!).test()
+                .expectSubscription()
+                .expectNextCount(1)
+                .verifyComplete()
+        assertThat(mockRepository.count().block()).isEqualTo(count)
+    }
+
+    @Test
     fun `should not update because name missing`() {
         val name = "demo_1"
         val mock = mockRepository.findByNameIgnoreCase(name).block() ?: throw IllegalStateException("No mock '$name'")

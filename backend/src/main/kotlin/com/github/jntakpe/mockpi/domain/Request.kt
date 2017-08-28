@@ -7,7 +7,7 @@ import java.util.*
 
 @Document
 data class Request(@field:NotBlank val path: String,
-                   @field:NotBlank val method: HttpMethod,
+                   val method: HttpMethod,
                    val params: Map<String, String> = emptyMap(),
                    val headers: Map<String, String> = emptyMap()) {
 
