@@ -1,6 +1,0 @@
-spring:
-  profiles:
-    active: test
-  data:
-    mongodb:
-      database: mockpitest
