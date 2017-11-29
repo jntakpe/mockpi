@@ -1,0 +1,8 @@
+spring:
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/mockpi
+  jackson:
+    serialization:
+      write_dates_as_timestamps: false
+      fail_on_empty_beans: false

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <jmxConfigurator/>
+    ​
+    <springProperty scope="context" name="springAppName" source="spring.application.name"/>
+    <property name="LOG_FILE" value="${BUILD_FOLDER:-build}/${springAppName}"/>​
+
+    <property name="CONSOLE_LOG_PATTERN"
+              value="%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"/>
+
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>DEBUG</level>
+        </filter>
+        <encoder>
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+            <charset>utf8</charset>
+        </encoder>
+    </appender>
+
+    <logger name="com.soprabanking.dxp" level="TRACE"/>
+    <logger name="java" level="WARN"/>
+    <logger name="javax" level="WARN"/>
+    <logger name="sun" level="OFF"/>
+    <logger name="com.sun" level="OFF"/>
+    <logger name="reactor" level="WARN"/>
+    <logger name="io.netty" level="WARN"/>
+    <logger name="org.jboss" level="WARN"/>
+    <logger name="org.junit" level="WARN"/>
+    <logger name="org.apache" level="WARN"/>
+    <logger name="com.jayway" level="WARN"/>
+    <logger name="org.mongodb" level="WARN"/>
+    <logger name="org.aspectj" level="WARN"/>
+    <logger name="org.hibernate" level="WARN"/>
+    <logger name="ch.qos.logback" level="WARN"/>
+    <logger name="org.hibernate.validator" level="WARN"/>
+    <logger name="org.springframework" level="WARN"/>
+    <logger name="org.springframework.boot" level="WARN"/>
+    <logger name="org.springframework.data" level="WARN"/>
+    <logger name="org.springframework.cache" level="WARN"/>
+    <logger name="org.springframework.security" level="WARN"/>
+    <logger name="org.springframework.web" level="WARN"/>
+    <logger name="org.springframework.boot.web.embedded.netty.NettyWebServer" level="INFO"/>
+
+    <root level="TRACE">
+        <appender-ref ref="console"/>
+    </root>
+
+</configuration>
