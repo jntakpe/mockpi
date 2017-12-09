@@ -1,28 +1,18 @@
 language: java
 sudo: required
-dist: trusty
-env:
-  - NODE_VERSION=6.10.2
-before_install:
-  - cd backend && ./gradlew clean && cd ..
-  - cd frontend && nvm install $NODE_VERSION && nvm use $NODE_VERSION && npm install -g yarn && cd ..
-  - export CHROME_BIN=/usr/bin/google-chrome
-  - export DISPLAY=:99.0
-  - sh -e /etc/init.d/xvfb start
-  - sudo apt-get update
-  - sudo apt-get install -y libappindicator1 fonts-liberation
-  - wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-  - sudo dpkg -i google-chrome*.deb
-cache:
-  directories:
-    - frontend/node_modules
 jdk:
   - oraclejdk8
-services: mongodb
-install:
-  - cd frontend && yarn && npm rebuild node-sass && cd ..
-before_script:
-  - npm install -g @angular/cli
-script: cd backend && ./gradlew test && cd ../frontend && ng test --single-run
+services:
+  - mongodb
+before_install:
+  - chmod +x gradlew
+  - ./gradlew clean
+before_cache:
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+cache:
+  directories:
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
 notifications:
   email: false
