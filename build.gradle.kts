@@ -62,6 +62,7 @@ dependencies {
     }
     testCompile("org.springframework.restdocs:spring-restdocs-webtestclient")
     testCompile("org.junit.jupiter:junit-jupiter-api")
+    testCompile("de.flapdoodle.embed:de.flapdoodle.embed.mongo")
     testRuntime("org.junit.jupiter:junit-jupiter-engine")
     asciidoctor("org.springframework.restdocs:spring-restdocs-asciidoctor")
 }
